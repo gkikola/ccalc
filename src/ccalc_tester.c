@@ -1,0 +1,435 @@
+/* ccalc-tester -- run tests on ccalc.
+   Copyright (C) 2015 Gregory Kikola.
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* Written by Gregory Kikola <gkikola@gmail.com>. */
+
+#include <assert.h>
+#include <math.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define BUF_SIZE 256
+
+#define EXPECT_INT(EXPR) expect_int(#EXPR, "", (EXPR))
+#define EXPECT_FLOAT(EXPR) expect_float(#EXPR, "", (EXPR))
+
+bool expect_int(char *expr, char *opts, long expected);
+bool expect_float(char *expr, char *opts, double expected);
+
+bool call_ccalc(char *expr, char *opts, char *output, int output_size);
+
+int num_tests = 0;
+
+int main() {
+  double PI = M_PI;
+  double E = M_E;
+
+  assert(EXPECT_INT(42));
+  assert(EXPECT_INT(0713));
+  assert(EXPECT_INT(-35));
+  assert(EXPECT_INT(0));
+  assert(EXPECT_INT(1));
+  assert(EXPECT_INT(-1));
+  assert(EXPECT_INT(0xDEAD));
+  assert(EXPECT_INT(000));
+  assert(EXPECT_INT(010));
+  assert(EXPECT_INT(021));
+  assert(EXPECT_INT(003234));
+  assert(EXPECT_INT(0xA));
+  assert(EXPECT_INT(0xF1));
+  assert(EXPECT_INT(0x234F3));
+  
+  assert(EXPECT_INT(3 + 2));
+  assert(EXPECT_INT(2 + (5 + 8)));
+  assert(EXPECT_INT((2 + 5) + 8));
+  assert(EXPECT_INT(1 + 1 + 1 + 1 + 1 + 1 + 1));
+  assert(EXPECT_INT((2 + 4) + (7 + 9)));
+  assert(EXPECT_INT(2 + (4 + 7) + 9));
+  assert(EXPECT_INT(+2 + +(+4 + +7) + +9));
+  assert(EXPECT_INT(+7));
+
+  assert(EXPECT_INT(4 - 7));
+  assert(EXPECT_INT(7 - 4));
+  assert(EXPECT_INT(4 - (2 + 5)));
+  assert(EXPECT_INT(3 + (5 + 2 - 7 + (7 - 1) - 2 + -3) - 8 + (5 + (3 + 2))));
+  
+  assert(EXPECT_INT(3 * 49));
+  assert(EXPECT_INT(3 * 7 + 1 - 2 * 4));
+  assert(EXPECT_INT(3 * 3 * 3 * 3 * 3));
+  assert(EXPECT_INT((3 * 3) * (3 * 3) * 3));
+  assert(EXPECT_INT((3 * 3 * 3) * (3 * 3)));
+  assert(EXPECT_INT(4 * (5 + 7 * (8 - 1 * (4 + 1 + 3)) * 2)));
+  assert(EXPECT_INT(3 - -4 * -7));
+  assert(EXPECT_INT((3 - -4) * -7));
+  
+  assert(EXPECT_INT(4 / 2));
+  assert(EXPECT_INT(64 / 16));
+  assert(EXPECT_INT(343 / 7));
+  assert(EXPECT_INT(343 / 7 / 7));
+  assert(EXPECT_INT(343 / 7 / 7 / 7));
+  assert(EXPECT_INT(450 / 10 / 9));
+  assert(EXPECT_INT(450 / (70 / 7)));
+  assert(EXPECT_INT(4 + (7 / (3 * 2 + 1)) - 4 / (2 + 3 - 4)));
+  assert(EXPECT_INT(4 + 7 - 36 / 12 + 4 - 13 * 96 / 13 + 2 - 4));
+  assert(EXPECT_INT((4 + 7 - 36) / 5 + (4 - 13) * 96 / (2 * 13 - 8)));
+  
+  assert(EXPECT_INT(17 % 3));
+  assert(EXPECT_INT(20 % 7));
+  assert(EXPECT_INT(3 * 4 / 3 % 10));
+  assert(EXPECT_INT(3 % 4 + 7 % 4 + 16 % 4));
+  assert(EXPECT_INT(3 % (4 + 7) % (4 + 16) % 4));
+  assert(EXPECT_INT(2 * 5 % 3));
+  assert(EXPECT_INT(2 * (5 % 3)));
+  assert(EXPECT_INT(3 * 3 % 3 * 3 - 4));
+  assert(EXPECT_INT(3 * (3 % 3 * 3) - 4));
+  assert(EXPECT_INT(81 % 7 + 13 % 7 + 42 % 7));
+  assert(EXPECT_INT(81 % 7 * 13 % 7 * 42 % 7));
+  assert(EXPECT_INT(13 % -5));
+  assert(EXPECT_INT(-13 % 5));
+  assert(EXPECT_INT(-13 % -5));
+  
+  assert(EXPECT_INT(035 + 010 * (-0324 + 0112) - (07 * 010) % 05));
+  assert(EXPECT_INT(0x11 + 0xa2 * (-0x33 + 0xdd) - (0xF * 0x1) % 0xB));
+  
+  assert(EXPECT_INT(4 == 4));
+  assert(EXPECT_INT(4 == 5));
+  assert(EXPECT_INT(4 == 4 == 5));
+  assert(EXPECT_INT(11 == 4 + 7));
+  assert(EXPECT_INT((11 == 4) + 7));
+  assert(EXPECT_INT((14 == 14) == (3 == 3)));
+  assert(EXPECT_INT(14 == (14 == 3) == 3));
+  assert(EXPECT_INT(4 != 4));
+  assert(EXPECT_INT(4 != 5));
+  assert(EXPECT_INT(4 == 4 != 5));
+  assert(EXPECT_INT(4 == (4 != 5)));
+  assert(EXPECT_INT(4 / 4 == (4 != 5)));
+  assert(EXPECT_INT(4 + (7 / (3 * 2 + 1) == (4 != 20)) - 13 * 4));
+
+  assert(EXPECT_INT(4 > 7));
+  assert(EXPECT_INT(7 > 4));
+  assert(EXPECT_INT(4 > 7 == 0));
+  assert(EXPECT_INT(7 > 4 == 15 > 12));
+  assert(EXPECT_INT(7 > 4 == 12 > 15));
+  assert(EXPECT_INT((4 > 3 == 1) * 42));
+  assert(EXPECT_INT(1 + ((3 == 3) + 7) * 4));
+  assert(EXPECT_INT(4 >= 7));
+  assert(EXPECT_INT(4 <= 7));
+  assert(EXPECT_INT(7 >= 4));
+  assert(EXPECT_INT(7 <= 4));
+  assert(EXPECT_INT(7 >= 7));
+  assert(EXPECT_INT(7 <= 7));
+  assert(EXPECT_INT(3 * (2 > 3) * 319));
+  assert(EXPECT_INT(2 * ((3 <= 4) + (5 != 52) * (4 > 0))));
+  assert(EXPECT_INT(4 < 6 < 8 < 8 < 8 < 8));
+  assert(EXPECT_INT(4 > 3 < 2));
+  assert(EXPECT_INT(4 >= 3 <= 2));
+  assert(EXPECT_INT(5 >= 1 >= 1 >= 1));
+  assert(EXPECT_INT(14 % ((3 <= 17) + 3)));
+  
+  assert(EXPECT_INT(!1));
+  assert(EXPECT_INT(!0));
+  assert(EXPECT_INT(!(7 == 7)));
+  assert(EXPECT_INT(!(7 != 7)));
+  assert(EXPECT_INT(!(!(!(!(!(!(1))))))));
+  assert(EXPECT_INT(!(!(!(!(!(!(0))))))));
+  assert(EXPECT_INT(!13 == !4));
+  assert(EXPECT_INT(!(13 == 4)));
+  assert(EXPECT_INT(4 == 4 && 7 >= 3 && 7 < 52));
+  assert(EXPECT_INT(4 == (4 && 7) >= (3 && 7) < 52));
+  assert(EXPECT_INT(4 != 4 && 6 == 6 && 1));
+  assert(EXPECT_INT(4 != 4 || 6 == 6 || 1));
+  assert(EXPECT_INT(4 != 4 || 6 == 6 && 1));
+  assert(EXPECT_INT((4 != 4 || 6 == 6) && 1));
+  assert(EXPECT_INT(4 != 4 && 6 == 6 || 1));
+  assert(EXPECT_INT(!(4 != 4) && !(7 < 0) || !1));
+  
+  assert(EXPECT_INT(1 + ((4 > 0) ? 5 : 3) + ((5 == 10) ? 12 : 6) - 4));
+  assert(EXPECT_INT(17 % 3 != 0 ? 4 + 3 < 5 ? 1 : 2 : 13));
+  assert(EXPECT_INT(1 ? 5 : (7 == 4) ? 3 : 2));
+  assert(EXPECT_INT(0 ? 5 : (7 == 4) ? 3 : 2));
+  assert(EXPECT_INT(10 % 4 != 0 ? 7 > 4 ? 12 : 11 : 10));
+  assert(EXPECT_INT(10 % 4 != 0 ? 7 > 4 ? 12 : 11 : 8 > 3 ? 10 : 9));
+  assert(EXPECT_INT(10 % 4 == 0 ? 7 > 4 ? 12 : 11 : 8 > 3 ? 10 : 9));
+  assert(EXPECT_INT(10 % 4 != 0 ? 7 < 4 ? 12 : 11 : 8 > 3 ? 10 : 9));
+  assert(EXPECT_INT(14 % 5 == 0 ? 1 : 14 % 5 == 1 ? 2 : 14 % 5 == 2 ? 3 : 14 %
+		    5 == 3 ? 4 : 14 % 5 == 4 ? 5 : -1));
+  
+  assert(EXPECT_INT((3, 4, 12, 0, -1, 12)));
+  assert(EXPECT_INT((3, 5 ? 3 , 2 : 7, 2)));
+  assert(EXPECT_INT((3, 5 + 7 * 8)));
+
+  assert(EXPECT_INT(12 & 7));
+  assert(EXPECT_INT(0 | 2 | 4 | 16));
+  assert(EXPECT_INT(9 & 17 | 8));
+  assert(EXPECT_INT(~17));
+  assert(EXPECT_INT(~(9 | 17)));
+  assert(EXPECT_INT(9 & 17 ^ 8));
+  assert(EXPECT_INT(9 & 17 | 5 ^ 9));
+  assert(EXPECT_INT(4 == 4 | 2 * (7 > 3)));
+  assert(EXPECT_INT(7 & 8 > 3 & 3));
+  assert(EXPECT_INT(7 ^ 8 > 3 ^ 3));
+  assert(EXPECT_INT(7 | 8 > 3 | 3));
+  assert(EXPECT_INT(16 | 5 ^ 7 & 7 | 7 ^ 7));
+  
+  assert(EXPECT_INT(1 << 4));
+  assert(EXPECT_INT(256 >> 4));
+  assert(EXPECT_INT(1 >> 2));
+  assert(EXPECT_INT(73 << 3));
+  assert(EXPECT_INT(15 >> 2));
+  assert(EXPECT_INT(7 > 3 << 4));
+  assert(EXPECT_INT(7 != 3 >> 9));
+  assert(EXPECT_INT(7 >> 2 & 7 << 1));
+  assert(EXPECT_INT(63 << 1 & 0xFF));
+  assert(EXPECT_INT(0xcdcdcd | 710));
+  assert(EXPECT_INT(0xcdcdcd & 710));
+  assert(EXPECT_INT(0xcdcdcd ^ 710));
+  assert(EXPECT_INT(3 << 12 / 4));
+  assert(EXPECT_INT(33 / 11 >> 9 / 9));
+
+  assert(EXPECT_INT(21 * 49 + 42 + -85 + 13 + 76 * 24 * -42 + 60 + -33 + 78 + 
+		    -5 - 56 * 91));
+  assert(EXPECT_INT(21 * 49 + 42 + -85 + 13 + 76 * 24 * -42 + 60 + -33 + 78 + 
+		    -5 - 56 * 91));
+  assert(EXPECT_INT(21 * 49 + 42 + (-85 + 13 + 76 * 24 * -42) + 60 + -33 + 
+		    78 + -5 - 56 * 91));
+  assert(EXPECT_INT(21 * (49 + 42 + -85) + 13 + 76 * (24 * -42 + 60) + -33 + 
+		    78 + -5 - (56 * 91)));
+  assert(EXPECT_INT(21 * (49 + (42 + (-85 + (13 + (76 * (24 * (-42 + (60 + 
+		    (-33 + (78 + (-5 - (56 * 91))))))))))))));
+
+  assert(EXPECT_FLOAT(30.));
+  assert(EXPECT_FLOAT(.713));
+  assert(EXPECT_FLOAT(1.2e47));
+  assert(EXPECT_FLOAT(0.0));
+  assert(EXPECT_FLOAT(-3.4e-12));
+  assert(EXPECT_FLOAT(-3.4e+12));
+  assert(EXPECT_FLOAT(0.00001));
+  assert(EXPECT_FLOAT(1000.001));
+  assert(EXPECT_FLOAT(12.34e-5));
+  assert(EXPECT_FLOAT(6.e9));
+  assert(EXPECT_FLOAT(.2e-2));
+  assert(EXPECT_FLOAT(219.00));
+  assert(EXPECT_FLOAT(219.912));
+  assert(EXPECT_FLOAT(87.41592));
+  
+  assert(EXPECT_FLOAT(3.0 + 2));
+  assert(EXPECT_FLOAT(3 + 2.0));
+  assert(EXPECT_FLOAT(3.0 + 2.0));
+  assert(EXPECT_FLOAT(2 + (5.0 + 8)));
+  assert(EXPECT_FLOAT((2 + 5.0) + 8));
+  assert(EXPECT_FLOAT(1 + 1 + 1 + 1 + 1 + 1. + 1));
+  assert(EXPECT_FLOAT((2 + 4.4) + (7 + 9)));
+  assert(EXPECT_FLOAT(2 + (4 + 7) + 9.15));
+  assert(EXPECT_FLOAT(+2.1 + +(+4.2 + +7.9) + +9.5));
+  assert(EXPECT_FLOAT(+7.));
+
+  assert(EXPECT_FLOAT(4 - 7.2));
+  assert(EXPECT_FLOAT(7.2 - 4));
+  assert(EXPECT_FLOAT(4 - (2.1 + 5)));
+  assert(EXPECT_FLOAT(3 + (5.15 + 2 - 7 + (7.99 - 1) - 2 + -3.) - 8 + (5.87 +
+		      (3 + 2.009))));
+  
+  assert(EXPECT_FLOAT(3 * 49.1));
+  assert(EXPECT_FLOAT(3.14 * 49));
+  assert(EXPECT_FLOAT(3 * 7 + 1 - 2.0 * 4));
+  assert(EXPECT_FLOAT(3 * 3 * 3 * 3.33 * 3));
+  assert(EXPECT_FLOAT((3 * 3) * (3 * 3.33) * 3));
+  assert(EXPECT_FLOAT((3 * 3 * 3) * (3.33 * 3)));
+  assert(EXPECT_FLOAT(4 * (5 + 7 * (8 - 1 * (4 + .1 + 3)) * 2)));
+  assert(EXPECT_FLOAT(3.1 - -4.9 * -7.8));
+  assert(EXPECT_FLOAT((3 - -4.0) * -7));
+  
+  assert(EXPECT_FLOAT(4.0 / 2));
+  assert(EXPECT_FLOAT(4 / 2.0));
+  assert(EXPECT_FLOAT(300 / 12.5));
+  assert(EXPECT_FLOAT(343 / 2.0));
+  assert(EXPECT_FLOAT(343 / 15.0 / 12.0));
+  assert(EXPECT_FLOAT(450 / 10 / 9.1));
+  assert(EXPECT_FLOAT(4.50 / (70 / 7)));
+  assert(EXPECT_FLOAT(4.38 + (7.91 / (3.26 * 2.01 + 1.94)) - 4.11 / (2.08
+		      + 3.39 - 4.0)));
+  assert(EXPECT_FLOAT(4 + 7 - 36 / 12 + 4 - 13. * 96 / 13 + 2 - 4));
+  assert(EXPECT_FLOAT((4.816 + 7.285 - 36.09) / 5.184 + (4.009 - 13.04) *
+		      96.11 / (2.927 * 13.07 - 8.888)));
+  
+  assert(EXPECT_FLOAT(3.8 * 4 / 3));
+  assert(EXPECT_FLOAT(3 % 4 + 0.14));
+  assert(EXPECT_FLOAT(2.5 * (5 % 3)));
+  assert(EXPECT_FLOAT(3 * 3 % 3 * 3.9 - 4));
+  assert(EXPECT_FLOAT(3 * (3 % 3 * 3.9) - 4));
+
+  assert(EXPECT_INT(4.0 == 4.0));
+  assert(EXPECT_INT(4.0 == 5.0));
+  assert(EXPECT_INT(4.0 == 4.0 == 5));
+  assert(EXPECT_INT(11 == 4.0 + 7.0));
+  assert(EXPECT_FLOAT((11 == 4) + 7.0));
+  assert(EXPECT_INT(4.5 != 5.5));
+  assert(EXPECT_INT(4 == 4.0 != 5));
+  assert(EXPECT_INT(4.05 == (4.72 != 5.18)));
+  assert(EXPECT_INT(10.0 / 4 == (4.0 != 5)));
+
+  assert(EXPECT_INT(4.3 > 7.8));
+  assert(EXPECT_INT(7.8 > 4.3));
+  assert(EXPECT_INT(4.3 > 7.8 == 0));
+  assert(EXPECT_INT(7.0 > 4.0 == 15.0 > 12.0));
+  assert(EXPECT_INT(7.0 > 4.0 == 12.0 > 15.0));
+  assert(EXPECT_FLOAT((4.0 > 3.5 == 1) * 42.7));
+  assert(EXPECT_FLOAT(1 + ((3.0 == 3.0) + 7) * 4.18));
+  assert(EXPECT_INT(4.1 >= 7.05));
+  assert(EXPECT_INT(4.1 <= 7.05));
+  assert(EXPECT_INT(7.05 >= 4.1));
+  assert(EXPECT_INT(7.05 <= 4.1));
+  assert(EXPECT_INT(7.0 >= 7.0));
+  assert(EXPECT_INT(7.0 <= 7.0));
+  assert(EXPECT_INT(3 * (2.0 > 3.0) * 319));
+  assert(EXPECT_INT(2 * ((3.5 <= 4.2) + (5 != 52.1) * (4 > 0.0))));
+  assert(EXPECT_INT(4.8 < 6.1 < 8. < 8. < 8. < 8.));
+  assert(EXPECT_INT(4.5 > 3.5 < 2.5));
+  assert(EXPECT_INT(4.5 >= 3.5 <= 2.5));
+  assert(EXPECT_INT(5.0 >= 1.0 >= 1.0 >= 1.0));
+  assert(EXPECT_INT(14 % ((3 <= 17) + 3)));
+  
+  assert(EXPECT_INT(!1.0));
+  assert(EXPECT_INT(!0.0));
+  assert(EXPECT_INT(!(7.0 == 7.0)));
+  assert(EXPECT_INT(!(7.0 != 7.0)));
+  assert(EXPECT_INT(!(!(!(!(!(!(1.87))))))));
+  assert(EXPECT_INT(!(!(!(!(!(!(0.00))))))));
+  assert(EXPECT_INT(!13.8 == !4.5));
+  assert(EXPECT_INT(!(13.8 == 4.5)));
+  assert(EXPECT_INT(4.2 == 4.2 && 7.0 >= 3.9 && 7.0 < 52.4));
+  assert(EXPECT_INT(4.2 == (4.2 && 7.0) >= (3.9 && 7.0) < 52.4));
+  assert(EXPECT_INT(4.0 != 4.0 && 6.0 == 6.0 && 1.));
+  assert(EXPECT_INT(4.0 != 4.0 || 6.0 == 6.0 || 1.));
+  assert(EXPECT_INT(4.0 != 4.0 || 6.0 == 6.0 && 1.));
+  assert(EXPECT_INT((4.0 != 4.0 || 6.0 == 6.0) && 1.));
+  assert(EXPECT_INT(4.0 != 4.0 && 6.0 == 6.0 || 1.));
+  assert(EXPECT_INT(!(4.0 != 4.0) && !(7.12 < 0.0) || !1.));
+  
+  assert(EXPECT_FLOAT(1 + ((4 > 0) ? 5.5 : 3.5) + ((5 == 10) ? 12.4 : 6.) - 4));
+  assert(EXPECT_FLOAT(17 % 3 != 0 ? 4 + 3 < 5 ? 1.2 : 2.2 : 13.2));
+  assert(EXPECT_FLOAT(1.87 ? 5.4 : (7.0 == 4.0) ? 3.4 : 2.4));
+  assert(EXPECT_FLOAT(0.0 ? 5.1 : (7.0 == 4.0) ? 3.1 : 2.1));
+  
+  assert(EXPECT_FLOAT((3.5, 4, 12.9, 0, -1, 12.5)));
+  assert(EXPECT_FLOAT((3, 5 ? 3 , 2.5 : 7.0, 2.12)));
+  assert(EXPECT_FLOAT((3, 5 + 7.1 * 8)));
+
+  assert(EXPECT_FLOAT(2181.e-2 * 49.51 + 42.71 + -85.04 + 0.1348e2 + 76.21 *
+		      24.43 * -42.93 + 60.40 + -33.07 + 78.40e+0 + -5.62 -
+		      56.41 * 91.28));
+  assert(EXPECT_FLOAT(21.81 * 49.51 + 42.71 + (-85.04 + 13.48 + 76.21 * 24.43
+		      * -42.93) + 60.40 + -33.07 + 78.40 + -5.62 - 56.41 *
+		      91.28));
+  assert(EXPECT_FLOAT(21 * (49.0 / 42 + -85.2) + 13 + 76 * (24 * -4.2 + 60) +
+		      -33 / 78.4 + -5.1 / (56 * 91)));
+  assert(EXPECT_FLOAT(21 * (49 + (42 + (-85 + (13 + (76 * (24 * (-42 + (60 +
+		      (-33 + (78 + (-5 - (56.0 * 91))))))))))))));
+
+  assert(EXPECT_FLOAT(sin(4.2) - cos(1.0)));
+  assert(EXPECT_FLOAT(log(1.8)));
+  assert(EXPECT_FLOAT(log((7, 2))));
+  assert(EXPECT_FLOAT(PI));
+  assert(EXPECT_FLOAT(E));
+  assert(EXPECT_FLOAT(PI * (E + PI)));
+  assert(EXPECT_FLOAT(sin ( (2 * PI > 6) ? PI / 2 : PI / 3 )));
+  assert(EXPECT_FLOAT(sin(sin(sin(1.0)))));
+  assert(EXPECT_FLOAT(atan2(sin(PI / 3), cos(PI / 4))));
+  assert(EXPECT_FLOAT(4 + atan2(hypot(3.0 * 2, sqrt(64)),
+				hypot(59 % 4, 2 * 2))));
+  assert(EXPECT_FLOAT(hypot(hypot(hypot(1.1, 1.2), hypot(1.3, 1.4)),
+			    hypot(hypot(1.5, 1.6), hypot(1.7, 1.8)))));
+  assert(EXPECT_FLOAT(sin(log(cos(tan(sqrt(exp(30.0))))))));
+  assert(EXPECT_FLOAT(  E    +  cos   (    7.2    )  ));
+  
+  printf("%d tests completed successfully.\n", num_tests);
+  return 0;
+}
+
+bool call_ccalc(char *expr, char *opts, char *output, int output_size) {
+  char *prog = "./ccalc ";
+  char *sep = " -- \"";
+  char *end = "\"";
+  char command[BUF_SIZE];
+
+  if (strlen(expr) + strlen(opts) + strlen(sep) + strlen(expr) + strlen(end)
+      + 1 > BUF_SIZE) {
+    fprintf(stderr, "Error: command string too big\n");
+    return false;
+  }
+  
+  strcpy(command, prog);
+  strcat(command, opts);
+  strcat(command, sep);
+  strcat(command, expr);
+  strcat(command, end);
+
+  FILE *stream = popen(command, "r");
+
+  if (!stream) {
+    fprintf(stderr, "Error: could not create stream\n");
+    return false;
+  }
+
+  fgets(output, output_size, stream);
+  
+  pclose(stream);
+
+  ++num_tests;
+
+  return true;
+}
+
+bool expect_int(char *expr, char *opts, long expected) {
+  char result[BUF_SIZE];
+  char desired[BUF_SIZE];
+
+  snprintf(desired, BUF_SIZE, "%ld\n", expected);
+
+  if (!call_ccalc(expr, opts, result, BUF_SIZE))
+    return false;
+
+  bool cmp = !strcmp(result, desired);
+
+  if (!cmp) {
+    printf("Test failed: ");
+    printf("%s\nExpected: %sReceived: %s", expr, desired, result);
+  }
+
+  return cmp;
+}
+
+bool expect_float(char *expr, char *opts, double expected) {
+  char result[BUF_SIZE];
+  char desired[BUF_SIZE];
+
+  snprintf(desired, BUF_SIZE, "%f\n", expected);
+
+  if (!call_ccalc(expr, opts, result, BUF_SIZE))
+    return false;
+
+  bool cmp = !strcmp(result, desired);
+
+  if (!cmp) {
+    printf("Test failed: ");
+    printf("%s\nExpected: %sReceived: %s", expr, desired, result);
+  }
+
+  return cmp;
+}
