@@ -37,6 +37,8 @@ void value_set_float(value *val, double fvalue);
 long int value_get_int(value *val);
 double value_get_float(value *val);
 
+int round_to_int(value *x);
+
 int get_constant(char *identifier, value *val);
 int call_function(char *identifier, value *result, int argc, value argv[],
 		  bool degrees);

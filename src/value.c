@@ -66,6 +66,29 @@ double value_get_float(value *val) {
   }
 }
 
+int round_to_int(value *x) {
+  if (x->type == INT)
+    return SUCCESS;
+  else {
+    double fval = value_get_float(x);
+    
+    //see if value will fit in a long int
+    double lower = nextafter(LONG_MIN + 0.5, 0);
+    double upper = nextafter(LONG_MAX + 0.5, 0);
+    if (fval >= lower && fval <= upper) {
+      x->type = INT;
+      x->data.ivalue = (fval >= 0)
+                         ? (long)(fval + 0.5)
+                         : (long)(fval - 0.5);
+    } else {
+      x->type = FLOAT;
+      x->data.fvalue = round(fval);
+    }
+
+    return SUCCESS;
+  }
+}
+
 int get_constant(char *identifier, value *val) {
   if (!strcmp(identifier, "PI")) {
     val->type = FLOAT;
@@ -204,6 +227,9 @@ int call_function(char *identifier, value *result, int argc, value argv[],
       } else if (argv[0].type == FLOAT) {
 	result->type = FLOAT;
 	result->data.fvalue = floor(value_get_float(&argv[0]));
+
+	//convert to int if possible
+	return round_to_int(result);
       }
     } else bad_args = true;
   } else if (!strcmp(identifier, "ceil")) {
@@ -213,6 +239,9 @@ int call_function(char *identifier, value *result, int argc, value argv[],
       } else if (argv[0].type == FLOAT) {
 	result->type = FLOAT;
 	result->data.fvalue = ceil(value_get_float(&argv[0]));
+
+	//convert to int if possible
+	return round_to_int(result);
       }
     } else bad_args = true;
   } else if (!strcmp(identifier, "trunc")) {
@@ -222,16 +251,16 @@ int call_function(char *identifier, value *result, int argc, value argv[],
       } else if (argv[0].type == FLOAT) {
 	result->type = FLOAT;
 	result->data.fvalue = trunc(value_get_float(&argv[0]));
+
+	//convert to int if possible
+	return round_to_int(result);
       }
     } else bad_args = true;
   } else if (!strcmp(identifier, "round")) {
     if (argc == 1) {
-      if (argv[0].type == INT) {
-	*result = argv[0];
-      } else if (argv[0].type == FLOAT) {
-	result->type = FLOAT;
-	result->data.fvalue = round(value_get_float(&argv[0]));
-      }
+      *result = argv[0];
+
+      return round_to_int(result);
     } else bad_args = true;
   } else if (!strcmp(identifier, "sin")) {
     if (argc == 1) {
