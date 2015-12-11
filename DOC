@@ -65,99 +65,48 @@ operators and the increment and decrement operators from C are not supported.
 FUNCTIONS
 
 The following mathematical functions are supported:
-  abs(x)
-  acos(x)
-  acosh(x)
-  asin(x)
-  asinh(x)
-  atan(x)
-  atan2(y, x)
-  atanh(x)
-  cbrt(x)
-  ceil(x)
-  cos(x)
-  cosh(x)
-  erf(x)
-  erfc(x)
-  exp(x)
-  exp2(x)
-  expm1(x)
-  floor(x)
-  fmod(x, y)
-  hypot(x, y)
-  lgamma(x)
-  log(x)
-  log10(x)
-  log1p(x)
-  log2(x)
-  max(x, y)
-  min(x, y)
-  nextafter(x, y)
-  pow(x)
-  rand()
-  remainder(x, y)
-  round(x)
-  sin(x)
-  sinh(x)
-  sqrt(x)
-  tan(x)
-  tanh(x)
-  tgamma(x)
-  trunc(x)
-
-The following mathematical functions are supported:
-  abs(x) or fabs(x)   absolute value of x
-  acos(x)     arccosine of x in range [0, PI]
-  acosh(x)    inverse hyperbolic cosine of x
-  asin(x)     arcsine of x in range [-PI/2, PI/2]
-  asinh(x)    inverse hyperbolic sine of x
-  atan(x)     arctangent of x in range [-PI/2, PI/2]
-  atan2(y, x) arctangent of y/x in range [-PI, PI]
-  atanh(x)    inverse hyperbolic tangent of x
-  cbrt(x)     cube root of x
-  ceil(x)     smallest integer greater than or equal to x
-  copysign(x, y)      returns the value of x with the sign of y
-  cos(x)      cosine of x
-  cosh(x)     hyperbolic cosine of x
-  erf(x)      error function of x
-  erfc(x)     complementary error function of x: 1 - erf(x)
-  exp(x)      exponential function E^x
-  exp2(x)     2 to the power of x
-  expm1(x)    computes exp(x) - 1
-  fdim(x, y)  positive difference between x and y: returns x - y if x > y or 0
-                if x <= y
-  floor(x)    largest integer less than or equal to x
-  fma(x, y, z)        multiply-add: computes (x * y) + z
-  fmod(x, y)  floating-point remainder of x/y, with same sign as x
-  frexp(x)    returns the value y in the interval [1/2, 1) or zero, such that
-                x is equal to y times a power of 2
-  hypot(x, y) square root of the sum of the squares of x and y
-  ldexp(x, n) computes x * pow(2, n)
-  lgamma(x)   natural logarithm of the absolute value of gamma of x
-  log(x)      natural logarithm of x
-  log10(x)    base-10 logarithm of x
-  log1p(x)    computes log(x + 1)
-  log2(x)     base-2 logarithm of x
-  logb(x) or ilogb(x) extracts exponent of x as a signed integer value
-  max(x, y) or fmax(x, y)     maximum value of x and y
-  min(x, y) or fmin(x, y)     minimum value of x and y
-  modf(x)     fractional part of x
-  nextafter(x, y)     returns the next value, in the direction of y, after x
-                        that can be represented on the current machine in a
-			double-precision floating point value
-  pow(x, y)   x to the power of y
-  rand()      pseudo-random integer between 0 and RAND_MAX
-  remainder(x, y)     remainder of x/y, with quotient rounded toward the
-                        nearest integral value
-  round(x)    x rounded to nearest integer
-  scalbn(x, n)        computes x * pow(FLT_RADIX, n)
-  sin(x)      sine of x
-  sinh(x)     hyperbolic sine of x
-  sqrt(x)     square root of x
-  tan(x)      tangent of x
-  tanh(x)     hyperbolic tangent of x
-  tgamma(x)   gamma function of x
-  trunc(x)    truncated integer value of x
+  abs(x)           absolute value of x
+  acos(x)          arccosine of x in range [0, PI]
+  acosh(x)         inverse hyperbolic cosine of x
+  asin(x)          arcsine of x in range [-PI/2, PI/2]
+  asinh(x)         inverse hyperbolic sine of x
+  atan(x)          arctangent of x in range [-PI/2, PI/2]
+  atan2(y, x)      arctangent of y/x in range [-PI, PI]
+  atanh(x)         inverse hyperbolic tangent of x
+  cbrt(x)          cube root of x
+  ceil(x)          smallest integer greater than or equal to x
+  cos(x)           cosine of x
+  cosh(x)          hyperbolic cosine of x
+  erf(x)           error function of x
+  erfc(x)          complementary error function of x: 1 - erf(x)
+  exp(x)           exponential function E^x
+  exp2(x)          2 to the power of x
+  expm1(x)         computes exp(x) - 1
+  floor(x)         largest integer less than or equal to x
+  fmod(x, y)       floating-point remainder of x/y, with same sign as x
+  hypot(x, y)      square root of the sum of the squares of x and y
+  lgamma(x)        natural logarithm of the absolute value of gamma of x
+  log(x)           natural logarithm of x
+  log10(x)         base-10 logarithm of x
+  log1p(x)         computes log(x + 1)
+  log2(x)          base-2 logarithm of x
+  max(x, y)        maximum value of x and y
+  min(x, y)        minimum value of x and y
+  nextafter(x, y)  returns the next value, in the direction of y, after x that
+                     can be represented on the current machine in a double-
+                     precision floating point value
+  pow(x)           x to the power of y
+  rand()           pseudo-random integer between 0 and RAND_MAX
+  remainder(x, y)  remainder of x/y, with quotient rounded toward the
+                     nearest integral value
+  round(x)         x rounded to nearest integer
+  sin(x)           sine of x
+  sinh(x)          hyperbolic sine of x
+  sqrt(x)          square root of x
+  tan(x)           tangent of x
+  tanh(x)          hyperbolic tangent of x
+  tgamma(x)        gamma function of x
+  trunc(x)         truncated integer value of x
 
 
 CONSTANTS
