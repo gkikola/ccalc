@@ -416,6 +416,43 @@ int main() {
   assert(expect_float("abs(-74.3e2)", "", 74.3e2));
   assert(expect_float("abs(abs(abs(abs(-3.14159))))", "", 3.14159));
 
+  assert(EXPECT_FLOAT(sin(0)));
+  assert(EXPECT_FLOAT(sin(0.1234)));
+  assert(EXPECT_FLOAT(sin(-0.1234)));
+  assert(EXPECT_FLOAT(sin(PI / 6)));
+  assert(EXPECT_FLOAT(sin(-PI / 6)));
+  assert(EXPECT_FLOAT(sin(PI / 3)));
+  assert(EXPECT_FLOAT(sin(-PI / 3)));
+  assert(EXPECT_FLOAT(sin(PI / 4)));
+  assert(EXPECT_FLOAT(sin(sqrt(7+2) + 7 * PI - 47.05)));
+  assert(EXPECT_FLOAT(sin(sin(sin(sin(sin(PI / 2)))))));
+
+  assert(EXPECT_FLOAT(cos(0)));
+  assert(EXPECT_FLOAT(cos(0.1234)));
+  assert(EXPECT_FLOAT(cos(-0.1234)));
+  assert(EXPECT_FLOAT(cos(PI / 6)));
+  assert(EXPECT_FLOAT(cos(-PI / 6)));
+  assert(EXPECT_FLOAT(cos(PI / 3)));
+  assert(EXPECT_FLOAT(cos(-PI / 3)));
+  assert(EXPECT_FLOAT(cos(PI / 4)));
+  assert(EXPECT_FLOAT(cos(sqrt(7+2) + 7 * PI - 47.05)));
+  assert(EXPECT_FLOAT(cos(cos(cos(cos(cos(PI / 2)))))));
+
+  assert(EXPECT_FLOAT(tan(0)));
+  assert(EXPECT_FLOAT(tan(0.1234)));
+  assert(EXPECT_FLOAT(tan(-0.1234)));
+  assert(EXPECT_FLOAT(tan(PI / 6)));
+  assert(EXPECT_FLOAT(tan(-PI / 6)));
+  assert(EXPECT_FLOAT(tan(PI / 3)));
+  assert(EXPECT_FLOAT(tan(-PI / 3)));
+  assert(EXPECT_FLOAT(tan(PI / 4)));
+  assert(EXPECT_FLOAT(tan(sqrt(7+2) + 7 * PI - 47.05)));
+  assert(EXPECT_FLOAT(tan(tan(tan(tan(tan(PI / 2)))))));
+
+  assert(expect_float("-3 ** sin(1 - sqrt(3) * tan(10.0)) + 1", "",
+		      -pow(3, sin(1 - sqrt(3) * tan(10))) + 1));
+  assert(EXPECT_FLOAT(sin(cos(atan(37.0) + tan(PI / 6)))));
+
   assert(EXPECT_FLOAT(acos(0.1234)));
   assert(EXPECT_FLOAT(acos(-0.1234)));
   assert(EXPECT_FLOAT(acos(0)));
