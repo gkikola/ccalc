@@ -29,8 +29,6 @@
 #define EXPECT_INT(EXPR) expect_int(#EXPR, "", (EXPR))
 #define EXPECT_FLOAT(EXPR) expect_float(#EXPR, "", (EXPR))
 
-#define TEST_FUNC(FN, ARG) expect_float(#FN "(" #ARG ")", (FN(ARG)))
-
 bool expect_int(char *expr, char *opts, long expected);
 bool expect_float(char *expr, char *opts, double expected);
 
@@ -417,6 +415,45 @@ int main() {
   assert(expect_float("abs(3.715)", "", 3.715));
   assert(expect_float("abs(-74.3e2)", "", 74.3e2));
   assert(expect_float("abs(abs(abs(abs(-3.14159))))", "", 3.14159));
+
+  assert(EXPECT_FLOAT(acos(0.1234)));
+  assert(EXPECT_FLOAT(acos(-0.1234)));
+  assert(EXPECT_FLOAT(acos(0)));
+  assert(EXPECT_FLOAT(acos(1)));
+  assert(EXPECT_FLOAT(acos(-1)));
+  assert(EXPECT_FLOAT(acos(sqrt(2) / 2)));
+  assert(EXPECT_FLOAT(acos(1 / sqrt(3))));
+
+  assert(EXPECT_FLOAT(asin(0.1234)));
+  assert(EXPECT_FLOAT(asin(-0.1234)));
+  assert(EXPECT_FLOAT(asin(0)));
+  assert(EXPECT_FLOAT(asin(1)));
+  assert(EXPECT_FLOAT(asin(-1)));
+  assert(EXPECT_FLOAT(asin(sqrt(2) / 2)));
+  assert(EXPECT_FLOAT(asin(1 / sqrt(3))));
+
+  assert(EXPECT_FLOAT(atan(0.1234)));
+  assert(EXPECT_FLOAT(atan(-0.1234)));
+  assert(EXPECT_FLOAT(atan(0)));
+  assert(EXPECT_FLOAT(atan(1)));
+  assert(EXPECT_FLOAT(atan(-1)));
+  assert(EXPECT_FLOAT(atan(PI)));
+  assert(EXPECT_FLOAT(atan( (1 + sqrt(5)) / 2 )));
+  assert(EXPECT_FLOAT(atan(-867.326)));
+  assert(EXPECT_FLOAT(atan(sqrt(2) / 2)));
+  assert(EXPECT_FLOAT(atan(1 / sqrt(3))));
+
+  assert(EXPECT_FLOAT(atan2(0.1234, 0.5678)));
+  assert(EXPECT_FLOAT(atan2(-0.1234, 0.5678)));
+  assert(EXPECT_FLOAT(atan2(0.1234, -0.5678)));
+  assert(EXPECT_FLOAT(atan2(-0.1234, -0.5678)));
+  assert(EXPECT_FLOAT(atan2(53, 386)));
+  assert(EXPECT_FLOAT(atan2(0, 1)));
+  assert(EXPECT_FLOAT(atan2(-sqrt(6), sqrt(55))));
+  assert(EXPECT_FLOAT(atan2(1.0 / 2, sqrt(3) / 2)));
+  assert(EXPECT_FLOAT(atan2(-1.0 / 2, sqrt(3) / 2)));
+  assert(EXPECT_FLOAT(atan2(1 / 2.0, -sqrt(3) / 2)));
+  assert(EXPECT_FLOAT(atan2(-1 / 2.0, -sqrt(3) / 2)));
   
   printf("%d tests completed successfully.\n", num_tests);
   return 0;
