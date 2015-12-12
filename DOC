@@ -42,8 +42,8 @@ OPERATORS
 
 The following operations are supported, in order of decreasing precedence:
   grouping (),
-  logical negation !, bitwise negation ~, unary + and -,
   exponentiation **,
+  logical negation !, bitwise negation ~, unary + and -,
   multiplication *, division /, modulo %,
   addition +, subtraction -,
   bit shifts << and >>,
@@ -56,10 +56,11 @@ The following operations are supported, in order of decreasing precedence:
   logical OR ||,
   ternary conditional expression ?:,
   comma ,.
-All operators have left-to-right associativity except for the unary operators
-and the conditional expression. The modulus operator % and the bitwise
-operators &, |, ^, <<, >>, and ~ only work with integer values. The assignment
-operators and the increment and decrement operators from C are not supported.
+All operators have left-to-right associativity except for the unary operators, 
+the exponentiation operator, and the conditional expression. The modulus 
+operator % and the bitwise operators &, |, ^, <<, >>, and ~ only work with 
+integer values. The assignment operators and the increment and decrement
+operators from C are nbot supported.
 
 
 FUNCTIONS

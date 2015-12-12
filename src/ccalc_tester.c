@@ -111,10 +111,15 @@ int main() {
   assert(expect_int("2 ** 2 ** 2", "", 16));
   assert(expect_int("-13 ** 2", "", -169));
   assert(expect_int("(-13) ** 2", "", 169));
+  assert(expect_int("+3 ** 2", "", 9));
+  assert(expect_int("-3 ** 2", "", -9));
+  assert(expect_int("!0 ** !0", "", 1));
+  assert(expect_int("1 + -3 ** 4 + ~ 2 ** 3", "", 1 - 81 + ~8));
   assert(expect_int("1 + 3 ** 4 + 9 ** 2 + 1 ** 4 - 1", "", 1 + 81 + 81));
   assert(expect_int("(1 + 3) ** 4 - 9 ** (2 + 1)", "", 256 - 729));
   assert(expect_int("2 + 2048 / 4 ** 5 - 7 * 2 ** 8", "", 2 + 2 - 7 * 256));
-  assert(expect_int("2 ** 2 ** 2 ** 2", "", 256));
+  assert(expect_int("2 ** 2 ** 2 ** 2", "", 1 << 16));
+  assert(expect_int("((2 ** 2) ** 2) ** 2", "", 256));
   assert(expect_int("2 ** (2 ** (2 ** 2))", "", 1 << 16));
   
   assert(EXPECT_INT(035 + 010 * (-0324 + 0112) - (07 * 010) % 05));
@@ -298,9 +303,13 @@ int main() {
   assert(expect_float("7.0 ** 3", "", pow(7.0, 3)));
   assert(expect_float("7 ** 3.0", "", pow(7, 3.0)));
   assert(expect_float("4.12 * 3.72 ** 2.15", "", 4.12 * pow(3.72, 2.15)));
-  assert(expect_float("2.1 ** 2 ** 2", "", pow(pow(2.1, 2), 2)));
+  assert(expect_float("2.1 ** 2 ** 2", "", pow(2.1, 4)));
+  assert(expect_float("(2.1 ** 2) ** 2", "", pow(pow(2.1, 2), 2)));
   assert(expect_float("-87.315 ** 4", "", -pow(87.315, 4)));
   assert(expect_float("(-87.315) ** 4", "", pow(87.315, 4)));
+  assert(expect_float("3 ** -2", "", 1.0 / 9));
+  assert(expect_float("-18 ** -3", "", -pow(18, -3)));
+  assert(expect_float("(-18) ** (-3)", "", pow(-18, -3)));
   assert(expect_float("1 + 3.15 ** 4 + 9 ** 2.3 + 1 ** 4.5 - 1", "",
 		      1 + pow(3.15, 4) + pow(9, 2.3) + pow(1, 4.5) - 1));
   assert(expect_float("(1 + 3.15) ** 4 - 9 ** (2.3 + 1)", "",
@@ -308,9 +317,13 @@ int main() {
   assert(expect_float("2 + 2048 / 3 ** 5 - 7 * 2 ** 8", "",
 		      2 + 2048 / pow(3.0, 5) - 7 * 256));
   assert(expect_float("2.3 ** 2.3 ** 2.3 ** 2.3", "",
+		      pow(2.3, pow(2.3, pow(2.3, 2.3)))));
+  assert(expect_float("((2.3 ** 2.3) ** 2.3) ** 2.3", "",
 		      pow(pow(pow(2.3, 2.3), 2.3), 2.3)));
   assert(expect_float("2.3 ** (2.3 ** (2.3 ** 2.3))", "",
 		      pow(2.3, pow(2.3, pow(2.3, 2.3)))));
+  assert(expect_float("-2.2 ** -2.2 ** -2.2 ** -2.2", "",
+		      -pow(2.2, -pow(2.2, -pow(2.2, -2.2)))));
   
   assert(EXPECT_INT(4.0 == 4.0));
   assert(EXPECT_INT(4.0 == 5.0));

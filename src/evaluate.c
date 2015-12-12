@@ -1062,7 +1062,7 @@ int parse_exponential_expression(parser *parse, value *val) {
       result = get_token(parse);
       if (result != SUCCESS) return result;
 
-      result = parse_primary(parse, &right);
+      result = parse_unary_expression(parse, &right);
       if (result != SUCCESS) return result;
 
       result = power(&left, &right, val);
