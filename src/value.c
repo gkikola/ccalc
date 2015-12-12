@@ -437,6 +437,10 @@ int call_function(char *identifier, value *result, int argc, value argv[],
       result->type = FLOAT;
       result->data.fvalue = remainder(value_get_float(&argv[0]),
 				      value_get_float(&argv[1]));
+
+      //make an integer if possible
+      if (argv[0].type == INT && argv[1].type == INT)
+	return round_to_int(result);
     } else bad_args = true;
   } else if (!strcmp(identifier, "nextafter")) {
     if (argc == 2) {

@@ -479,11 +479,11 @@ int main() {
   assert(expect_int("trunc(-12.3)", "", -12));
   assert(expect_int("trunc(-12.7)", "", -12));
 
-  assert(EXPECT_FLOAT(remainder(0, 1)));
-  assert(EXPECT_FLOAT(remainder(12, 13)));
-  assert(EXPECT_FLOAT(remainder(-12, 13)));
-  assert(EXPECT_FLOAT(remainder(12, -13)));
-  assert(EXPECT_FLOAT(remainder(-12, -13)));
+  assert(expect_int("remainder(0, 1)", "", 0));
+  assert(expect_int("remainder(12, 13)", "", -1));
+  assert(expect_int("remainder(-12, 13)", "", 1));
+  assert(expect_int("remainder(12, -13)", "", -1));
+  assert(expect_int("remainder(-12, -13)", "", 1));
   assert(EXPECT_FLOAT(remainder(482.5, 73.6)));
   assert(EXPECT_FLOAT(remainder(-482.5, 73.6)));
   assert(EXPECT_FLOAT(remainder(482.5, -73.6)));
@@ -492,6 +492,20 @@ int main() {
   assert(EXPECT_FLOAT(remainder(3.78, 100)));
   assert(EXPECT_FLOAT(remainder(PI, 1 / E)));
   assert(EXPECT_FLOAT(remainder(exp(5), PHI)));
+
+  assert(expect_int("fmod(0, 1)", "", 0 % 1));
+  assert(expect_int("fmod(12, 13)", "", 12 % 13));
+  assert(expect_int("fmod(-12, 13)", "", -12 % 13));
+  assert(expect_int("fmod(12, -13)", "", 12 % -13));
+  assert(expect_int("fmod(-12, -13)", "", -12 % -13));
+  assert(EXPECT_FLOAT(fmod(482.5, 73.6)));
+  assert(EXPECT_FLOAT(fmod(-482.5, 73.6)));
+  assert(EXPECT_FLOAT(fmod(482.5, -73.6)));
+  assert(EXPECT_FLOAT(fmod(-482.5, -73.6)));
+  assert(EXPECT_FLOAT(fmod(100, 3.78)));
+  assert(EXPECT_FLOAT(fmod(3.78, 100)));
+  assert(EXPECT_FLOAT(fmod(PI, 1 / E)));
+  assert(EXPECT_FLOAT(fmod(exp(5), PHI)));
 
   assert(expect_int("pow(12, 3)", "", 12 * 12 * 12));
   assert(expect_int("pow(3, 12)", "", (int)round(pow(3, 12))));
@@ -770,6 +784,20 @@ int main() {
   assert(EXPECT_FLOAT(atanh(-0.1234)));
   assert(EXPECT_FLOAT(atanh(1 - 0.1234)));
   assert(EXPECT_FLOAT(atanh(tanh(3.37))));
+
+  assert(EXPECT_FLOAT(erf(0)));
+  assert(EXPECT_FLOAT(erf(0.1234)));
+  assert(EXPECT_FLOAT(erf(0.5678)));
+  assert(EXPECT_FLOAT(erf(1)));
+  assert(EXPECT_FLOAT(erf(1.75)));
+  assert(EXPECT_FLOAT(erf(13.8)));
+
+  assert(EXPECT_FLOAT(erfc(0)));
+  assert(EXPECT_FLOAT(erfc(0.1234)));
+  assert(EXPECT_FLOAT(erfc(0.5678)));
+  assert(EXPECT_FLOAT(erfc(1)));
+  assert(EXPECT_FLOAT(erfc(1.75)));
+  assert(EXPECT_FLOAT(erfc(13.8)));
   
   printf("%d tests completed successfully.\n", num_tests);
   return 0;
