@@ -512,6 +512,26 @@ int main() {
   assert(EXPECT_FLOAT(tanh(1 + PI + E)));
   assert(EXPECT_FLOAT(tanh(-PI / 12)));
   assert(EXPECT_FLOAT(tanh(-tanh(3.37))));
+
+  assert(EXPECT_FLOAT(asinh(0)));
+  assert(EXPECT_FLOAT(asinh(0.1234)));
+  assert(EXPECT_FLOAT(asinh(-0.1234)));
+  assert(EXPECT_FLOAT(asinh(1 + PI + E)));
+  assert(EXPECT_FLOAT(asinh(-PI / 12)));
+  assert(EXPECT_FLOAT(asinh(sinh(3.37))));
+
+  assert(EXPECT_FLOAT(acosh(1)));
+  assert(EXPECT_FLOAT(acosh(1.1234)));
+  assert(EXPECT_FLOAT(acosh(2 - 0.1234)));
+  assert(EXPECT_FLOAT(acosh(1 + PI + E)));
+  assert(EXPECT_FLOAT(acosh(1 + PI / 12)));
+  assert(EXPECT_FLOAT(acosh(cosh(3.37))));
+
+  assert(EXPECT_FLOAT(atanh(0)));
+  assert(EXPECT_FLOAT(atanh(0.1234)));
+  assert(EXPECT_FLOAT(atanh(-0.1234)));
+  assert(EXPECT_FLOAT(atanh(1 - 0.1234)));
+  assert(EXPECT_FLOAT(atanh(tanh(3.37))));
   
   printf("%d tests completed successfully.\n", num_tests);
   return 0;
