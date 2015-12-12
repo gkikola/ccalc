@@ -89,8 +89,8 @@ int parse_relational_expression(parser *parse, value *val);
 int parse_shift_expression(parser *parse, value *val);
 int parse_additive_expression(parser *parse, value *val);
 int parse_multiplicative_expression(parser *parse, value *val);
-int parse_exponential_expression(parser *parse, value *val);
 int parse_unary_expression(parser *parse, value *val);
+int parse_exponential_expression(parser *parse, value *val);
 int parse_primary(parser *parse, value *val);
 
 int evaluate(char *expr, value *result, options *opts) {
@@ -941,7 +941,7 @@ int parse_additive_expression(parser *parse, value *val) {
 
 int parse_multiplicative_expression(parser *parse, value *val) {
   value left, right;
-  int result = parse_exponential_expression(parse, val);
+  int result = parse_unary_expression(parse, val);
   if (result != SUCCESS) return result;
 
   left = *val;
@@ -956,7 +956,7 @@ int parse_multiplicative_expression(parser *parse, value *val) {
       result = get_token(parse);
       if (result != SUCCESS) return result;
 
-      result = parse_exponential_expression(parse, &right);
+      result = parse_unary_expression(parse, &right);
       if (result != SUCCESS) return result;
 
       result = multiply(&left, &right, val);
@@ -968,7 +968,7 @@ int parse_multiplicative_expression(parser *parse, value *val) {
       result = get_token(parse);
       if (result != SUCCESS) return result;
 
-      result = parse_exponential_expression(parse, &right);
+      result = parse_unary_expression(parse, &right);
       if (result != SUCCESS) return result;
 
       result = divide(&left, &right, val);
@@ -980,43 +980,10 @@ int parse_multiplicative_expression(parser *parse, value *val) {
       result = get_token(parse);
       if (result != SUCCESS) return result;
 
-      result = parse_exponential_expression(parse, &right);
-      if (result != SUCCESS) return result;
-
-      result = modulo(&left, &right, val);
-      if (result != SUCCESS) return result;
-      
-      left = *val;
-      break;
-    case TOKEN_UNKNOWN:
-      return ERROR_EXPR;
-    }
-  }
-  
-  return SUCCESS;
-}
-
-int parse_exponential_expression(parser *parse, value *val) {
-  value left, right;
-  int result = parse_unary_expression(parse, val);
-  if (result != SUCCESS) return result;
-
-  left = *val;
-
-  bool done = false;
-  while (!done) {
-    switch (peek_token(parse)) {
-    default:
-      done = true;
-      break;
-    case TOKEN_OP_POW:
-      result = get_token(parse);
-      if (result != SUCCESS) return result;
-
       result = parse_unary_expression(parse, &right);
       if (result != SUCCESS) return result;
 
-      result = power(&left, &right, val);
+      result = modulo(&left, &right, val);
       if (result != SUCCESS) return result;
       
       left = *val;
@@ -1035,7 +1002,7 @@ int parse_unary_expression(parser *parse, value *val) {
   
   switch (peek_token(parse)) {
   default:
-    return parse_primary(parse, val);
+    return parse_exponential_expression(parse, val);
   case TOKEN_OP_PLUS:
     result = get_token(parse);
     if (result != SUCCESS) return result;
@@ -1075,6 +1042,39 @@ int parse_unary_expression(parser *parse, value *val) {
     return ERROR_EXPR;
   }
 
+  return SUCCESS;
+}
+
+int parse_exponential_expression(parser *parse, value *val) {
+  value left, right;
+  int result = parse_primary(parse, val);
+  if (result != SUCCESS) return result;
+
+  left = *val;
+
+  bool done = false;
+  while (!done) {
+    switch (peek_token(parse)) {
+    default:
+      done = true;
+      break;
+    case TOKEN_OP_POW:
+      result = get_token(parse);
+      if (result != SUCCESS) return result;
+
+      result = parse_primary(parse, &right);
+      if (result != SUCCESS) return result;
+
+      result = power(&left, &right, val);
+      if (result != SUCCESS) return result;
+      
+      left = *val;
+      break;
+    case TOKEN_UNKNOWN:
+      return ERROR_EXPR;
+    }
+  }
+  
   return SUCCESS;
 }
 

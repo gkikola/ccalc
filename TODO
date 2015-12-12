@@ -1,5 +1,2 @@
 -Add integer division // operator
 -Optimize function name matching
-
-BUGS:
--Exponentiation should have precedence over unary operators
