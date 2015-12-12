@@ -29,6 +29,8 @@
 #define EXPECT_INT(EXPR) expect_int(#EXPR, "", (EXPR))
 #define EXPECT_FLOAT(EXPR) expect_float(#EXPR, "", (EXPR))
 
+#define TEST_FUNC(FN, ARG) expect_float(#FN "(" #ARG ")", (FN(ARG)))
+
 bool expect_int(char *expr, char *opts, long expected);
 bool expect_float(char *expr, char *opts, double expected);
 
@@ -88,7 +90,7 @@ int main() {
   assert(EXPECT_INT(4 + (7 / (3 * 2 + 1)) - 4 / (2 + 3 - 4)));
   assert(EXPECT_INT(4 + 7 - 36 / 12 + 4 - 13 * 96 / 13 + 2 - 4));
   assert(EXPECT_INT((4 + 7 - 36) / 5 + (4 - 13) * 96 / (2 * 13 - 8)));
-  
+
   assert(EXPECT_INT(17 % 3));
   assert(EXPECT_INT(20 % 7));
   assert(EXPECT_INT(3 * 4 / 3 % 10));
@@ -103,6 +105,17 @@ int main() {
   assert(EXPECT_INT(13 % -5));
   assert(EXPECT_INT(-13 % 5));
   assert(EXPECT_INT(-13 % -5));
+
+  assert(expect_int("7 ** 3", "", 343));
+  assert(expect_int("4 * 3 ** 2", "", 4 * 9));
+  assert(expect_int("2 ** 2 ** 2", "", 16));
+  assert(expect_int("-13 ** 2", "", -169));
+  assert(expect_int("(-13) ** 2", "", 169));
+  assert(expect_int("1 + 3 ** 4 + 9 ** 2 + 1 ** 4 - 1", "", 1 + 81 + 81));
+  assert(expect_int("(1 + 3) ** 4 - 9 ** (2 + 1)", "", 256 - 729));
+  assert(expect_int("2 + 2048 / 4 ** 5 - 7 * 2 ** 8", "", 2 + 2 - 7 * 256));
+  assert(expect_int("2 ** 2 ** 2 ** 2", "", 256));
+  assert(expect_int("2 ** (2 ** (2 ** 2))", "", 1 << 16));
   
   assert(EXPECT_INT(035 + 010 * (-0324 + 0112) - (07 * 010) % 05));
   assert(EXPECT_INT(0x11 + 0xa2 * (-0x33 + 0xdd) - (0xF * 0x1) % 0xB));
@@ -254,6 +267,14 @@ int main() {
   assert(EXPECT_FLOAT(4 * (5 + 7 * (8 - 1 * (4 + .1 + 3)) * 2)));
   assert(EXPECT_FLOAT(3.1 - -4.9 * -7.8));
   assert(EXPECT_FLOAT((3 - -4.0) * -7));
+
+  assert(expect_float("5 / 3", "", 5.0 / 3));
+  assert(expect_float("9 / 4 / 2", "", 9.0 / 4 / 2));
+  assert(expect_float("5 / (3 + 4) / 2", "", 5.0 / (3 + 4) / 2));
+  assert(expect_float("5 / 3 + 4 / 2", "", 5.0 / 3 + 4 / 2));
+  assert(expect_float("343 / 15 / 12", "", 343.0 / 15 / 12));
+  assert(expect_float("82 / 9", "", 82 / 9.0));
+  assert(expect_float("10 / (2 / 5)", "", 10 / (2.0 / 5)));
   
   assert(EXPECT_FLOAT(4.0 / 2));
   assert(EXPECT_FLOAT(4 / 2.0));
@@ -274,6 +295,23 @@ int main() {
   assert(EXPECT_FLOAT(3 * 3 % 3 * 3.9 - 4));
   assert(EXPECT_FLOAT(3 * (3 % 3 * 3.9) - 4));
 
+  assert(expect_float("7.0 ** 3", "", pow(7.0, 3)));
+  assert(expect_float("7 ** 3.0", "", pow(7, 3.0)));
+  assert(expect_float("4.12 * 3.72 ** 2.15", "", 4.12 * pow(3.72, 2.15)));
+  assert(expect_float("2.1 ** 2 ** 2", "", pow(pow(2.1, 2), 2)));
+  assert(expect_float("-87.315 ** 4", "", -pow(87.315, 4)));
+  assert(expect_float("(-87.315) ** 4", "", pow(87.315, 4)));
+  assert(expect_float("1 + 3.15 ** 4 + 9 ** 2.3 + 1 ** 4.5 - 1", "",
+		      1 + pow(3.15, 4) + pow(9, 2.3) + pow(1, 4.5) - 1));
+  assert(expect_float("(1 + 3.15) ** 4 - 9 ** (2.3 + 1)", "",
+		      pow(1 + 3.15, 4) - pow(9, 2.3 + 1)));
+  assert(expect_float("2 + 2048 / 3 ** 5 - 7 * 2 ** 8", "",
+		      2 + 2048 / pow(3.0, 5) - 7 * 256));
+  assert(expect_float("2.3 ** 2.3 ** 2.3 ** 2.3", "",
+		      pow(pow(pow(2.3, 2.3), 2.3), 2.3)));
+  assert(expect_float("2.3 ** (2.3 ** (2.3 ** 2.3))", "",
+		      pow(2.3, pow(2.3, pow(2.3, 2.3)))));
+  
   assert(EXPECT_INT(4.0 == 4.0));
   assert(EXPECT_INT(4.0 == 5.0));
   assert(EXPECT_INT(4.0 == 4.0 == 5));
@@ -357,6 +395,15 @@ int main() {
 			    hypot(hypot(1.5, 1.6), hypot(1.7, 1.8)))));
   assert(EXPECT_FLOAT(sin(log(cos(tan(sqrt(exp(30.0))))))));
   assert(EXPECT_FLOAT(  E    +  cos   (    7.2    )  ));
+
+  assert(EXPECT_INT(abs(0)));
+  assert(EXPECT_INT(abs(3)));
+  assert(EXPECT_INT(abs(-072)));
+  assert(EXPECT_INT( abs ( abs ( - 386 ))));
+  assert(expect_float("abs(0.0)", "", 0.0));
+  assert(expect_float("abs(3.715)", "", 3.715));
+  assert(expect_float("abs(-74.3e2)", "", 74.3e2));
+  assert(expect_float("abs(abs(abs(abs(-3.14159))))", "", 3.14159));
   
   printf("%d tests completed successfully.\n", num_tests);
   return 0;
