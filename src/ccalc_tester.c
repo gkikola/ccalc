@@ -18,6 +18,8 @@
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
 #include <assert.h>
+#include <float.h>
+#include <limits.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -408,6 +410,45 @@ int main() {
   assert(EXPECT_FLOAT(sin(log(cos(tan(sqrt(exp(30.0))))))));
   assert(EXPECT_FLOAT(  E    +  cos   (    7.2    )  ));
 
+  assert(EXPECT_FLOAT(PI));
+  assert(EXPECT_FLOAT(E));
+  assert(EXPECT_FLOAT(PHI));
+  assert(EXPECT_FLOAT(PI * E + PI));
+  assert(EXPECT_FLOAT(E * (PI / 7)));
+  assert(EXPECT_FLOAT(9 * PI / 2));
+  assert(EXPECT_FLOAT(-PI));
+  assert(EXPECT_FLOAT(-3 * PI / 2));
+  assert(EXPECT_FLOAT(1 + sqrt(PI) - pow(E, 2.34)));
+
+  assert(EXPECT_INT(CHAR_MAX));
+  assert(EXPECT_INT(CHAR_MIN));
+  assert(EXPECT_INT(DBL_DIG));
+  assert(EXPECT_FLOAT(DBL_EPSILON));
+  assert(EXPECT_INT(DBL_MANT_DIG));
+  assert(EXPECT_FLOAT(DBL_MAX));
+  assert(EXPECT_INT(DBL_MAX_EXP));
+  assert(EXPECT_FLOAT(DBL_MIN));
+  assert(EXPECT_INT(DBL_MIN_EXP));
+  assert(EXPECT_INT(FLT_DIG));
+  assert(EXPECT_FLOAT(FLT_EPSILON));
+  assert(EXPECT_INT(FLT_MANT_DIG));
+  assert(EXPECT_FLOAT(FLT_MAX));
+  assert(EXPECT_INT(FLT_MAX_EXP));
+  assert(EXPECT_FLOAT(FLT_MIN));
+  assert(EXPECT_INT(FLT_MIN_EXP));
+  assert(EXPECT_INT(FLT_RADIX));
+  assert(EXPECT_INT(INT_MAX));
+  assert(EXPECT_INT(INT_MIN));
+  assert(EXPECT_INT(LONG_MAX));
+  assert(EXPECT_INT(LONG_MIN));
+  assert(EXPECT_INT(RAND_MAX));
+  assert(EXPECT_INT(SCHAR_MAX));
+  assert(EXPECT_INT(SCHAR_MIN));
+  assert(EXPECT_INT(SHRT_MAX));
+  assert(EXPECT_INT(SHRT_MIN));
+  assert(EXPECT_INT(UCHAR_MAX));
+  assert(EXPECT_INT(USHRT_MAX));
+  
   assert(EXPECT_INT(abs(0)));
   assert(EXPECT_INT(abs(3)));
   assert(EXPECT_INT(abs(-072)));
