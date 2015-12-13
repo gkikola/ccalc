@@ -658,6 +658,14 @@ int main() {
   assert(expect_float("max(0.1234, 0.5678)", "", 0.5678));
   assert(expect_float("max(-0.1234, -0.5678)", "", -0.1234));
 
+  assert(EXPECT_FLOAT(nextafter(31.25, 100)));
+  assert(EXPECT_FLOAT(nextafter(1.0, 2)));
+  assert(EXPECT_FLOAT(nextafter(1.0, 0)));
+  assert(EXPECT_FLOAT(nextafter(-31.25, -100)));
+  assert(EXPECT_FLOAT(nextafter(-31.25, 0)));
+  assert(EXPECT_FLOAT(nextafter(0, 1)));
+  assert(EXPECT_FLOAT(nextafter(0, -1)));
+
   assert(EXPECT_FLOAT(hypot(3, 4)));
   assert(EXPECT_FLOAT(hypot(3.0, 4)));
   assert(EXPECT_FLOAT(hypot(3, 4.0)));
@@ -798,6 +806,22 @@ int main() {
   assert(EXPECT_FLOAT(erfc(1)));
   assert(EXPECT_FLOAT(erfc(1.75)));
   assert(EXPECT_FLOAT(erfc(13.8)));
+
+  assert(EXPECT_FLOAT(lgamma(1)));
+  assert(EXPECT_FLOAT(lgamma(0.1234)));
+  assert(EXPECT_FLOAT(lgamma(2)));
+  assert(EXPECT_FLOAT(lgamma(5)));
+  assert(EXPECT_FLOAT(lgamma(-3.0/2)));
+  assert(EXPECT_FLOAT(lgamma(1.0/2)));
+  assert(EXPECT_FLOAT(lgamma(23.5128)));
+
+  assert(EXPECT_FLOAT(tgamma(1)));
+  assert(EXPECT_FLOAT(tgamma(0.1234)));
+  assert(EXPECT_FLOAT(tgamma(2)));
+  assert(EXPECT_FLOAT(tgamma(5)));
+  assert(EXPECT_FLOAT(tgamma(-3.0/2)));
+  assert(EXPECT_FLOAT(tgamma(1.0/2)));
+  assert(EXPECT_FLOAT(tgamma(12.46)));
   
   printf("%d tests completed successfully.\n", num_tests);
   return 0;
