@@ -45,10 +45,15 @@ int main() {
 
   assert(EXPECT_INT(42));
   assert(EXPECT_INT(0713));
+  assert(EXPECT_INT(-0713));
   assert(EXPECT_INT(-35));
   assert(EXPECT_INT(0));
   assert(EXPECT_INT(1));
   assert(EXPECT_INT(-1));
+  assert(expect_int("0b11011011", "", 0xDB));
+  assert(expect_int("-0b1100111", "", -0x67));
+  assert(expect_int("0b0", "", 0));
+  assert(expect_int("0b1001001", "", 0x49));
   assert(EXPECT_INT(0xDEAD));
   assert(EXPECT_INT(000));
   assert(EXPECT_INT(010));
