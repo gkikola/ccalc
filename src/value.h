@@ -46,6 +46,7 @@ int call_function(char *identifier, value *result, int argc, value argv[],
 int add(value *left, value *right, value *result);
 int subtract(value *left, value *right, value *result);
 int multiply(value *left, value *right, value *result);
+int int_divide(value *left, value *right, value *result);
 int divide(value *left, value *right, value *result);
 int power(value *left, value *right, value *result);
 int modulo(value *left, value *right, value *result);

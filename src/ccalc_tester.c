@@ -99,6 +99,19 @@ int main() {
   assert(EXPECT_INT(4 + 7 - 36 / 12 + 4 - 13 * 96 / 13 + 2 - 4));
   assert(EXPECT_INT((4 + 7 - 36) / 5 + (4 - 13) * 96 / (2 * 13 - 8)));
 
+  assert(expect_int("4 // 2", "", 4 / 2));
+  assert(expect_int("64 // 16", "", 64 / 16));
+  assert(expect_int("343 // 7", "", 343 / 7));
+  assert(expect_int("343 // 7 // 7", "", 343 / 7 / 7));
+  assert(expect_int("343 // 7 // 7 // 7", "", 343 / 7 / 7 / 7));
+  assert(expect_int("5 // 3", "", 5 / 3));
+  assert(expect_int("9 // 4 // 2", "", 9 / 4 / 2));
+  assert(expect_int("5 // (3 + 4) // 2", "", 5 / (3 + 4) / 2));
+  assert(expect_int("5 // 3 + 4 // 2", "", 5 / 3 + 4 / 2));
+  assert(expect_int("343 // 15 // 12", "", 343 / 15 / 12));
+  assert(expect_int("82 // 9", "", 82 / 9));
+  assert(expect_int("10 / (5 // 2)", "", 10 / (5 / 2)));
+  
   assert(EXPECT_INT(17 % 3));
   assert(EXPECT_INT(20 % 7));
   assert(EXPECT_INT(3 * 4 / 3 % 10));
@@ -927,6 +940,7 @@ int main() {
   assert(expect_error("(5 > 3 ? 12)", "", "unexpected token ')'"));
 
   assert(expect_error("13 / 0", "", "division by zero"));
+  assert(expect_error("13 // 0", "", "division by zero"));
   assert(expect_error("13 % 0", "", "mod by zero"));
   assert(expect_error("13.5 / 0.0", "", "division by zero"));
 
@@ -981,6 +995,12 @@ int main() {
   assert(expect_error("1 + 1", "-r 0", "radix cannot be less than 2"));
   assert(expect_error("1 + 1", "-p -2", "precision cannot be less than 0"));
 
+  assert(expect_error("5 // 1.5", "",
+		      "integer division operator '//' requires integer "
+		      "operands"));
+  assert(expect_error("5.5 // 2", "",
+		      "integer division operator '//' requires integer "
+		      "operands"));
   assert(expect_error("1.5 % 4", "",
 		      "modulo operator '%' requires integer operands"));
   assert(expect_error("10 % 2.5", "",

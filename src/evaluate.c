@@ -41,6 +41,7 @@ typedef enum {
   TOKEN_OP_MINUS,
   TOKEN_OP_TIMES,
   TOKEN_OP_DIVIDE,
+  TOKEN_OP_IDIVIDE,
   TOKEN_OP_MOD,
   TOKEN_OP_POW,
   TOKEN_OP_EQUAL,
@@ -167,6 +168,7 @@ switch (parse->cur_token) {
     parse->pos++;
     break;
 
+  case TOKEN_OP_IDIVIDE:
   case TOKEN_OP_EQUAL:
   case TOKEN_OP_NOT_EQUAL:
   case TOKEN_OP_LESS_THAN_EQ:
@@ -237,7 +239,11 @@ token_type peek_token(parser *parse) {
       else
 	return TOKEN_OP_TIMES;
     case '/':
-      return TOKEN_OP_DIVIDE;
+      //could be / or //
+      if (parse->expr[parse->pos + 1] == '/')
+	return TOKEN_OP_IDIVIDE;
+      else
+	return TOKEN_OP_DIVIDE;
     case '%':
       return TOKEN_OP_MOD;
     case '=':
@@ -982,6 +988,18 @@ int parse_multiplicative_expression(parser *parse, value *val) {
       result = divide(&left, &right, val);
       if (result != SUCCESS) return result;
       
+      left = *val;
+      break;
+    case TOKEN_OP_IDIVIDE:
+      result = get_token(parse);
+      if (result != SUCCESS) return result;
+
+      result = parse_unary_expression(parse, &right);
+      if (result != SUCCESS) return result;
+
+      result = int_divide(&left, &right, val);
+      if (result != SUCCESS) return result;
+
       left = *val;
       break;
     case TOKEN_OP_MOD:

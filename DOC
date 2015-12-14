@@ -24,13 +24,16 @@ given, read from standard input.
 Mandatory or optional arguments to long options are also mandatory or optional
 for any corresponding short options.
 
-The EXPRESSION is interpreted as a C expression and evaluated. Integer
-operations are used when possible. If a floating-point value is given
-explicitly, or if an operation results in a non-integer value, then
-floating-point arithmetic is used for the remainder of the calculation.
+The EXPRESSION is interpreted as a C expression and evaluated. Integer 
+operations are used when possible. If a floating-point value is given 
+explicitly, or if an operation results in a non-integer value, then 
+floating-point arithmetic is used for the remainder of the calculation. 
+
+The division operator / may give a floating-point result even with integer
+arguments. To perform integer division, you may use the // operator.
 
 WARNING: The caret ^ indicates bitwise XOR, like in C, and not exponentiation.
-This behavior can be changed with the '-e' option. Exponentiation can also be
+This behavior can be changed with the '-c' option. Exponentiation can also be
 performed using the pow function or (unlike in C) the ** operator.
 
 Many mathematical functions from the C standard library are available. Common
@@ -44,7 +47,7 @@ The following operations are supported, in order of decreasing precedence:
   grouping (),
   exponentiation **,
   logical negation !, bitwise negation ~, unary + and -,
-  multiplication *, division /, modulo %,
+  multiplication *, division /, integer division //, modulo %,
   addition +, subtraction -,
   bit shifts << and >>,
   relational comparison <, <=, >, and >=,

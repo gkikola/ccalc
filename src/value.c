@@ -555,6 +555,25 @@ int divide(value *left, value *right, value *result) {
   return SUCCESS;
 }
 
+int int_divide(value *left, value *right, value *result) {
+  //make sure we have int operands
+  if (left->type == FLOAT || right->type == FLOAT) {
+    fprintf(stderr, "Error: integer division operator '//' requires integer "
+	    "operands\n");
+    return ERROR_EXPR;
+  }
+
+  //check for div by zero
+  if (right->data.ivalue == 0) {
+    fprintf(stderr, "Error: division by zero\n");
+    return ERROR_EXPR;
+  }
+
+  result->type = INT;
+  result->data.ivalue = value_get_int(left) / value_get_int(right);
+  return SUCCESS;
+}
+
 int power(value *left, value *right, value *result) {
   if ((left->type == FLOAT || right->type == FLOAT)
       || right->data.ivalue < 0) {
