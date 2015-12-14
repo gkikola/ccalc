@@ -33,6 +33,7 @@
 
 bool expect_int(char *expr, char *opts, long expected);
 bool expect_float(char *expr, char *opts, double expected);
+bool expect_error(char *expr, char *opts, char *message);
 
 bool call_ccalc(char *expr, char *opts, char *output, int output_size);
 
@@ -868,6 +869,46 @@ int main() {
   assert(EXPECT_FLOAT(tgamma(-3.0/2)));
   assert(EXPECT_FLOAT(tgamma(1.0/2)));
   assert(EXPECT_FLOAT(tgamma(12.46)));
+
+  assert(expect_error("4 * (1 + 2", "", "unmatched parenthesis '('"));
+  assert(expect_error("(5 + (1 - 2) / 3", "", "unmatched parenthesis '('"));
+  assert(expect_error("3 + 4)", "", "unmatched parenthesis ')'"));
+  assert(expect_error("(((47 + 3) * 8) + 2", "", "unmatched parenthesis '('"));
+
+  assert(expect_error("37 + 8 +", "", "unexpected end of input"));
+  assert(expect_error("-2 ** ", "", "unexpected end of input"));
+  assert(expect_error("37 + (8 - 4 +) + 3", "", "unexpected token ')'"));
+  assert(expect_error("12 * (-)", "", "unexpected token ')'"));
+  assert(expect_error("* 13", "", "unexpected token '*'"));
+  assert(expect_error("53 37", "", "unexpected token '37'"));
+  assert(expect_error("5 ^ ^ 2", "", "unexpected token '^'"));
+
+  assert(expect_error("5 > 3 ? 12", "", "unexpected end of input"));
+  assert(expect_error("(5 > 3 ? 12)", "", "unexpected token ')'"));
+
+  assert(expect_error("PI = 37", "",
+		      "assignment operator '=' is not supported"));
+  assert(expect_error("12 = 13", "",
+		      "assignment operator '=' is not supported"));
+  assert(expect_error("E = (41 + 7) / 3", "",
+		      "assignment operator '=' is not supported"));
+  assert(expect_error("PI += 4", "",
+		      "assignment operator '=' is not supported"));
+  assert(expect_error("37 -= 8", "",
+		      "assignment operator '=' is not supported"));
+
+  assert(expect_error("2 + 53C4", "",
+		      "unexpected digit 'C' in constant"));
+  assert(expect_error("1 + 0182", "",
+		      "unexpected digit '8' in octal constant"));
+  assert(expect_error("02ff", "",
+		      "unexpected digit 'f' in octal constant"));
+  assert(expect_error("5 * 0b11020011", "",
+		      "unexpected digit '2' in binary constant"));
+
+  assert(expect_error("1 + 1", "-r 1", "radix cannot be less than 2"));
+  assert(expect_error("1 + 1", "-r 0", "radix cannot be less than 2"));
+  assert(expect_error("1 + 1", "-p -2", "precision cannot be less than 0"));
   
   printf("%d tests completed successfully.\n", num_tests);
   return 0;
@@ -876,7 +917,7 @@ int main() {
 bool call_ccalc(char *expr, char *opts, char *output, int output_size) {
   char *prog = "./ccalc ";
   char *sep = " -- \"";
-  char *end = "\"";
+  char *end = "\" 2>&1";
   char command[BUF_SIZE];
 
   if (strlen(expr) + strlen(opts) + strlen(sep) + strlen(expr) + strlen(end)
@@ -931,6 +972,25 @@ bool expect_float(char *expr, char *opts, double expected) {
   char desired[BUF_SIZE];
 
   snprintf(desired, BUF_SIZE, "%f\n", expected);
+
+  if (!call_ccalc(expr, opts, result, BUF_SIZE))
+    return false;
+
+  bool cmp = !strcmp(result, desired);
+
+  if (!cmp) {
+    printf("Test failed: ");
+    printf("%s\nExpected: %sReceived: %s", expr, desired, result);
+  }
+
+  return cmp;
+}
+
+bool expect_error(char *expr, char *opts, char *message) {
+  char result[BUF_SIZE];
+  char desired[BUF_SIZE];
+
+  snprintf(desired, BUF_SIZE, "Error: %s\n", message);
 
   if (!call_ccalc(expr, opts, result, BUF_SIZE))
     return false;

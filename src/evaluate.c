@@ -113,7 +113,7 @@ int evaluate(char *expr, value *result, options *opts) {
     fprintf(stderr, "Error: unmatched parenthesis ')'\n");
     return ERROR_EXPR;
   default:
-    fprintf(stderr, "Error: token '%s' was not expected\n",
+    fprintf(stderr, "Error: unexpected token '%s'\n",
 	    parse.str_value);
     return ERROR_EXPR;
   }
@@ -553,8 +553,16 @@ int parse_conditional_expression(parser *parse, value *val) {
     //read colon
     result = get_token(parse);
     if (result != SUCCESS) return result;
-    if (parse->cur_token != TOKEN_COLON) {
-      fprintf(stderr, "Error: expected ':', got '%s'\n", parse->str_value);
+
+    //make sure the token is actually a colon
+    switch (parse->cur_token) {
+    case TOKEN_COLON:
+      break;
+    case TOKEN_END:
+      fprintf(stderr, "Error: unexpected end of input\n");
+      return ERROR_EXPR;
+    default:
+      fprintf(stderr, "Error: unexpected token '%s'\n", parse->str_value);
       return ERROR_EXPR;
     }
 
@@ -1084,7 +1092,7 @@ int parse_primary(parser *parse, value *val) {
 
   switch (parse->cur_token) {
   default:
-    fprintf(stderr, "Error: expected number or identifier, got '%s'\n",
+    fprintf(stderr, "Error: unexpected token '%s'\n",
 	    parse->str_value);
     return ERROR_EXPR;
   case TOKEN_END:

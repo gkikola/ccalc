@@ -52,6 +52,11 @@ int main(int argc, char *argv[]) {
     print_version();
     return 0;
   }
+
+  if (opts.precision < 0) {
+    fprintf(stderr, "Error: precision cannot be less than 0\n");
+    return ERROR_EXPR;
+  }
   
   char *expression = NULL;
   int expr_length = 0;
@@ -80,7 +85,8 @@ int main(int argc, char *argv[]) {
 
   if (expr_length <= 0) {
     fprintf(stderr, "Error: no expression given\n");
-    printf("Try 'ccalc --help' for more information.");
+    fprintf(stderr, "Try 'ccalc --help' for more information.\n");
+    return ERROR_EXPR;
   }
 
   //seed RNG
