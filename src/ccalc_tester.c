@@ -887,6 +887,20 @@ int main() {
   assert(expect("42", "-r 12", "36"));
   assert(expect("42", "-r 20", "2:2"));
   assert(expect("-42", "-r 20", "-2:2"));
+
+  assert(expect("4 > 2", "--bool", "true"));
+  assert(expect("4 > 2", "-u --bool", "TRUE"));
+  assert(expect("4 < 2", "--bool", "false"));
+  assert(expect("4 < 2", "--bool -u", "FALSE"));
+
+  assert(expect("783.123456789", "-p 0", "783"));
+  assert(expect("783.123456789", "-p 1", "783.1"));
+  assert(expect("783.123456789", "-p 2", "783.12"));
+  assert(expect("783.123456789", "-p 8", "783.12345679"));
+
+  assert(expect_float("sin(90)", "-d", sin(PI / 2)));
+  assert(expect_float("cos(30)", "-d", cos(PI / 6)));
+  assert(expect_float("acos(sqrt(2)/2)", "-d", acos(sqrt(2)/2) * 180 / PI));
   
   assert(expect_error("4 * (1 + 2", "", "unmatched parenthesis '('"));
   assert(expect_error("(5 + (1 - 2) / 3", "", "unmatched parenthesis '('"));
