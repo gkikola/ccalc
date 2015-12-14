@@ -482,8 +482,13 @@ int call_function(char *identifier, value *result, int argc, value argv[],
   }
 
   if (bad_args) {
-    fprintf(stderr, "Error: function '%s' does not take %d arguments\n",
-	    identifier, argc);
+    if (argc == 1)
+      fprintf(stderr, "Error: function '%s' requires more than 1 argument\n",
+	      identifier);
+    else
+      fprintf(stderr, "Error: function '%s' does not take %d arguments\n",
+	      identifier, argc);
+    
     return ERROR_EXPR;
   } else if (result->type == FLOAT && !isfinite(value_get_float(result))) {
     fprintf(stderr, "Error: domain error in function '%s'\n", identifier);

@@ -249,6 +249,8 @@ int main() {
   assert(EXPECT_FLOAT(12.34e-5));
   assert(EXPECT_FLOAT(6.e9));
   assert(EXPECT_FLOAT(.2e-2));
+  assert(EXPECT_FLOAT(0219.));
+  assert(EXPECT_FLOAT(00187.3));
   assert(EXPECT_FLOAT(219.00));
   assert(EXPECT_FLOAT(219.912));
   assert(EXPECT_FLOAT(87.41592));
@@ -874,7 +876,7 @@ int main() {
   assert(expect_error("(5 + (1 - 2) / 3", "", "unmatched parenthesis '('"));
   assert(expect_error("3 + 4)", "", "unmatched parenthesis ')'"));
   assert(expect_error("(((47 + 3) * 8) + 2", "", "unmatched parenthesis '('"));
-
+  
   assert(expect_error("37 + 8 +", "", "unexpected end of input"));
   assert(expect_error("-2 ** ", "", "unexpected end of input"));
   assert(expect_error("37 + (8 - 4 +) + 3", "", "unexpected token ')'"));
@@ -885,6 +887,10 @@ int main() {
 
   assert(expect_error("5 > 3 ? 12", "", "unexpected end of input"));
   assert(expect_error("(5 > 3 ? 12)", "", "unexpected token ')'"));
+
+  assert(expect_error("13 / 0", "", "division by zero"));
+  assert(expect_error("13 % 0", "", "mod by zero"));
+  assert(expect_error("13.5 / 0.0", "", "division by zero"));
 
   assert(expect_error("PI = 37", "",
 		      "assignment operator '=' is not supported"));
@@ -905,10 +911,63 @@ int main() {
 		      "unexpected digit 'f' in octal constant"));
   assert(expect_error("5 * 0b11020011", "",
 		      "unexpected digit '2' in binary constant"));
+  assert(expect_error("0x35a1.302", "",
+		      "hexadecimal constant must be an integer"));
+  assert(expect_error("0b110110.101011", "",
+		      "binary constant must be an integer"));
+
+  assert(expect_error("sin(13, 4)", "",
+		      "function 'sin' does not take 2 arguments"));
+  assert(expect_error("hypot(7)", "",
+		      "function 'hypot' requires more than 1 argument"));
+  assert(expect_error("hypot(7, 8, 9)", "",
+		      "function 'hypot' does not take 3 arguments"));
+
+  assert(expect_error("sine(13)", "",
+		      "unknown function identifier 'sine'"));
+  assert(expect_error("1 + magic(7, 12) - 3", "",
+		      "unknown function identifier 'magic'"));
+  assert(expect_error("47 + PIE", "",
+		      "unknown identifier 'PIE'"));
+  assert(expect_error("3 * apple + 1", "",
+		      "unknown identifier 'apple'"));
+
+  assert(expect_error("asin(1.5)", "",
+		      "domain error in function 'asin'"));
+  assert(expect_error("log(-13)", "",
+		      "domain error in function 'log'"));
 
   assert(expect_error("1 + 1", "-r 1", "radix cannot be less than 2"));
   assert(expect_error("1 + 1", "-r 0", "radix cannot be less than 2"));
   assert(expect_error("1 + 1", "-p -2", "precision cannot be less than 0"));
+
+  assert(expect_error("1.5 % 4", "",
+		      "modulo operator '%' requires integer operands"));
+  assert(expect_error("10 % 2.5", "",
+		      "modulo operator '%' requires integer operands"));
+
+  assert(expect_error("3 & 4.5", "",
+		      "bitwise AND operator '&' requires integer operands"));
+  assert(expect_error("3.5 & 4", "",
+		      "bitwise AND operator '&' requires integer operands"));
+  assert(expect_error("-3 | 2.5", "",
+		      "bitwise OR operator '|' requires integer operands"));
+  assert(expect_error("-3.2 | 2", "",
+		      "bitwise OR operator '|' requires integer operands"));
+  assert(expect_error("3 ^ 0.5", "",
+		      "bitwise XOR operator '^' requires integer operands"));
+  assert(expect_error("3.5 ^ 2", "",
+		      "bitwise XOR operator '^' requires integer operands"));
+  assert(expect_error("1 + ~13.5", "",
+		      "bitwise NOT operator '~' requires an integer operand"));
+  assert(expect_error("1 << 3.5", "",
+		      "bit shift operator '<<' requires integer operands"));
+  assert(expect_error("1.5 << 3", "",
+		      "bit shift operator '<<' requires integer operands"));
+  assert(expect_error("100 >> 3.5", "",
+		      "bit shift operator '>>' requires integer operands"));
+  assert(expect_error("10.5 >> 3", "",
+		      "bit shift operator '>>' requires integer operands"));  
   
   printf("%d tests completed successfully.\n", num_tests);
   return 0;
