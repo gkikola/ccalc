@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
     }
   } else { //no expression given, read from standard input
     size_t n = 0;
-    expr_length = getdelim(&expression, &n, 0, stdin);
+    expr_length = getline(&expression, &n, stdin);
   }
 
   if (expr_length <= 0) {
