@@ -31,6 +31,7 @@
 #define EXPECT_INT(EXPR) expect_int(#EXPR, "", (EXPR))
 #define EXPECT_FLOAT(EXPR) expect_float(#EXPR, "", (EXPR))
 
+bool expect(char *expr, char *opts, char *expected);
 bool expect_int(char *expr, char *opts, long expected);
 bool expect_float(char *expr, char *opts, double expected);
 bool expect_error(char *expr, char *opts, char *message);
@@ -872,6 +873,21 @@ int main() {
   assert(EXPECT_FLOAT(tgamma(1.0/2)));
   assert(EXPECT_FLOAT(tgamma(12.46)));
 
+  assert(expect("42", "-b", "0b101010"));
+  assert(expect("42", "-r 2", "0b101010"));
+  assert(expect("42", "-o", "052"));
+  assert(expect("42", "-r 8", "052"));
+  assert(expect("42", "-x", "0x2a"));
+  assert(expect("42", "-ux", "0x2A"));
+  assert(expect("42", "-r 16", "0x2a"));
+  assert(expect("42", "-r 16 -u", "0x2A"));
+  assert(expect("-42", "-b", "-0b101010"));
+  assert(expect("-42", "-o", "-052"));
+  assert(expect("-42", "-x", "-0x2a"));
+  assert(expect("42", "-r 12", "36"));
+  assert(expect("42", "-r 20", "2:2"));
+  assert(expect("-42", "-r 20", "-2:2"));
+  
   assert(expect_error("4 * (1 + 2", "", "unmatched parenthesis '('"));
   assert(expect_error("(5 + (1 - 2) / 3", "", "unmatched parenthesis '('"));
   assert(expect_error("3 + 4)", "", "unmatched parenthesis ')'"));
@@ -934,6 +950,8 @@ int main() {
 
   assert(expect_error("asin(1.5)", "",
 		      "domain error in function 'asin'"));
+  assert(expect_error("acos(-1.5)", "",
+		      "domain error in function 'acos'"));
   assert(expect_error("log(-13)", "",
 		      "domain error in function 'log'"));
 
@@ -1007,11 +1025,11 @@ bool call_ccalc(char *expr, char *opts, char *output, int output_size) {
   return true;
 }
 
-bool expect_int(char *expr, char *opts, long expected) {
+bool expect(char *expr, char *opts, char *expected) {
   char result[BUF_SIZE];
   char desired[BUF_SIZE];
 
-  snprintf(desired, BUF_SIZE, "%ld\n", expected);
+  snprintf(desired, BUF_SIZE, "%s\n", expected);
 
   if (!call_ccalc(expr, opts, result, BUF_SIZE))
     return false;
@@ -1024,42 +1042,28 @@ bool expect_int(char *expr, char *opts, long expected) {
   }
 
   return cmp;
+}
+
+bool expect_int(char *expr, char *opts, long expected) {
+  char value[BUF_SIZE];
+
+  snprintf(value, BUF_SIZE, "%ld", expected);
+
+  return expect(expr, opts, value);
 }
 
 bool expect_float(char *expr, char *opts, double expected) {
-  char result[BUF_SIZE];
-  char desired[BUF_SIZE];
+  char value[BUF_SIZE];
 
-  snprintf(desired, BUF_SIZE, "%f\n", expected);
+  snprintf(value, BUF_SIZE, "%f", expected);
 
-  if (!call_ccalc(expr, opts, result, BUF_SIZE))
-    return false;
-
-  bool cmp = !strcmp(result, desired);
-
-  if (!cmp) {
-    printf("Test failed: ");
-    printf("%s\nExpected: %sReceived: %s", expr, desired, result);
-  }
-
-  return cmp;
+  return expect(expr, opts, value);
 }
 
 bool expect_error(char *expr, char *opts, char *message) {
-  char result[BUF_SIZE];
-  char desired[BUF_SIZE];
+  char str[BUF_SIZE];
 
-  snprintf(desired, BUF_SIZE, "Error: %s\n", message);
+  snprintf(str, BUF_SIZE, "Error: %s", message);
 
-  if (!call_ccalc(expr, opts, result, BUF_SIZE))
-    return false;
-
-  bool cmp = !strcmp(result, desired);
-
-  if (!cmp) {
-    printf("Test failed: ");
-    printf("%s\nExpected: %sReceived: %s", expr, desired, result);
-  }
-
-  return cmp;
+  return expect(expr, opts, str);
 }
