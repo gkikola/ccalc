@@ -81,6 +81,9 @@ int main(int argc, char *argv[]) {
   } else { //no expression given, read from standard input
     size_t n = 0;
     expr_length = getline(&expression, &n, stdin);
+
+    if (expr_length == 1) //just the newline
+      expr_length = 0;
   }
 
   if (expr_length <= 0) {
