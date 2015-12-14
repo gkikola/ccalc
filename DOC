@@ -5,10 +5,10 @@ given, read from standard input.
   -b, --binary               Print integer results in binary (base 2)
       --bool                 Interpret the result as a boolean value and print
                              true or false
+  -c, --caret-exp            Use caret ^ for exponentiation rather than for
+                             bitwise XOR
   -d, --degrees              Use degrees instead of radians for trigonometric
                              functions
-  -e                         Use caret ^ for exponentiation rather than for
-                             bitwise XOR
   -o, --octal                Print integer results in octal (base 8)
   -p, --precision=DIGITS     Print floating-point results with DIGITS digits
                              after the decimal point (default 6)

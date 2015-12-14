@@ -129,6 +129,14 @@ int main() {
   assert(expect_int("2 ** 2 ** 2 ** 2", "", 1 << 16));
   assert(expect_int("((2 ** 2) ** 2) ** 2", "", 256));
   assert(expect_int("2 ** (2 ** (2 ** 2))", "", 1 << 16));
+
+  assert(expect_int("7 ^ 3", "-c", 343));
+  assert(expect_int("4 * 3 ^ 2", "-c", 4 * 9));
+  assert(expect_int("2 ^ 2 ^ 2", "-c", 16));
+  assert(expect_int("-13 ^ 2", "-c", -169));
+  assert(expect_int("(-13) ^ 2", "-c", 169));
+  assert(expect_int("+3 ^ 2", "-c", 9));
+  assert(expect_int("-3 ^ 2", "-c", -9));
   
   assert(EXPECT_INT(035 + 010 * (-0324 + 0112) - (07 * 010) % 05));
   assert(EXPECT_INT(0x11 + 0xa2 * (-0x33 + 0xdd) - (0xF * 0x1) % 0xB));

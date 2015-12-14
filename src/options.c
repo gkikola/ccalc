@@ -48,10 +48,10 @@ int read_options(int argc, char *argv[], int *expr_index, options *opts) {
     { "binary", 'b', 0, 0, "Print integer results in binary (base 2)" },
     { "bool", OPTION_BOOL, 0, 0, "Interpret the result as a boolean value and "
       "print true or false" },
+    { "caret-exp", 'c', 0, 0, "Use caret ^ for exponentiation rather than for "
+      "bitwise XOR" },
     { "degrees", 'd', 0, 0, "Use degrees instead of radians for trigonometric "
       "functions" },
-    { 0, 'e', 0, 0, "Use caret ^ for exponentiation rather than for bitwise "
-      "XOR" },
     { "octal", 'o', 0, 0, "Print integer results in octal (base 8)" },
     { "precision", 'p', "DIGITS", 0, "Print floating-point results with "
       "DIGITS digits after the decimal point (default 6)" },
@@ -129,11 +129,11 @@ error_t parse_opt(int key, char *arg, struct argp_state *state) {
   case OPTION_BOOL:
     input->boolean = true;
     break;
+  case 'c':
+    input->caret_exp = true;
+    break;
   case 'd':
     input->degrees = true;
-    break;
-  case 'e':
-    input->caret_exp = true;
     break;
   case 'o':
     input->radix = 8;
