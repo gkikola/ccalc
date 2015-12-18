@@ -24,7 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "define.h"
+#include "error.h"
 #include "options.h"
 
 #define OPTION_BOOL 1

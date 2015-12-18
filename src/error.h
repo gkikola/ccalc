@@ -19,11 +19,8 @@
 
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#ifndef CCALC_DEFINE_H
-#define CCALC_DEFINE_H
-
-#define MAX_IDENTIFIER_LENGTH 32
-#define MAX_ARGUMENTS 8
+#ifndef CCALC_ERROR_H
+#define CCALC_ERROR_H
 
 #define SUCCESS 0
 #define ERROR_EXPR 1

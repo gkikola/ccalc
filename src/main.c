@@ -29,7 +29,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 
-#include "define.h"
+#include "error.h"
 #include "evaluate.h"
 #include "options.h"
 #include "value.h"

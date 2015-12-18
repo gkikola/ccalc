@@ -24,8 +24,11 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "define.h"
+#include "error.h"
 #include "evaluate.h"
+
+#define MAX_IDENTIFIER_LENGTH 32
+#define MAX_ARGUMENTS 8
 
 typedef enum {
   TOKEN_UNKNOWN,

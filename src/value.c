@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "define.h"
+#include "error.h"
 #include "value.h"
 
 void value_set_int(value *val, long int ivalue) {
