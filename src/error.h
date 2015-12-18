@@ -26,4 +26,6 @@
 #define ERROR_EXPR 1
 #define ERROR_SYS 2
 
+void raise_error(int exit_code, char *fmt_str, ...);
+
 #endif

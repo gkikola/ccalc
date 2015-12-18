@@ -19,4 +19,22 @@
 
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "error.h"
+
+void raise_error(int exit_code, char *fmt_str, ...) {
+  va_list vargs;
+
+  fprintf(stderr, "Error: ");
+  
+  va_start(vargs, fmt_str);
+  vfprintf(stderr, fmt_str, vargs);
+  va_end(vargs);
+
+  fprintf(stderr, "\n");
+
+  exit(exit_code);
+}
