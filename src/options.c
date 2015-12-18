@@ -32,7 +32,7 @@
 
 error_t parse_opt(int key, char *arg, struct argp_state *state);
 
-int read_options(int argc, char *argv[], int *expr_index, options *opts) {
+void read_options(int argc, char *argv[], int *expr_index, options *opts) {
   //set default options
   opts->radix = 10;
   opts->precision = 6;
@@ -105,18 +105,13 @@ Exit status:\n\
   if (result) {
     switch (result) {
     case ENOMEM:
-      fprintf(stderr, "Error: memory allocation error\n");
-      return ERROR_SYS;
+      raise_error(ERROR_SYS, "memory allocation error");
     case EINVAL:
-      fprintf(stderr, "Error: invalid option\n");
-      return ERROR_SYS;
+      raise_error(ERROR_SYS, "invalid option");
     default:
-      fprintf(stderr, "Error reading program arguments\n");
-      return ERROR_SYS;
+      raise_error(ERROR_SYS, "could not read program arguments");
     }
   }
-
-  return SUCCESS;
 }
 
 error_t parse_opt(int key, char *arg, struct argp_state *state) {

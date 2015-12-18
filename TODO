@@ -1,1 +1,3 @@
--Separate error handling code into separate module
+-Rewrite output code
+  -add options for digit grouping and padding
+  -should use scientific notation for really big or small float values

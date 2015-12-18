@@ -66,10 +66,8 @@ double value_get_float(value *val) {
   }
 }
 
-int round_to_int(value *x) {
-  if (x->type == INT)
-    return SUCCESS;
-  else {
+void round_to_int(value *x) {
+  if (x->type != INT) {
     double fval = value_get_float(x);
     
     //see if value will fit in a long int
@@ -84,12 +82,10 @@ int round_to_int(value *x) {
       x->type = FLOAT;
       x->data.fvalue = round(fval);
     }
-
-    return SUCCESS;
   }
 }
 
-int get_constant(char *identifier, value *val) {
+void get_constant(char *identifier, value *val) {
   if (!strcmp(identifier, "PI")) {
     val->type = FLOAT;
     val->data.fvalue = M_PI;
@@ -184,21 +180,18 @@ int get_constant(char *identifier, value *val) {
     val->type = INT;
     val->data.ivalue = USHRT_MAX;
   } else {
-    fprintf(stderr, "Error: unknown identifier '%s'\n", identifier);
-    return ERROR_EXPR;
+    raise_error(ERROR_EXPR, "unknown identifier '%s'", identifier);
   }
-  
-  return SUCCESS;
 }
 
-int call_function(char *identifier, value *result, int argc, value argv[],
-		  bool degrees) {
+void call_function(char *identifier, value *result, int argc, value argv[],
+		   bool degrees) {
   bool bad_args = false;
   double arg = 0.0;
 
   if (!strcmp(identifier, "pow")) {
     if (argc == 2) {
-      return power(&argv[0], &argv[1], result);
+      power(&argv[0], &argv[1], result);
     } else bad_args = true;
   } else if (!strcmp(identifier, "sqrt")) {
     if (argc == 1) {
@@ -229,7 +222,7 @@ int call_function(char *identifier, value *result, int argc, value argv[],
 	result->data.fvalue = floor(value_get_float(&argv[0]));
 
 	//convert to int if possible
-	return round_to_int(result);
+        round_to_int(result);
       }
     } else bad_args = true;
   } else if (!strcmp(identifier, "ceil")) {
@@ -241,7 +234,7 @@ int call_function(char *identifier, value *result, int argc, value argv[],
 	result->data.fvalue = ceil(value_get_float(&argv[0]));
 
 	//convert to int if possible
-	return round_to_int(result);
+	round_to_int(result);
       }
     } else bad_args = true;
   } else if (!strcmp(identifier, "trunc")) {
@@ -253,14 +246,14 @@ int call_function(char *identifier, value *result, int argc, value argv[],
 	result->data.fvalue = trunc(value_get_float(&argv[0]));
 
 	//convert to int if possible
-	return round_to_int(result);
+	round_to_int(result);
       }
     } else bad_args = true;
   } else if (!strcmp(identifier, "round")) {
     if (argc == 1) {
       *result = argv[0];
 
-      return round_to_int(result);
+      round_to_int(result);
     } else bad_args = true;
   } else if (!strcmp(identifier, "sin")) {
     if (argc == 1) {
@@ -334,7 +327,7 @@ int call_function(char *identifier, value *result, int argc, value argv[],
       two.type = INT;
       two.data.ivalue = 2;
 
-      return power(&two, &argv[0], result);
+      power(&two, &argv[0], result);
     } else bad_args = true;
   } else if (!strcmp(identifier, "log")) {
     if (argc == 1) {
@@ -425,7 +418,7 @@ int call_function(char *identifier, value *result, int argc, value argv[],
   } else if (!strcmp(identifier, "fmod")) {
     if (argc == 2) {
       if (argv[0].type == INT && argv[1].type == INT) {
-	return modulo(&argv[0], &argv[1], result);
+        modulo(&argv[0], &argv[1], result);
       } else {
 	result->type = FLOAT;
 	result->data.fvalue = fmod(value_get_float(&argv[0]),
@@ -440,7 +433,7 @@ int call_function(char *identifier, value *result, int argc, value argv[],
 
       //make an integer if possible
       if (argv[0].type == INT && argv[1].type == INT)
-	return round_to_int(result);
+	round_to_int(result);
     } else bad_args = true;
   } else if (!strcmp(identifier, "nextafter")) {
     if (argc == 2) {
@@ -477,28 +470,22 @@ int call_function(char *identifier, value *result, int argc, value argv[],
       }
     } else bad_args = true;
   } else {
-    fprintf(stderr, "Error: unknown function identifier '%s'\n", identifier);
-    return ERROR_EXPR;
+    raise_error(ERROR_EXPR, "unknown function identifier '%s'", identifier);
   }
 
   if (bad_args) {
     if (argc == 1)
-      fprintf(stderr, "Error: function '%s' requires more than 1 argument\n",
-	      identifier);
+      raise_error(ERROR_EXPR, "function '%s' requires more than 1 argument",
+		  identifier);
     else
-      fprintf(stderr, "Error: function '%s' does not take %d arguments\n",
-	      identifier, argc);
-    
-    return ERROR_EXPR;
+      raise_error(ERROR_EXPR, "function '%s' does not take %d arguments",
+		  identifier, argc);
   } else if (result->type == FLOAT && !isfinite(value_get_float(result))) {
-    fprintf(stderr, "Error: domain error in function '%s'\n", identifier);
-    return ERROR_EXPR;
+    raise_error(ERROR_EXPR, "domain error in function '%s'", identifier);
   }
-  
-  return SUCCESS;
 }
 
-int add(value *left, value *right, value *result) {
+void add(value *left, value *right, value *result) {
   if (left->type == FLOAT || right->type == FLOAT) {
     result->type = FLOAT;
     result->data.fvalue = value_get_float(left) + value_get_float(right);
@@ -506,11 +493,9 @@ int add(value *left, value *right, value *result) {
     result->type = INT;
     result->data.ivalue = value_get_int(left) + value_get_int(right);
   }
-
-  return SUCCESS;
 }
 
-int subtract(value *left, value *right, value *result) {
+void subtract(value *left, value *right, value *result) {
   if (left->type == FLOAT || right->type == FLOAT) {
     result->type = FLOAT;
     result->data.fvalue = value_get_float(left) - value_get_float(right);
@@ -518,11 +503,9 @@ int subtract(value *left, value *right, value *result) {
     result->type = INT;
     result->data.ivalue = value_get_int(left) - value_get_int(right);
   }
-
-  return SUCCESS;
 }
 
-int multiply(value *left, value *right, value *result) {
+void multiply(value *left, value *right, value *result) {
   if (left->type == FLOAT || right->type == FLOAT) {
     result->type = FLOAT;
     result->data.fvalue = value_get_float(left) * value_get_float(right);
@@ -530,16 +513,13 @@ int multiply(value *left, value *right, value *result) {
     result->type = INT;
     result->data.ivalue = value_get_int(left) * value_get_int(right);
   }
-
-  return SUCCESS;
 }
 
-int divide(value *left, value *right, value *result) {
+void divide(value *left, value *right, value *result) {
   //check for division by zero
   if ((right->type == INT && right->data.ivalue == 0)
       || (right->type == FLOAT && right->data.fvalue == 0)) {
-    fprintf(stderr, "Error: division by zero\n");
-    return ERROR_EXPR;
+    raise_error(ERROR_EXPR, "division by zero");
   }
   
   //use int division only if numerator is perfect multiple of denominator
@@ -551,30 +531,23 @@ int divide(value *left, value *right, value *result) {
     result->type = FLOAT;
     result->data.fvalue = value_get_float(left) / value_get_float(right);
   }
-
-  return SUCCESS;
 }
 
-int int_divide(value *left, value *right, value *result) {
+void int_divide(value *left, value *right, value *result) {
   //make sure we have int operands
-  if (left->type == FLOAT || right->type == FLOAT) {
-    fprintf(stderr, "Error: integer division operator '//' requires integer "
-	    "operands\n");
-    return ERROR_EXPR;
-  }
+  if (left->type == FLOAT || right->type == FLOAT)
+    raise_error(ERROR_EXPR,
+		"integer division operator '//' requires integer operands");
 
   //check for div by zero
-  if (right->data.ivalue == 0) {
-    fprintf(stderr, "Error: division by zero\n");
-    return ERROR_EXPR;
-  }
+  if (right->data.ivalue == 0)
+    raise_error(ERROR_EXPR, "division by zero");
 
   result->type = INT;
   result->data.ivalue = value_get_int(left) / value_get_int(right);
-  return SUCCESS;
 }
 
-int power(value *left, value *right, value *result) {
+void power(value *left, value *right, value *result) {
   if ((left->type == FLOAT || right->type == FLOAT)
       || right->data.ivalue < 0) {
     result->type = FLOAT;
@@ -593,25 +566,21 @@ int power(value *left, value *right, value *result) {
     result->type = INT;
     result->data.ivalue = ivalue;
   }
-  return SUCCESS;
 }
 
-int modulo(value *left, value *right, value *result) {
+void modulo(value *left, value *right, value *result) {
   //make sure arguments are ints and right value is nonzero
   if (left->type == FLOAT || right->type == FLOAT) {
-    fprintf(stderr, "Error: modulo operator '%' requires integer operands\n");
-    return ERROR_EXPR;
+    raise_error(ERROR_EXPR, "modulo operator '%' requires integer operands");
   } else if (right->data.ivalue == 0) {
-    fprintf(stderr, "Error: mod by zero\n");
-    return ERROR_EXPR;
+    raise_error(ERROR_EXPR, "mod by zero");
   } else {
     result->type = INT;
     result->data.ivalue = value_get_int(left) % value_get_int(right);
-    return SUCCESS;
   }
 }
 
-int negate(value *right, value *result) {
+void negate(value *right, value *result) {
   if (right->type == FLOAT) {
     result->type = FLOAT;
     result->data.fvalue = -value_get_float(right);
@@ -619,187 +588,154 @@ int negate(value *right, value *result) {
     result->type = INT;
     result->data.ivalue = -value_get_int(right);
   }
-
-  return SUCCESS;
 }
 
-int equal(value *left, value *right, value *result) {
+void equal(value *left, value *right, value *result) {
   result->type = INT;
   if (left->type == FLOAT || right->type == FLOAT) {
     result->data.ivalue = value_get_float(left) == value_get_float(right);
   } else {
     result->data.ivalue = value_get_int(left) == value_get_int(right);
   }
-
-  return SUCCESS;
 }
 
-int not_equal(value *left, value *right, value *result) {
+void not_equal(value *left, value *right, value *result) {
   result->type = INT;
   if (left->type == FLOAT || right->type == FLOAT) {
     result->data.ivalue = value_get_float(left) != value_get_float(right);
   } else {
     result->data.ivalue = value_get_int(left) != value_get_int(right);
   }
-
-  return SUCCESS;
 }
 
-int less_than(value *left, value *right, value *result) {
+void less_than(value *left, value *right, value *result) {
   result->type = INT;
   if (left->type == FLOAT || right->type == FLOAT) {
     result->data.ivalue = value_get_float(left) < value_get_float(right);
   } else {
     result->data.ivalue = value_get_int(left) < value_get_int(right);
   }
-
-  return SUCCESS;
 }
 
-int less_than_eq(value *left, value *right, value *result) {
+void less_than_eq(value *left, value *right, value *result) {
   result->type = INT;
   if (left->type == FLOAT || right->type == FLOAT) {
     result->data.ivalue = value_get_float(left) <= value_get_float(right);
   } else {
     result->data.ivalue = value_get_int(left) <= value_get_int(right);
   }
-
-  return SUCCESS;
 }
 
-int greater_than(value *left, value *right, value *result) {
+void greater_than(value *left, value *right, value *result) {
   result->type = INT;
   if (left->type == FLOAT || right->type == FLOAT) {
     result->data.ivalue = value_get_float(left) > value_get_float(right);
   } else {
     result->data.ivalue = value_get_int(left) > value_get_int(right);
   }
-
-  return SUCCESS;
 }
 
-int greater_than_eq(value *left, value *right, value *result) {
+void greater_than_eq(value *left, value *right, value *result) {
   result->type = INT;
   if (left->type == FLOAT || right->type == FLOAT) {
     result->data.ivalue = value_get_float(left) >= value_get_float(right);
   } else {
     result->data.ivalue = value_get_int(left) >= value_get_int(right);
   }
-
-  return SUCCESS;
 }
 
-int and(value *left, value *right, value *result) {
+void and(value *left, value *right, value *result) {
   result->type = INT;
   if (left->type == FLOAT || right->type == FLOAT) {
     result->data.ivalue = value_get_float(left) && value_get_float(right);
   } else {
     result->data.ivalue = value_get_int(left) && value_get_int(right);
   }
-
-  return SUCCESS;
 }
 
-int or(value *left, value *right, value *result) {
+void or(value *left, value *right, value *result) {
   result->type = INT;
   if (left->type == FLOAT || right->type == FLOAT) {
     result->data.ivalue = value_get_float(left) || value_get_float(right);
   } else {
     result->data.ivalue = value_get_int(left) || value_get_int(right);
   }
-
-  return SUCCESS;
 }
 
-int not(value *right, value *result) {
+void not(value *right, value *result) {
   result->type = INT;
   if (right->type == FLOAT) {
     result->data.ivalue = !value_get_float(right);
   } else {
     result->data.ivalue = !value_get_int(right);
   }
-
-  return SUCCESS;
 }
 
-int bit_and(value *left, value *right, value *result) {
+void bit_and(value *left, value *right, value *result) {
   if (left->type == INT && right->type == INT) {
     result->type = INT;
     result->data.ivalue = value_get_int(left) & value_get_int(right);
   } else {
-    fprintf(stderr, "Error: bitwise AND operator '&' requires integer operands\n");
-    return ERROR_EXPR;
+    raise_error(ERROR_EXPR,
+		"bitwise AND operator '&' requires integer operands");
   }
-
-  return SUCCESS;
 }
 
-int bit_or(value *left, value *right, value *result) {
+void bit_or(value *left, value *right, value *result) {
   if (left->type == INT && right->type == INT) {
     result->type = INT;
     result->data.ivalue = value_get_int(left) | value_get_int(right);
   } else {
-    fprintf(stderr, "Error: bitwise OR operator '|' requires integer operands\n");
-    return ERROR_EXPR;
+    raise_error(ERROR_EXPR,
+		"bitwise OR operator '|' requires integer operands");
   }
-
-  return SUCCESS;
 }
 
-int bit_xor(value *left, value *right, value *result) {
+void bit_xor(value *left, value *right, value *result) {
   if (left->type == INT && right->type == INT) {
     result->type = INT;
     result->data.ivalue = value_get_int(left) ^ value_get_int(right);
   } else {
-    fprintf(stderr, "Error: bitwise XOR operator '^' requires integer operands\n");
-    return ERROR_EXPR;
+    raise_error(ERROR_EXPR,
+		"bitwise XOR operator '^' requires integer operands");
   }
-
-  return SUCCESS;
 }
 
-int bit_not(value *right, value *result) {
+void bit_not(value *right, value *result) {
   if (right->type == INT) {
     result->type = INT;
     result->data.ivalue = ~value_get_int(right);
   } else {
-    fprintf(stderr, "Error: bitwise NOT operator '~' requires an integer operand\n");
-    return ERROR_EXPR;
+    raise_error(ERROR_EXPR,
+		"bitwise NOT operator '~' requires an integer operand");
   }
-
-  return SUCCESS;
 }
 
-int bit_shift_left(value *left, value *right, value *result) {
+void bit_shift_left(value *left, value *right, value *result) {
   if (left->type == INT && right->type == INT) {
     result->type = INT;
     result->data.ivalue = value_get_int(left) << value_get_int(right);
   } else {
-    fprintf(stderr, "Error: bit shift operator '<<' requires integer operands\n");
-    return ERROR_EXPR;
+    raise_error(ERROR_EXPR,
+		"bit shift operator '<<' requires integer operands");
   }
-
-  return SUCCESS;
 }
 
-int bit_shift_right(value *left, value *right, value *result) {
+void bit_shift_right(value *left, value *right, value *result) {
   if (left->type == INT && right->type == INT) {
     result->type = INT;
     result->data.ivalue = value_get_int(left) >> value_get_int(right);
   } else {
-    fprintf(stderr, "Error: bit shift operator '>>' requires integer operands\n");
-    return ERROR_EXPR;
+    raise_error(ERROR_EXPR,
+		"bit shift operator '>>' requires integer operands");
   }
-
-  return SUCCESS;
 }
 
-int conditional(value *condition, value *on_true, value *on_false,  value *result) {
+void conditional(value *condition, value *on_true, value *on_false,
+		 value *result) {
   if ((condition->type == INT && condition->data.ivalue)
       || (condition->type == FLOAT && condition->data.fvalue != 0.0))
     *result = *on_true;
   else
     *result = *on_false;
-
-  return SUCCESS;
 }

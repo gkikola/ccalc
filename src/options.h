@@ -35,6 +35,6 @@ typedef struct {
   bool show_version;
 } options;
 
-int read_options(int argc, char *argv[], int *expr_index, options *opts);
+void read_options(int argc, char *argv[], int *expr_index, options *opts);
 
 #endif

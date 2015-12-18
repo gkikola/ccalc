@@ -21,7 +21,6 @@
 
 #include <math.h>
 #include <stdbool.h>
-#include <stdio.h>
 #include <string.h>
 
 #include "error.h"
@@ -421,7 +420,7 @@ void get_literal(parser *parse) {
         if (base == 16)
 	  raise_error(ERROR_EXPR, "hexadecimal constant must be an integer");
         else if (base == 2)
-	  raise_error(ERROR_EXPR, "binary constant must be an integer\n");
+	  raise_error(ERROR_EXPR, "binary constant must be an integer");
 
 	result.type = FLOAT;
 	result.data.fvalue = (double) result.data.ivalue;

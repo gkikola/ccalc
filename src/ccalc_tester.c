@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define BUF_SIZE 256
+#define BUF_SIZE 512
 
 #define EXPECT_INT(EXPR) expect_int(#EXPR, "", (EXPR))
 #define EXPECT_FLOAT(EXPR) expect_float(#EXPR, "", (EXPR))
@@ -604,7 +604,7 @@ int main() {
   assert(EXPECT_FLOAT(pow(5, -0.1234)));
   assert(EXPECT_FLOAT(pow(0.1234, 0.5678)));
   assert(EXPECT_FLOAT(pow(0.5678, 0.1234)));
-  assert(EXPECT_FLOAT(pow(-0.1234, 0.5678)));
+  assert(EXPECT_FLOAT(pow(0.1234, -0.5678)));
   assert(EXPECT_FLOAT(pow(PI, E)));
   assert(EXPECT_FLOAT(pow(pow(2, 3.5), pow(4.2, 3))));
   assert(EXPECT_FLOAT(pow(pow(2.18, 3.5), pow(4, 3))));
@@ -617,7 +617,7 @@ int main() {
   assert(EXPECT_FLOAT(exp(-1)));
   assert(EXPECT_FLOAT(exp(2.375)));
   assert(EXPECT_FLOAT(exp(-PHI)));
-  assert(EXPECT_FLOAT(pow(2.5, exp(7.5))));
+  assert(EXPECT_FLOAT(pow(2.5, exp(3.5))));
 
   assert(expect_int("exp2(0)", "", 1));
   assert(EXPECT_FLOAT(exp2(0.1234)));
@@ -637,7 +637,7 @@ int main() {
   assert(EXPECT_FLOAT(expm1(-1)));
   assert(EXPECT_FLOAT(expm1(2.375)));
   assert(EXPECT_FLOAT(expm1(-PHI)));
-  assert(EXPECT_FLOAT(pow(2.5, expm1(7.5))));
+  assert(EXPECT_FLOAT(pow(2.5, expm1(3.5))));
 
   assert(EXPECT_FLOAT(log(0.1234)));
   assert(EXPECT_FLOAT(log(1 - 0.1234)));
@@ -1063,6 +1063,12 @@ bool call_ccalc(char *expr, char *opts, char *output, int output_size) {
   }
 
   fgets(output, output_size, stream);
+  fgetc(stream);
+  
+  if (!feof(stream)) {
+    fprintf(stderr, "Error: output is more than one line\n");
+    return false;
+  }
   
   pclose(stream);
 

@@ -37,36 +37,36 @@ void value_set_float(value *val, double fvalue);
 long int value_get_int(value *val);
 double value_get_float(value *val);
 
-int round_to_int(value *x);
+void round_to_int(value *x);
 
-int get_constant(char *identifier, value *val);
-int call_function(char *identifier, value *result, int argc, value argv[],
-		  bool degrees);
+void get_constant(char *identifier, value *val);
+void call_function(char *identifier, value *result, int argc, value argv[],
+		   bool degrees);
 
-int add(value *left, value *right, value *result);
-int subtract(value *left, value *right, value *result);
-int multiply(value *left, value *right, value *result);
-int int_divide(value *left, value *right, value *result);
-int divide(value *left, value *right, value *result);
-int power(value *left, value *right, value *result);
-int modulo(value *left, value *right, value *result);
-int negate(value *right, value *result);
-int equal(value *left, value *right, value *result);
-int not_equal(value *left, value *right, value *result);
-int less_than(value *left, value *right, value *result);
-int less_than_eq(value *left, value *right, value *result);
-int greater_than(value *left, value *right, value *result);
-int greater_than_eq(value *left, value *right, value *result);
-int and(value *left, value *right, value *result);
-int or(value *left, value *right, value *result);
-int not(value *right, value *result);
-int bit_and(value *left, value *right, value *result);
-int bit_or(value *left, value *right, value *result);
-int bit_xor(value *left, value *right, value *result);
-int bit_not(value *right, value *result);
-int bit_shift_left(value *left, value *right, value *result);
-int bit_shift_right(value *left, value *right, value *result);
-int conditional(value *condition, value *on_true, value *on_false,
+void add(value *left, value *right, value *result);
+void subtract(value *left, value *right, value *result);
+void multiply(value *left, value *right, value *result);
+void int_divide(value *left, value *right, value *result);
+void divide(value *left, value *right, value *result);
+void power(value *left, value *right, value *result);
+void modulo(value *left, value *right, value *result);
+void negate(value *right, value *result);
+void equal(value *left, value *right, value *result);
+void not_equal(value *left, value *right, value *result);
+void less_than(value *left, value *right, value *result);
+void less_than_eq(value *left, value *right, value *result);
+void greater_than(value *left, value *right, value *result);
+void greater_than_eq(value *left, value *right, value *result);
+void and(value *left, value *right, value *result);
+void or(value *left, value *right, value *result);
+void not(value *right, value *result);
+void bit_and(value *left, value *right, value *result);
+void bit_or(value *left, value *right, value *result);
+void bit_xor(value *left, value *right, value *result);
+void bit_not(value *right, value *result);
+void bit_shift_left(value *left, value *right, value *result);
+void bit_shift_right(value *left, value *right, value *result);
+void conditional(value *condition, value *on_true, value *on_false,
 		 value *result);
 
 #endif

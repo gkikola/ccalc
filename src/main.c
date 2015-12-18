@@ -118,8 +118,7 @@ int main(int argc, char *argv[]) {
       printf("%.*f", value_get_float(&result_value), opts.precision);
     break;
   default:
-    fprintf(stderr, "Error: unknown result type\n");
-    return ERROR_EXPR;
+    raise_error(ERROR_EXPR, "unknown result type");
   }
 
   if (opts.boolean) {
@@ -186,7 +185,7 @@ void print_int(long value, int base, bool uppercase) {
   int place = digits - 1;
 
   if (!digit_str)
-    raise_error(ERROR_SYS, "Error: memory allocation failed\n");
+    raise_error(ERROR_SYS, "Error: memory allocation failed");
 
   while (value > 0 && place >= 0) {
     digit_str[place--] = value % base;
