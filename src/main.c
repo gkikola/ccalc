@@ -34,29 +34,23 @@
 #include "options.h"
 #include "value.h"
 
-int print_int(long value, int base, bool uppercase);
+void print_int(long value, int base, bool uppercase);
 void print_version();
 
 int main(int argc, char *argv[]) {
   //parse program arguments
   options opts;
   int expr_index;
-  int result;
 
-  result = read_options(argc, argv, &expr_index, &opts);
-
-  if (result != SUCCESS)
-    return result;
+  read_options(argc, argv, &expr_index, &opts);
 
   if (opts.show_version) { //show version information
     print_version();
     return 0;
   }
 
-  if (opts.precision < 0) {
-    fprintf(stderr, "Error: precision cannot be less than 0\n");
-    return ERROR_EXPR;
-  }
+  if (opts.precision < 0)
+    raise_error(ERROR_EXPR, "precision cannot be less than 0");
   
   char *expression = NULL;
   int expr_length = 0;
@@ -70,10 +64,8 @@ int main(int argc, char *argv[]) {
     expression = malloc(expr_length + 1);
     expression[0] = '\0';
 
-    if (!expression) {
-      fprintf(stderr, "Error: memory allocation error\n");
-      return ERROR_SYS;
-    }
+    if (!expression)
+      raise_error(ERROR_EXPR, "memory allocation error");
 
     for (int i = expr_index; i < argc; i++) {
       strcat(expression, argv[i]);
@@ -86,11 +78,8 @@ int main(int argc, char *argv[]) {
       expr_length = 0;
   }
 
-  if (expr_length <= 0) {
-    fprintf(stderr, "Error: no expression given\n");
-    fprintf(stderr, "Try 'ccalc --help' for more information.\n");
-    return ERROR_EXPR;
-  }
+  if (expr_length <= 0)
+    raise_error(ERROR_EXPR, "no expression given");
 
   //seed RNG
   srand(time(NULL));
@@ -103,89 +92,82 @@ int main(int argc, char *argv[]) {
   if (opts.show_time)
     gettimeofday(&tv_start, NULL);
   
-  result = evaluate(expression, &result_value, &opts);
+  evaluate(expression, &result_value, &opts);
 
   if (opts.show_time)
     gettimeofday(&tv_end, NULL);
 
   //print the calculated value
-  if (result == SUCCESS) {
-    bool bresult = false;
-
-    switch (result_value.type) {
-    case INT:
-      if (opts.boolean)
-	bresult = value_get_int(&result_value) ? true : false;
-      else
-	if (opts.radix == 10) {
-	  printf("%ld", value_get_int(&result_value));
-	} else {
-	  result = print_int(value_get_int(&result_value),
-			     opts.radix, opts.uppercase);
-	  if (result != SUCCESS)
-	    return result;
-        }
-      break;
-    case FLOAT:
-      if (opts.boolean)
-	bresult = value_get_float(&result_value) != 0.0 ? true : false;
-      else
-	printf("%.*f", value_get_float(&result_value), opts.precision);
-      break;
-    default:
-      fprintf(stderr, "Error: unknown result type\n");
-      return ERROR_EXPR;
-    }
-
-    if (opts.boolean) {
-      if (opts.uppercase) {
-	if (bresult)
-	  printf("TRUE");
-	else
-	  printf("FALSE");
+  bool bresult = false;
+  switch (result_value.type) {
+  case INT:
+    if (opts.boolean)
+      bresult = value_get_int(&result_value) ? true : false;
+    else
+      if (opts.radix == 10) {
+	printf("%ld", value_get_int(&result_value));
       } else {
-	if (bresult)
-	  printf("true");
-	else
-	  printf("false");
+        print_int(value_get_int(&result_value),
+			   opts.radix, opts.uppercase);
       }
-    }
-
-    //show the elapsed time if requested
-    if (opts.show_time) {
-      int sec = 0, usec = 0;
-
-      sec = tv_end.tv_sec - tv_start.tv_sec;
-      if (tv_end.tv_usec < tv_start.tv_usec) {
-	--sec;
-	usec = 1000000 - (tv_start.tv_usec - tv_end.tv_usec);
-      } else {
-	usec = tv_end.tv_usec - tv_start.tv_usec;
-      }
-
-      printf(" (time: %d.%06d seconds)", sec, usec);
-    }
-
-    printf("\n");
-  }
-  
-  if (expression) {
-    free(expression);
-  }
-
-  return result;
-}
-
-int print_int(long value, int base, bool uppercase) {
-  if (base <= 1) {
-    fprintf(stderr, "Error: radix cannot be less than 2\n");
+    break;
+  case FLOAT:
+    if (opts.boolean)
+      bresult = value_get_float(&result_value) != 0.0 ? true : false;
+    else
+      printf("%.*f", value_get_float(&result_value), opts.precision);
+    break;
+  default:
+    fprintf(stderr, "Error: unknown result type\n");
     return ERROR_EXPR;
   }
 
+  if (opts.boolean) {
+    if (opts.uppercase) {
+      if (bresult)
+	printf("TRUE");
+      else
+	printf("FALSE");
+    } else {
+      if (bresult)
+	printf("true");
+      else
+	printf("false");
+    }
+  }
+
+  //show the elapsed time if requested
+  if (opts.show_time) {
+    int sec = 0, usec = 0;
+
+    sec = tv_end.tv_sec - tv_start.tv_sec;
+    if (tv_end.tv_usec < tv_start.tv_usec) {
+      --sec;
+      usec = 1000000 - (tv_start.tv_usec - tv_end.tv_usec);
+    } else {
+      usec = tv_end.tv_usec - tv_start.tv_usec;
+    }
+
+    printf(" (time: %d.%06d seconds)", sec, usec);
+  }
+
+  printf("\n");
+
+  if (expression)
+    free(expression);
+
+  return 0;
+}
+
+void print_int(long value, int base, bool uppercase) {
+  if (base <= 1)
+    raise_error(ERROR_EXPR, "radix cannot be less than 2");
+
   if (value == 0) {
     printf("0");
-    return SUCCESS;
+    return;
   }
+
   if (value < 0) {
     printf("-");
     value = -value;
@@ -203,10 +185,8 @@ int print_int(long value, int base, bool uppercase) {
   int *digit_str = malloc(digits * sizeof(int));
   int place = digits - 1;
 
-  if (!digit_str) {
-    fprintf(stderr, "Error: memory allocation failed\n");
-    return ERROR_SYS;
-  }
+  if (!digit_str)
+    raise_error(ERROR_SYS, "Error: memory allocation failed\n");
 
   while (value > 0 && place >= 0) {
     digit_str[place--] = value % base;
@@ -234,8 +214,6 @@ int print_int(long value, int base, bool uppercase) {
   }
   
   free(digit_str);
-  
-  return SUCCESS;
 }
 
 void print_version() {

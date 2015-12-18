@@ -25,6 +25,6 @@
 #include "options.h"
 #include "value.h"
 
-int evaluate(char *expr, value *result, options *opts);
+void evaluate(char *expr, value *result, options *opts);
 
 #endif

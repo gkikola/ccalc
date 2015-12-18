@@ -935,6 +935,10 @@ int main() {
   assert(expect_error("* 13", "", "unexpected token '*'"));
   assert(expect_error("53 37", "", "unexpected token '37'"));
   assert(expect_error("5 ^ ^ 2", "", "unexpected token '^'"));
+  assert(expect_error("(3 > ) ? 3 : 2", "", "unexpected token ')'"));
+  assert(expect_error("( > 4) ? 3 : 2", "", "unexpected token '>'"));
+  assert(expect_error("(3 > 4) ? 3 + : 2", "", "unexpected token ':'"));
+  assert(expect_error("(3 > 4) ? 3 : 2 +", "", "unexpected end of input"));
 
   assert(expect_error("5 > 3 ? 12", "", "unexpected end of input"));
   assert(expect_error("(5 > 3 ? 12)", "", "unexpected token ')'"));

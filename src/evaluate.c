@@ -76,50 +76,45 @@ typedef struct Parser {
 
 bool is_whitespace(char c);
 
-int get_token(parser *parse);
+void get_token(parser *parse);
 token_type peek_token(parser *parse);
-int get_identifier(parser *parse);
-int get_literal(parser *parse);
+void get_identifier(parser *parse);
+void get_literal(parser *parse);
 
-int parse_expression(parser *parse, value *val);
-int parse_conditional_expression(parser *parse, value *val);
-int parse_logical_or_expression(parser *parse, value *val);
-int parse_logical_and_expression(parser *parse, value *val);
-int parse_inclusive_or_expression(parser *parse, value *val);
-int parse_exclusive_or_expression(parser *parse, value *val);
-int parse_and_expression(parser *parse, value *val);
-int parse_equality_expression(parser *parse, value *val);
-int parse_relational_expression(parser *parse, value *val);
-int parse_shift_expression(parser *parse, value *val);
-int parse_additive_expression(parser *parse, value *val);
-int parse_multiplicative_expression(parser *parse, value *val);
-int parse_unary_expression(parser *parse, value *val);
-int parse_exponential_expression(parser *parse, value *val);
-int parse_primary(parser *parse, value *val);
+void parse_expression(parser *parse, value *val);
+void parse_conditional_expression(parser *parse, value *val);
+void parse_logical_or_expression(parser *parse, value *val);
+void parse_logical_and_expression(parser *parse, value *val);
+void parse_inclusive_or_expression(parser *parse, value *val);
+void parse_exclusive_or_expression(parser *parse, value *val);
+void parse_and_expression(parser *parse, value *val);
+void parse_equality_expression(parser *parse, value *val);
+void parse_relational_expression(parser *parse, value *val);
+void parse_shift_expression(parser *parse, value *val);
+void parse_additive_expression(parser *parse, value *val);
+void parse_multiplicative_expression(parser *parse, value *val);
+void parse_unary_expression(parser *parse, value *val);
+void parse_exponential_expression(parser *parse, value *val);
+void parse_primary(parser *parse, value *val);
 
-int evaluate(char *expr, value *result, options *opts) {
+void evaluate(char *expr, value *result, options *opts) {
   parser parse;
   parse.expr = expr;
   parse.pos = 0;
   parse.program_opts = opts;
 
-  int retval = parse_expression(&parse, result);
-  if (retval != SUCCESS) return retval;
+  parse_expression(&parse, result);
 
   //next token should be TOKEN_END
-  retval = get_token(&parse);
-  if (retval != SUCCESS) return retval;
+  get_token(&parse);
   
   switch (parse.cur_token) {
   case TOKEN_END:
-    return SUCCESS;
+    break;
   case TOKEN_RIGHT_PAREN:
-    fprintf(stderr, "Error: unmatched parenthesis ')'\n");
-    return ERROR_EXPR;
+    raise_error(ERROR_EXPR, "unmatched parenthesis ')'");
   default:
-    fprintf(stderr, "Error: unexpected token '%s'\n",
-	    parse.str_value);
-    return ERROR_EXPR;
+    raise_error(ERROR_EXPR, "unexpected token '%s'", parse.str_value);
   }
 }
 
@@ -127,7 +122,7 @@ bool is_whitespace(char c) {
   return c == ' ' || c == '\t' || c == '\r' || c == '\n';
 }
 
-int get_token(parser *parse) {
+void get_token(parser *parse) {
   parse->numeric_value.type = INT;
   parse->numeric_value.data.ivalue = 0;
   parse->str_value[0] = 0;
@@ -138,16 +133,18 @@ int get_token(parser *parse) {
 
   parse->cur_token = peek_token(parse);
 
-switch (parse->cur_token) {
+  switch (parse->cur_token) {
   case TOKEN_END:
     break;
-  default:
-  case TOKEN_UNKNOWN: //error
-    return ERROR_EXPR;
+
   case TOKEN_IDENTIFIER:
-    return get_identifier(parse);
+    get_identifier(parse);
+    break;
+
   case TOKEN_LITERAL:
-    return get_literal(parse);
+    get_literal(parse);
+    break;
+
   case TOKEN_LEFT_PAREN:
   case TOKEN_RIGHT_PAREN:
   case TOKEN_QMARK:
@@ -200,8 +197,6 @@ switch (parse->cur_token) {
   //skip whitespace
   while (is_whitespace(parse->expr[parse->pos]))
     parse->pos++;
-  
-  return SUCCESS;
 }
 
 token_type peek_token(parser *parse) {
@@ -235,35 +230,41 @@ token_type peek_token(parser *parse) {
       return TOKEN_OP_PLUS;
     case '-':
       return TOKEN_OP_MINUS;
+
     case '*':
       //could be * or **
       if (parse->expr[parse->pos + 1] == '*')
 	return TOKEN_OP_POW;
       else
 	return TOKEN_OP_TIMES;
+
     case '/':
       //could be / or //
       if (parse->expr[parse->pos + 1] == '/')
 	return TOKEN_OP_IDIVIDE;
       else
 	return TOKEN_OP_DIVIDE;
+
     case '%':
       return TOKEN_OP_MOD;
+
     case '=':
       //must be ==, assignment not supported
       if (parse->expr[parse->pos + 1] == '=') {
 	return TOKEN_OP_EQUAL;
       }
       else {
-	fprintf(stderr, "Error: assignment operator '=' is not supported\n");
+        raise_error(ERROR_EXPR, "assignment operator '=' is not supported");
 	return TOKEN_UNKNOWN;
       }
+
     case '!':
       //could be ! or !=
       if (parse->expr[parse->pos + 1] == '=')
 	return TOKEN_OP_NOT_EQUAL;
       else
 	return TOKEN_OP_NOT;
+
     case '<':
       //could be <, <=, or <<
       if (parse->expr[parse->pos + 1] == '=')
@@ -272,6 +273,7 @@ token_type peek_token(parser *parse) {
 	return TOKEN_OP_BIT_SHIFT_LEFT;
       else
 	return TOKEN_OP_LESS_THAN;
+
     case '>':
       //could be >, >=, or >>
       if (parse->expr[parse->pos + 1] == '=')
@@ -280,33 +282,38 @@ token_type peek_token(parser *parse) {
 	return TOKEN_OP_BIT_SHIFT_RIGHT;
       else
 	return TOKEN_OP_GREATER_THAN;
+
     case '&':
       //could be & or &&
       if (parse->expr[parse->pos + 1] == '&')
 	return TOKEN_OP_AND;
       else
 	return TOKEN_OP_BIT_AND;
+
     case '|':
       //could be | or ||
       if (parse->expr[parse->pos + 1] == '|')
 	return TOKEN_OP_OR;
       else
 	return TOKEN_OP_BIT_OR;
+
     case '^':
       if (parse->program_opts->caret_exp)
 	return TOKEN_OP_POW;
       else
 	return TOKEN_OP_BIT_XOR;
+
     case '~':
       return TOKEN_OP_BIT_NOT;
+
     default:
-      fprintf(stderr, "Error: unexpected character '%c'\n", next_ch);
+      raise_error(ERROR_EXPR, "unexpected character '%c'", next_ch);
       return TOKEN_UNKNOWN;
     }
   }
 }
 
-int get_literal(parser *parse) {
+void get_literal(parser *parse) {
   int base = 10;
   bool is_float = false;
   int start_pos = parse->pos;
@@ -367,15 +374,13 @@ int get_literal(parser *parse) {
 	break;
       case '0': case '1': case '2': case '3': case '4':
       case '5': case '6': case '7': case '8': case '9':
-	if (base == 2 && cur_ch > '1') {
-	  fprintf(stderr, "Error: unexpected digit '%c' in binary constant\n",
-		  cur_ch);
-	  return ERROR_EXPR;
-	} else if (base == 8 && cur_ch > '7') {
-	  fprintf(stderr, "Error: unexpected digit '%c' in octal constant\n",
-		  cur_ch);
-	  return ERROR_EXPR;
-	}
+	if (base == 2 && cur_ch > '1')
+          raise_error(ERROR_EXPR, "unexpected digit '%c' in binary constant",
+		      cur_ch);
+        else if (base == 8 && cur_ch > '7')
+          raise_error(ERROR_EXPR, "unexpected digit '%c' in octal constant",
+		      cur_ch);
+
 	result.data.ivalue = base * result.data.ivalue + (cur_ch - '0');
 	break;
       case 'A':
@@ -384,18 +389,14 @@ int get_literal(parser *parse) {
       case 'D':
       case 'E':
       case 'F':
-	if (base == 10) {
-	  fprintf(stderr, "Error: unexpected digit '%c' in constant\n", cur_ch);
-	  return ERROR_EXPR;
-	} else if (base == 2) {
-	  fprintf(stderr, "Error: unexpected digit '%c' in binary constant\n",
-		  cur_ch);
-	  return ERROR_EXPR;
-	} else if (base == 8) {
-	  fprintf(stderr, "Error: unexpected digit '%c' in octal constant\n",
-		  cur_ch);
-	  return ERROR_EXPR;
-	}
+	if (base == 10)
+	  raise_error(ERROR_EXPR, "unexpected digit '%c' in constant", cur_ch);
+        else if (base == 2)
+	  raise_error(ERROR_EXPR, "unexpected digit '%c' in binary constant",
+		      cur_ch);
+        else if (base == 8)
+          raise_error(ERROR_EXPR, "unexpected digit '%c' in octal constant",
+		      cur_ch);
 
 	result.data.ivalue = base * result.data.ivalue + (10 + cur_ch - 'A');
 	break;
@@ -405,29 +406,22 @@ int get_literal(parser *parse) {
       case 'd':
       case 'e':
       case 'f':
-	if (base == 10) {
-	  fprintf(stderr, "Error: unexpected digit '%c' in constant\n", cur_ch);
-	  return ERROR_EXPR;
-	} else if (base == 2) {
-	  fprintf(stderr, "Error: unexpected digit '%c' in binary constant\n",
-		  cur_ch);
-	  return ERROR_EXPR;
-	} else if (base == 8) {
-	  fprintf(stderr, "Error: unexpected digit '%c' in octal constant\n",
-		  cur_ch);
-	  return ERROR_EXPR;
-	}
+	if (base == 10)
+	  raise_error(ERROR_EXPR, "unexpected digit '%c' in constant", cur_ch);
+        else if (base == 2)
+	  raise_error(ERROR_EXPR, "unexpected digit '%c' in binary constant",
+		      cur_ch);
+        else if (base == 8)
+	  raise_error(ERROR_EXPR, "unexpected digit '%c' in octal constant",
+		      cur_ch);
 
 	result.data.ivalue = base * result.data.ivalue + (10 + cur_ch - 'a');
 	break;
       case '.':
-        if (base == 16) {
-	  fprintf(stderr, "Error: hexadecimal constant must be an integer\n");
-	  return ERROR_EXPR;
-	} else if (base == 2) {
-	  fprintf(stderr, "Error: binary constant must be an integer\n");
-	  return ERROR_EXPR;
-	}
+        if (base == 16)
+	  raise_error(ERROR_EXPR, "hexadecimal constant must be an integer");
+        else if (base == 2)
+	  raise_error(ERROR_EXPR, "binary constant must be an integer\n");
 
 	result.type = FLOAT;
 	result.data.fvalue = (double) result.data.ivalue;
@@ -486,11 +480,9 @@ int get_literal(parser *parse) {
     length = MAX_IDENTIFIER_LENGTH - 1;
   strncpy(parse->str_value, parse->expr + start_pos, length);
   parse->str_value[length] = '\0';
-  
-  return SUCCESS;
 }
 
-int get_identifier(parser *parse) {
+void get_identifier(parser *parse) {
   int length = 0;
   
   while (length <= MAX_IDENTIFIER_LENGTH) {
@@ -510,13 +502,10 @@ int get_identifier(parser *parse) {
 
   parse->cur_token = TOKEN_IDENTIFIER;
   parse->str_value[length] = '\0';
-  
-  return SUCCESS;
 }
 
-int parse_expression(parser *parse, value *val) {  
-  int result = parse_conditional_expression(parse, val);
-  if (result != SUCCESS) return result;
+void parse_expression(parser *parse, value *val) {  
+  parse_conditional_expression(parse, val);
 
   bool done = false;
   while (!done) {
@@ -524,74 +513,55 @@ int parse_expression(parser *parse, value *val) {
     default:
       done = true;
       break;
+
     case TOKEN_OP_COMMA:
-      result = get_token(parse);
-      if (result != SUCCESS) return result;
+      get_token(parse);
 
       //evaluate right side, discard everything to the left of the comma
-      result = parse_conditional_expression(parse, val);
-      if (result != SUCCESS) return result;
+      parse_conditional_expression(parse, val);
 
       break;
-    case TOKEN_UNKNOWN:
-      return ERROR_EXPR;
     }
   }
-
-  return SUCCESS;
 }
 
-int parse_conditional_expression(parser *parse, value *val) {
+void parse_conditional_expression(parser *parse, value *val) {
   value left;
-  int result = parse_logical_or_expression(parse, val);
-  if (result != SUCCESS) return result;
 
+  parse_logical_or_expression(parse, val);
   left = *val;
 
-  switch (peek_token(parse)) {
-  case TOKEN_QMARK:
-    result = get_token(parse);
-    if (result != SUCCESS) return result;
-
+  if (peek_token(parse) == TOKEN_QMARK) {
     //this is a conditional expression
     value on_true, on_false;
+    get_token(parse);
 
     //read first value
     parse_expression(parse, &on_true);
 
     //read colon
-    result = get_token(parse);
-    if (result != SUCCESS) return result;
+    get_token(parse);
 
-    //make sure the token is actually a colon
     switch (parse->cur_token) {
     case TOKEN_COLON:
       break;
     case TOKEN_END:
-      fprintf(stderr, "Error: unexpected end of input\n");
-      return ERROR_EXPR;
+      raise_error(ERROR_EXPR, "unexpected end of input");
     default:
-      fprintf(stderr, "Error: unexpected token '%s'\n", parse->str_value);
-      return ERROR_EXPR;
+      raise_error(ERROR_EXPR, "unexpected token '%s'", parse->str_value);
     }
 
     //read second value
-    result = parse_conditional_expression(parse, &on_false);
-    if (result != SUCCESS) return result;
+    parse_conditional_expression(parse, &on_false);
 
-    return conditional(&left, &on_true, &on_false, val);
-  case TOKEN_UNKNOWN:
-    return ERROR_EXPR;
+    conditional(&left, &on_true, &on_false, val);
   }
-  
-  return SUCCESS;
 }
 
-int parse_logical_or_expression(parser *parse, value *val) {
+void parse_logical_or_expression(parser *parse, value *val) {
   value left, right;
-  int result = parse_logical_and_expression(parse, val);
-  if (result != SUCCESS) return result;
-
+  
+  parse_logical_and_expression(parse, val);
   left = *val;
 
   bool done = false;
@@ -601,30 +571,20 @@ int parse_logical_or_expression(parser *parse, value *val) {
       done = true;
       break;
     case TOKEN_OP_OR:
-      result = get_token(parse);
-      if (result != SUCCESS) return result;
-
-      result = parse_logical_and_expression(parse, &right);
-      if (result != SUCCESS) return result;
-
-      result = or(&left, &right, val);
-      if (result != SUCCESS) return result;
+      get_token(parse);
+      parse_logical_and_expression(parse, &right);
+      or(&left, &right, val);
       
       left = *val;
       break;
-    case TOKEN_UNKNOWN:
-      return ERROR_EXPR;
     }
   }  
-  
-  return SUCCESS;
 }
 
-int parse_logical_and_expression(parser *parse, value *val) {
+void parse_logical_and_expression(parser *parse, value *val) {
   value left, right;
-  int result = parse_inclusive_or_expression(parse, val);
-  if (result != SUCCESS) return result;
 
+  parse_inclusive_or_expression(parse, val);
   left = *val;
 
   bool done = false;
@@ -634,30 +594,20 @@ int parse_logical_and_expression(parser *parse, value *val) {
       done = true;
       break;
     case TOKEN_OP_AND:
-      result = get_token(parse);
-      if (result != SUCCESS) return result;
-
-      result = parse_inclusive_or_expression(parse, &right);
-      if (result != SUCCESS) return result;
-
-      result = and(&left, &right, val);
-      if (result != SUCCESS) return result;
+      get_token(parse);
+      parse_inclusive_or_expression(parse, &right);
+      and(&left, &right, val);
       
       left = *val;
       break;
-    case TOKEN_UNKNOWN:
-      return ERROR_EXPR;
     }
   }
-
-  return SUCCESS;
 }
 
-int parse_inclusive_or_expression(parser *parse, value *val) {
+void parse_inclusive_or_expression(parser *parse, value *val) {
   value left, right;
-  int result = parse_exclusive_or_expression(parse, val);
-  if (result != SUCCESS) return result;
-
+  
+  parse_exclusive_or_expression(parse, val);
   left = *val;
 
   bool done = false;
@@ -667,30 +617,20 @@ int parse_inclusive_or_expression(parser *parse, value *val) {
       done = true;
       break;
     case TOKEN_OP_BIT_OR:
-      result = get_token(parse);
-      if (result != SUCCESS) return result;
-
-      result = parse_exclusive_or_expression(parse, &right);
-      if (result != SUCCESS) return result;
-
-      result = bit_or(&left, &right, val);
-      if (result != SUCCESS) return result;
+      get_token(parse);
+      parse_exclusive_or_expression(parse, &right);
+      bit_or(&left, &right, val);
       
       left = *val;
       break;
-    case TOKEN_UNKNOWN:
-      return ERROR_EXPR;
     }
   }
-
-  return SUCCESS;
 }
 
-int parse_exclusive_or_expression(parser *parse, value *val) {
+void parse_exclusive_or_expression(parser *parse, value *val) {
   value left, right;
-  int result = parse_and_expression(parse, val);
-  if (result != SUCCESS) return result;
 
+  parse_and_expression(parse, val);
   left = *val;
 
   bool done = false;
@@ -700,30 +640,20 @@ int parse_exclusive_or_expression(parser *parse, value *val) {
       done = true;
       break;
     case TOKEN_OP_BIT_XOR:
-      result = get_token(parse);
-      if (result != SUCCESS) return result;
-
-      result = parse_and_expression(parse, &right);
-      if (result != SUCCESS) return result;
-
-      result = bit_xor(&left, &right, val);
-      if (result != SUCCESS) return result;
+      get_token(parse);
+      parse_and_expression(parse, &right);
+      bit_xor(&left, &right, val);
       
       left = *val;
       break;
-    case TOKEN_UNKNOWN:
-      return ERROR_EXPR;
     }
   }
-
-  return SUCCESS;
 }
 
-int parse_and_expression(parser *parse, value *val) {
+void parse_and_expression(parser *parse, value *val) {
   value left, right;
-  int result = parse_equality_expression(parse, val);
-  if (result != SUCCESS) return result;
 
+  parse_equality_expression(parse, val);
   left = *val;
 
   bool done = false;
@@ -733,30 +663,20 @@ int parse_and_expression(parser *parse, value *val) {
       done = true;
       break;
     case TOKEN_OP_BIT_AND:
-      result = get_token(parse);
-      if (result != SUCCESS) return result;
-
-      result = parse_equality_expression(parse, &right);
-      if (result != SUCCESS) return result;
-
-      result = bit_and(&left, &right, val);
-      if (result != SUCCESS) return result;
+      get_token(parse);
+      parse_equality_expression(parse, &right);
+      bit_and(&left, &right, val);
       
       left = *val;
       break;
-    case TOKEN_UNKNOWN:
-      return ERROR_EXPR;
     }
   }
-
-  return SUCCESS;
 }
 
-int parse_equality_expression(parser *parse, value *val) {
+void parse_equality_expression(parser *parse, value *val) {
   value left, right;
-  int result = parse_relational_expression(parse, val);
-  if (result != SUCCESS) return result;
 
+  parse_relational_expression(parse, val);
   left = *val;
 
   bool done = false;
@@ -765,43 +685,30 @@ int parse_equality_expression(parser *parse, value *val) {
     default:
       done = true;
       break;
+
     case TOKEN_OP_EQUAL:
-      result = get_token(parse);
-      if (result != SUCCESS) return result;
-
-      result = parse_relational_expression(parse, &right);
-      if (result != SUCCESS) return result;
-
-      result = equal(&left, &right, val);
-      if (result != SUCCESS) return result;
+      get_token(parse);
+      parse_relational_expression(parse, &right);
+      equal(&left, &right, val);
       
       left = *val;
       break;
+
     case TOKEN_OP_NOT_EQUAL:
-      result = get_token(parse);
-      if (result != SUCCESS) return result;
-
-      result = parse_relational_expression(parse, &right);
-      if (result != SUCCESS) return result;
-
-      result = not_equal(&left, &right, val);
-      if (result != SUCCESS) return result;
+      get_token(parse);
+      parse_relational_expression(parse, &right);
+      not_equal(&left, &right, val);
       
       left = *val;
       break;
-    case TOKEN_UNKNOWN:
-      return ERROR_EXPR;
     }
   }
-
-  return SUCCESS;
 }
 
-int parse_relational_expression(parser *parse, value *val) {
+void parse_relational_expression(parser *parse, value *val) {
   value left, right;
-  int result = parse_shift_expression(parse, val);
-  if (result != SUCCESS) return result;
 
+  parse_shift_expression(parse, val);
   left = *val;
 
   bool done = false;
@@ -810,67 +717,46 @@ int parse_relational_expression(parser *parse, value *val) {
     default:
       done = true;
       break;
+
     case TOKEN_OP_LESS_THAN:
-      result = get_token(parse);
-      if (result != SUCCESS) return result;
-
-      result = parse_shift_expression(parse, &right);
-      if (result != SUCCESS) return result;
-
-      result = less_than(&left, &right, val);
-      if (result != SUCCESS) return result;
+      get_token(parse);
+      parse_shift_expression(parse, &right);
+      less_than(&left, &right, val);
       
       left = *val;
       break;
+
     case TOKEN_OP_LESS_THAN_EQ:
-      result = get_token(parse);
-      if (result != SUCCESS) return result;
-
-      result = parse_shift_expression(parse, &right);
-      if (result != SUCCESS) return result;
-
-      result = less_than_eq(&left, &right, val);
-      if (result != SUCCESS) return result;
+      get_token(parse);
+      parse_shift_expression(parse, &right);
+      less_than_eq(&left, &right, val);
       
       left = *val;
       break;
+
     case TOKEN_OP_GREATER_THAN:
-      result = get_token(parse);
-      if (result != SUCCESS) return result;
-
-      result = parse_shift_expression(parse, &right);
-      if (result != SUCCESS) return result;
-
-      result = greater_than(&left, &right, val);
-      if (result != SUCCESS) return result;
+      get_token(parse);
+      parse_shift_expression(parse, &right);
+      greater_than(&left, &right, val);
       
       left = *val;
       break;
+
     case TOKEN_OP_GREATER_THAN_EQ:
-      result = get_token(parse);
-      if (result != SUCCESS) return result;
-
-      result = parse_shift_expression(parse, &right);
-      if (result != SUCCESS) return result;
-
-      result = greater_than_eq(&left, &right, val);
-      if (result != SUCCESS) return result;
+      get_token(parse);
+      parse_shift_expression(parse, &right);
+      greater_than_eq(&left, &right, val);
       
       left = *val;
       break;
-    case TOKEN_UNKNOWN:
-      return ERROR_EXPR;
     }
   }
-
-  return SUCCESS;
 }
 
-int parse_shift_expression(parser *parse, value *val) {
+void parse_shift_expression(parser *parse, value *val) {
   value left, right;
-  int result = parse_additive_expression(parse, val);
-  if (result != SUCCESS) return result;
 
+  parse_additive_expression(parse, val);
   left = *val;
   
   bool done = false;
@@ -879,43 +765,30 @@ int parse_shift_expression(parser *parse, value *val) {
     default:
       done = true;
       break;
+
     case TOKEN_OP_BIT_SHIFT_LEFT:
-      result = get_token(parse);
-      if (result != SUCCESS) return result;
-
-      result = parse_additive_expression(parse, &right);
-      if (result != SUCCESS) return result;
-
-      result = bit_shift_left(&left, &right, val);
-      if (result != SUCCESS) return result;
+      get_token(parse);
+      parse_additive_expression(parse, &right);
+      bit_shift_left(&left, &right, val);
       
       left = *val;
       break;
+
     case TOKEN_OP_BIT_SHIFT_RIGHT:
-      result = get_token(parse);
-      if (result != SUCCESS) return result;
-
-      result = parse_additive_expression(parse, &right);
-      if (result != SUCCESS) return result;
-
-      result = bit_shift_right(&left, &right, val);
-      if (result != SUCCESS) return result;
+      get_token(parse);
+      parse_additive_expression(parse, &right);
+      bit_shift_right(&left, &right, val);
       
       left = *val;
       break;
-    case TOKEN_UNKNOWN:
-      return ERROR_EXPR;
     }
   }
-  
-  return SUCCESS;
 }
 
-int parse_additive_expression(parser *parse, value *val) {
+void parse_additive_expression(parser *parse, value *val) {
   value left, right;
-  int result = parse_multiplicative_expression(parse, val);
-  if (result != SUCCESS) return result;
-
+  
+  parse_multiplicative_expression(parse, val);
   left = *val;
 
   bool done = false;
@@ -924,43 +797,30 @@ int parse_additive_expression(parser *parse, value *val) {
     default:
       done = true;
       break;
+
     case TOKEN_OP_PLUS:
-      result = get_token(parse);
-      if (result != SUCCESS) return result;
-
-      result = parse_multiplicative_expression(parse, &right);
-      if (result != SUCCESS) return result;
-
-      result = add(&left, &right, val);
-      if (result != SUCCESS) return result;
+      get_token(parse);
+      parse_multiplicative_expression(parse, &right);
+      add(&left, &right, val);
       
       left = *val;
       break;
+
     case TOKEN_OP_MINUS:
-      result = get_token(parse);
-      if (result != SUCCESS) return result;
-
-      result = parse_multiplicative_expression(parse, &right);
-      if (result != SUCCESS) return result;
-
-      result = subtract(&left, &right, val);
-      if (result != SUCCESS) return result;
+      get_token(parse);
+      parse_multiplicative_expression(parse, &right);
+      subtract(&left, &right, val);
       
       left = *val;
       break;
-    case TOKEN_UNKNOWN:
-      return ERROR_EXPR;
     }
   }
-
-  return SUCCESS;
 }
 
-int parse_multiplicative_expression(parser *parse, value *val) {
+void parse_multiplicative_expression(parser *parse, value *val) {
   value left, right;
-  int result = parse_unary_expression(parse, val);
-  if (result != SUCCESS) return result;
 
+  parse_unary_expression(parse, val);
   left = *val;
 
   bool done = false;
@@ -969,116 +829,79 @@ int parse_multiplicative_expression(parser *parse, value *val) {
     default:
       done = true;
       break;
+
     case TOKEN_OP_TIMES:
-      result = get_token(parse);
-      if (result != SUCCESS) return result;
-
-      result = parse_unary_expression(parse, &right);
-      if (result != SUCCESS) return result;
-
-      result = multiply(&left, &right, val);
-      if (result != SUCCESS) return result;
+      get_token(parse);
+      parse_unary_expression(parse, &right);
+      multiply(&left, &right, val);
       
       left = *val;
       break;
+
     case TOKEN_OP_DIVIDE:
-      result = get_token(parse);
-      if (result != SUCCESS) return result;
-
-      result = parse_unary_expression(parse, &right);
-      if (result != SUCCESS) return result;
-
-      result = divide(&left, &right, val);
-      if (result != SUCCESS) return result;
+      get_token(parse);
+      parse_unary_expression(parse, &right);
+      divide(&left, &right, val);
       
       left = *val;
       break;
+
     case TOKEN_OP_IDIVIDE:
-      result = get_token(parse);
-      if (result != SUCCESS) return result;
-
-      result = parse_unary_expression(parse, &right);
-      if (result != SUCCESS) return result;
-
-      result = int_divide(&left, &right, val);
-      if (result != SUCCESS) return result;
+      get_token(parse);
+      parse_unary_expression(parse, &right);
+      int_divide(&left, &right, val);
 
       left = *val;
       break;
+
     case TOKEN_OP_MOD:
-      result = get_token(parse);
-      if (result != SUCCESS) return result;
-
-      result = parse_unary_expression(parse, &right);
-      if (result != SUCCESS) return result;
-
-      result = modulo(&left, &right, val);
-      if (result != SUCCESS) return result;
+      get_token(parse);
+      parse_unary_expression(parse, &right);
+      modulo(&left, &right, val);
       
       left = *val;
       break;
-    case TOKEN_UNKNOWN:
-      return ERROR_EXPR;
     }
   }
-  
-  return SUCCESS;
 }
 
-int parse_unary_expression(parser *parse, value *val) {
+void parse_unary_expression(parser *parse, value *val) {
   value operand;
-  int result;
-  
+
   switch (peek_token(parse)) {
   default:
-    return parse_exponential_expression(parse, val);
+    parse_exponential_expression(parse, val);
+    break;
+    
   case TOKEN_OP_PLUS:
-    result = get_token(parse);
-    if (result != SUCCESS) return result;
-
-    return parse_unary_expression(parse, val);
+    get_token(parse);
+    parse_unary_expression(parse, val);
+    break;
+    
   case TOKEN_OP_MINUS:
-    result = get_token(parse);
-    if (result != SUCCESS) return result;
-
-    result = parse_unary_expression(parse, &operand);
-    if (result != SUCCESS) return result;
-
-    result = negate(&operand, val);
-    if (result != SUCCESS) return result;
+    get_token(parse);
+    parse_unary_expression(parse, &operand);
+    negate(&operand, val);
     break;
+
   case TOKEN_OP_BIT_NOT:
-    result = get_token(parse);
-    if (result != SUCCESS) return result;
-
-    result = parse_unary_expression(parse, &operand);
-    if (result != SUCCESS) return result;
-
-    result = bit_not(&operand, val);
-    if (result != SUCCESS) return result;
+    get_token(parse);
+    parse_unary_expression(parse, &operand);
+    bit_not(&operand, val);
     break;
+
   case TOKEN_OP_NOT:
-    result = get_token(parse);
-    if (result != SUCCESS) return result;
-
-    result = parse_unary_expression(parse, &operand);
-    if (result != SUCCESS) return result;
-
-    result = not(&operand, val);
-    if (result != SUCCESS) return result;
+    get_token(parse);
+    parse_unary_expression(parse, &operand);
+    not(&operand, val);
     break;
-  case TOKEN_UNKNOWN:
-    return ERROR_EXPR;
   }
-
-  return SUCCESS;
 }
 
-int parse_exponential_expression(parser *parse, value *val) {
+void parse_exponential_expression(parser *parse, value *val) {
   value left, right;
-  int result = parse_primary(parse, val);
-  if (result != SUCCESS) return result;
 
+  parse_primary(parse, val);
   left = *val;
 
   bool done = false;
@@ -1088,37 +911,28 @@ int parse_exponential_expression(parser *parse, value *val) {
       done = true;
       break;
     case TOKEN_OP_POW:
-      result = get_token(parse);
-      if (result != SUCCESS) return result;
-
-      result = parse_unary_expression(parse, &right);
-      if (result != SUCCESS) return result;
-
-      result = power(&left, &right, val);
-      if (result != SUCCESS) return result;
+      get_token(parse);
+      parse_unary_expression(parse, &right);
+      power(&left, &right, val);
       
       left = *val;
       break;
-    case TOKEN_UNKNOWN:
-      return ERROR_EXPR;
     }
   }
-  
-  return SUCCESS;
 }
 
-int parse_primary(parser *parse, value *val) {
-  int result = get_token(parse);
-  if (result != SUCCESS) return result;
+void parse_primary(parser *parse, value *val) {
+  get_token(parse);
 
   switch (parse->cur_token) {
   default:
-    fprintf(stderr, "Error: unexpected token '%s'\n",
-	    parse->str_value);
-    return ERROR_EXPR;
+    raise_error(ERROR_EXPR, "unexpected token '%s'", parse->str_value);
+    break;
+
   case TOKEN_END:
-    fprintf(stderr, "Error: unexpected end of input\n");
-    return ERROR_EXPR;
+    raise_error(ERROR_EXPR, "unexpected end of input");
+    break;
+    
   case TOKEN_IDENTIFIER:
     //is this a function or a constant?
     if (peek_token(parse) == TOKEN_LEFT_PAREN) {      
@@ -1129,8 +943,7 @@ int parse_primary(parser *parse, value *val) {
       strncpy(id, parse->str_value, MAX_IDENTIFIER_LENGTH + 1);
 
       //eat parenthesis
-      result = get_token(parse);
-      if (result != SUCCESS) return result;
+      get_token(parse);
 
       //is there an argument list?
       if (peek_token(parse) == TOKEN_RIGHT_PAREN) {
@@ -1138,67 +951,49 @@ int parse_primary(parser *parse, value *val) {
       } else {
 	bool done = false;
 	while (!done) {
-	  if (argc >= MAX_ARGUMENTS) {
-	    fprintf(stderr, "Error: too many arguments to function '%s'\n",
-		    id);
-	    return ERROR_EXPR;
-	  }
+	  if (argc >= MAX_ARGUMENTS)
+            raise_error(ERROR_EXPR, "too many arguments to function '%s'", id);
 	  
-	  result = parse_conditional_expression(parse, &argv[argc]);
-	  if (result != SUCCESS) return result;
-
+          parse_conditional_expression(parse, &argv[argc]);
 	  argc++;
 
 	  switch (peek_token(parse)) {
-	  default:
+          default:
 	    done = true;
 	    break;
-	  case TOKEN_OP_COMMA:
-	    result = get_token(parse);
-	    if (result != SUCCESS) return result;
+          case TOKEN_OP_COMMA:
+	    get_token(parse);
 	    break;
-	  case TOKEN_UNKNOWN:
-	    return ERROR_EXPR;
 	  }
 	}
       }
 
-      //expect a closing parenthesis
-      result = get_token(parse);
-      if (result != SUCCESS) return result;
+      //read closing parenthesis
+      get_token(parse);
 
-      if (parse->cur_token != TOKEN_RIGHT_PAREN) {
-	fprintf(stderr, "Error: unmatched parenthesis '('\n");
-	return ERROR_EXPR;
-      }
+      if (parse->cur_token != TOKEN_RIGHT_PAREN)
+	raise_error(ERROR_EXPR, "unmatched parenthesis '('");
 
       //call the function
-      result = call_function(id, val, argc, argv,
-			     parse->program_opts->degrees);
-      if (result != SUCCESS) return result;
+      call_function(id, val, argc, argv, parse->program_opts->degrees);
     } else {    
-      result = get_constant(parse->str_value, val);
-      if (result != SUCCESS) return result;
+      get_constant(parse->str_value, val);
     }
     break;
+
   case TOKEN_LITERAL:
     *val = parse->numeric_value;
     break;
+
   case TOKEN_LEFT_PAREN:
-    result = parse_expression(parse, val);
-    if (result != SUCCESS) return result;
+    parse_expression(parse, val);
 
     //closing parenthesis should be next
-    result = get_token(parse);
-    if (result != SUCCESS) return result;
+    get_token(parse);
 
-    if (parse->cur_token != TOKEN_RIGHT_PAREN) {
-      fprintf(stderr, "Error: unmatched parenthesis '('\n");
-      return ERROR_EXPR;
-    }
+    if (parse->cur_token != TOKEN_RIGHT_PAREN)
+      raise_error(ERROR_EXPR, "unmatched parenthesis '('");
     
     break;
   }
-  
-  return SUCCESS;
 }
