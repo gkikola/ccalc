@@ -27,12 +27,14 @@
 typedef struct {
   int radix;
   int precision;
+  int grouping;
   bool boolean;
   bool caret_exp;
   bool degrees;
-  bool uppercase;
+  bool sci_notation;
   bool show_time;
   bool show_version;
+  bool uppercase;
 } options;
 
 void read_options(int argc, char *argv[], int *expr_index, options *opts);

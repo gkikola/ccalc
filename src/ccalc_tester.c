@@ -894,31 +894,78 @@ int main() {
   assert(EXPECT_FLOAT(tgamma(1.0/2)));
   assert(EXPECT_FLOAT(tgamma(12.46)));
 
-  assert(expect("42", "-b", "0b101010"));
-  assert(expect("42", "-r 2", "0b101010"));
-  assert(expect("42", "-o", "052"));
-  assert(expect("42", "-r 8", "052"));
-  assert(expect("42", "-x", "0x2a"));
-  assert(expect("42", "-ux", "0x2A"));
-  assert(expect("42", "-r 16", "0x2a"));
-  assert(expect("42", "-r 16 -u", "0x2A"));
-  assert(expect("-42", "-b", "-0b101010"));
-  assert(expect("-42", "-o", "-052"));
-  assert(expect("-42", "-x", "-0x2a"));
+  assert(expect("42", "-b", "101010"));
+  assert(expect("42", "-r 2", "101010"));
+  assert(expect("42", "-o", "52"));
+  assert(expect("42", "-r 8", "52"));
+  assert(expect("42", "-x", "2a"));
+  assert(expect("42", "-ux", "2A"));
+  assert(expect("42", "-r 16", "2a"));
+  assert(expect("42", "-r 16 -u", "2A"));
+  assert(expect("-42", "-b", "-101010"));
+  assert(expect("-42", "-o", "-52"));
+  assert(expect("-42", "-x", "-2a"));
   assert(expect("42", "-r 12", "36"));
   assert(expect("42", "-r 20", "2:2"));
   assert(expect("-42", "-r 20", "-2:2"));
-
+  assert(expect("324235", "-r 60", "1:30:3:55"));
+  assert(expect("-324235", "-r 60", "-1:30:3:55"));
+  
   assert(expect("4 > 2", "--bool", "true"));
   assert(expect("4 > 2", "-u --bool", "TRUE"));
   assert(expect("4 < 2", "--bool", "false"));
   assert(expect("4 < 2", "--bool -u", "FALSE"));
+
+  assert(expect("153467865", "-g 0", "153467865"));
+  assert(expect("153467865", "-g 1", "1 5 3 4 6 7 8 6 5"));
+  assert(expect("153467865", "-g 2", "1 53 46 78 65"));
+  assert(expect("153467865", "-g 3", "153 467 865"));
+  assert(expect("153467865", "-g 4", "1 5346 7865"));
+  assert(expect("153467865", "-g 5", "1534 67865"));
+  assert(expect("153467865", "-g 6", "153 467865"));
+  assert(expect("153467865", "-g 7", "15 3467865"));
+  assert(expect("153467865", "-g 8", "1 53467865"));
+  assert(expect("153467865", "-g 9", "153467865"));
+  assert(expect("153467865", "-g 10", "153467865"));
+
+  assert(expect("-153467865", "-g 0", "-153467865"));
+  assert(expect("-153467865", "-g 1", "-1 5 3 4 6 7 8 6 5"));
+  assert(expect("-153467865", "-g 2", "-1 53 46 78 65"));
+  assert(expect("-153467865", "-g 3", "-153 467 865"));
+  assert(expect("-153467865", "-g 4", "-1 5346 7865"));
+  assert(expect("-153467865", "-g 5", "-1534 67865"));
+  assert(expect("-153467865", "-g 6", "-153 467865"));
+  assert(expect("-153467865", "-g 7", "-15 3467865"));
+  assert(expect("-153467865", "-g 8", "-1 53467865"));
+  assert(expect("-153467865", "-g 9", "-153467865"));
+  assert(expect("-153467865", "-g 10", "-153467865"));
+
+  assert(expect("242837.23413986", "-g 3", "242 837.234 139 86"));
+
+  assert(expect("-242837.23413986", "-g 0", "-242837.23413986"));
+  assert(expect("-242837.23413986", "-g 1", "-2 4 2 8 3 7.2 3 4 1 3 9 8 6"));
+  assert(expect("-242837.23413986", "-g 2", "-24 28 37.23 41 39 86"));
+  assert(expect("-242837.23413986", "-g 3", "-242 837.234 139 86"));
+  assert(expect("-242837.23413986", "-g 4", "-24 2837.2341 3986"));
+  assert(expect("-242837.23413986", "-g 5", "-2 42837.23413 986"));
+  assert(expect("-242837.23413986", "-g 6", "-242837.234139 86"));
+  assert(expect("-242837.23413986", "-g 7", "-242837.2341398 6"));
+  assert(expect("-242837.23413986", "-g 8", "-242837.23413986"));
+  assert(expect("-242837.23413986", "-g 9", "-242837.23413986"));
 
   assert(expect("783.123456789", "-p 0", "783"));
   assert(expect("783.123456789", "-p 1", "783.1"));
   assert(expect("783.123456789", "-p 2", "783.12"));
   assert(expect("783.123456789", "-p 8", "783.12345679"));
 
+  assert(expect("783.123456789", "-s", "7.831235e+02"));
+  assert(expect("783123.456789", "-s", "7.831235e+05"));
+  assert(expect("0.000783123456789", "-s", "7.831235e-04"));
+  assert(expect("0.783123456789", "-s", "7.831235e-01"));
+  assert(expect("7.83123456789", "-s", "7.831235e+00"));
+  assert(expect("-242837.23413986", "-s", "-2.428372e+05"));
+  assert(expect("-242837.23413986", "-s -g 3 -p 10", "-2.428 372 341 4e+05"));
+  
   assert(expect_float("sin(90)", "-d", sin(PI / 2)));
   assert(expect_float("cos(30)", "-d", cos(PI / 6)));
   assert(expect_float("acos(sqrt(2)/2)", "-d", acos(sqrt(2)/2) * 180 / PI));

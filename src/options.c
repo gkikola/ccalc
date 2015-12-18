@@ -36,12 +36,14 @@ void read_options(int argc, char *argv[], int *expr_index, options *opts) {
   //set default options
   opts->radix = 10;
   opts->precision = 6;
+  opts->grouping = -1;
   opts->boolean = false;
   opts->caret_exp = false;
   opts->degrees = false;
-  opts->uppercase = false;
+  opts->sci_notation = false;
   opts->show_time = false;
   opts->show_version = false;
+  opts->uppercase = false;
   
   //option descriptions for argp  
   struct argp_option opt_desc[] = {
@@ -52,10 +54,14 @@ void read_options(int argc, char *argv[], int *expr_index, options *opts) {
       "bitwise XOR" },
     { "degrees", 'd', 0, 0, "Use degrees instead of radians for trigonometric "
       "functions" },
+    { "grouping", 'g', "DIGITS", 0, "Group each set of DIGITS digits and "
+      "separate each group with spaces (use 0 for no grouping)" },
     { "octal", 'o', 0, 0, "Print integer results in octal (base 8)" },
     { "precision", 'p', "DIGITS", 0, "Print floating-point results with "
       "DIGITS digits after the decimal point (default 6)" },
     { "radix", 'r', "RADIX", 0, "Print integer results in base RADIX" },
+    { "scientific-notation", 's', 0, 0, "Always print floating-point results "
+      "in scientific notation, [-]d.ddde±dd" },
     { "time", 't', 0, 0, "Show how much time the computation took" },
     { "uppercase", 'u', 0, 0, "Use uppercase rather than lowercase letters for "
       "digits in bases greater than 10" },
@@ -112,6 +118,22 @@ Exit status:\n\
       raise_error(ERROR_SYS, "could not read program arguments");
     }
   }
+
+  //set default grouping if user didn't specify otherwise
+  if (opts->grouping < 0) {
+    switch (opts->radix) {
+    default:
+      opts->grouping = 0;
+      break;
+    case 2: //binary
+      opts->grouping = 8;
+      break;
+    case 8: //octal
+    case 16: //hexadecimal
+      opts->grouping = 4;
+      break;
+    }
+  }
 }
 
 error_t parse_opt(int key, char *arg, struct argp_state *state) {
@@ -130,6 +152,9 @@ error_t parse_opt(int key, char *arg, struct argp_state *state) {
   case 'd':
     input->degrees = true;
     break;
+  case 'g':
+    input->grouping = atoi(arg);
+    break;
   case 'o':
     input->radix = 8;
     break;
@@ -138,6 +163,9 @@ error_t parse_opt(int key, char *arg, struct argp_state *state) {
     break;
   case 'r':
     input->radix = atoi(arg);
+    break;
+  case 's':
+    input->sci_notation = true;
     break;
   case 't':
     input->show_time = true;

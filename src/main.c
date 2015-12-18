@@ -34,6 +34,7 @@
 #include "options.h"
 #include "value.h"
 
+void print_value(value *val, options *opts);
 void print_int(long value, int base, bool uppercase);
 void print_version();
 
@@ -98,43 +99,8 @@ int main(int argc, char *argv[]) {
     gettimeofday(&tv_end, NULL);
 
   //print the calculated value
-  bool bresult = false;
-  switch (result_value.type) {
-  case INT:
-    if (opts.boolean)
-      bresult = value_get_int(&result_value) ? true : false;
-    else
-      if (opts.radix == 10) {
-	printf("%ld", value_get_int(&result_value));
-      } else {
-        print_int(value_get_int(&result_value),
-			   opts.radix, opts.uppercase);
-      }
-    break;
-  case FLOAT:
-    if (opts.boolean)
-      bresult = value_get_float(&result_value) != 0.0 ? true : false;
-    else
-      printf("%.*f", value_get_float(&result_value), opts.precision);
-    break;
-  default:
-    raise_error(ERROR_EXPR, "unknown result type");
-  }
-
-  if (opts.boolean) {
-    if (opts.uppercase) {
-      if (bresult)
-	printf("TRUE");
-      else
-	printf("FALSE");
-    } else {
-      if (bresult)
-	printf("true");
-      else
-	printf("false");
-    }
-  }
-
+  print_value(&result_value, &opts);
+  
   //show the elapsed time if requested
   if (opts.show_time) {
     int sec = 0, usec = 0;
@@ -158,61 +124,84 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-void print_int(long value, int base, bool uppercase) {
-  if (base <= 1)
-    raise_error(ERROR_EXPR, "radix cannot be less than 2");
+void print_value(value *val, options *opts) {
+  if (opts->boolean) { // -- boolean value --
+    bool result;
 
-  if (value == 0) {
-    printf("0");
-    return;
-  }
+    if (val->type == INT)
+      result = value_get_int(val);
+    else
+      result = value_get_float(val);
 
-  if (value < 0) {
-    printf("-");
-    value = -value;
-  }
+    if (opts->uppercase)
+      printf("%s", result ? "TRUE" : "FALSE");
+    else
+      printf("%s", result ? "true" : "false");
+  } else if (val->type == INT) { // -- integer value --
+    long svalue = value_get_int(val);
+    unsigned long uvalue;
 
-  if (base == 2)
-    printf("0b");
-  else if (base == 8)
-    printf("0");
-  else if (base == 16)
-    printf("0x");
+    if (opts->radix <= 1)
+      raise_error(ERROR_EXPR, "radix cannot be less than 2");
 
-  //figure out how much space we need
-  int digits = floor(log(value) / log(base)) + 1;
-  int *digit_str = malloc(digits * sizeof(int));
-  int place = digits - 1;
-
-  if (!digit_str)
-    raise_error(ERROR_SYS, "Error: memory allocation failed");
-
-  while (value > 0 && place >= 0) {
-    digit_str[place--] = value % base;
-    value /= base;
-  }
-
-  for (int i = 0; i < digits; i++) {
-    if (base > 16) {
-      if (i > 0)
-	printf(":");
-
-      printf("%d", digit_str[i]);
+    if (svalue < 0) { //negative number, need to print minus sign
+      printf("-");
+      uvalue = -svalue;
     } else {
-      int cur_digit = digit_str[i];
-
-      if (cur_digit < 10) {
-	printf("%d", cur_digit);
-      } else {
-	if (uppercase)
-	  printf("%c", 'A' + (cur_digit - 10));
-	else
-	  printf("%c", 'a' + (cur_digit - 10));
-      }
+      uvalue = svalue;
     }
+
+    if (uvalue == 0) {
+      printf("0");
+    } else {
+      int num_digits = floor(log(uvalue) / log(opts->radix)) + 1;
+      int *digit_str = malloc(num_digits * sizeof(int));
+      int place = num_digits - 1;
+
+      if (!digit_str)
+	raise_error(ERROR_SYS, "memory allocation failed");
+
+      //compute digits
+      while (uvalue > 0 && place >= 0) {
+	digit_str[place--] = uvalue % opts->radix;
+	uvalue /= opts->radix;
+      }
+
+      //print each digit
+      for (int i = 0; i < num_digits; i++) {
+	//print spacer
+	if (i > 0) {
+	  if (opts->grouping > 0 && (num_digits - i) % opts->grouping == 0) {
+	    printf(" ");
+
+	    if (opts->radix > 16)
+	      printf(": ");
+	  } else if (opts->radix > 16)
+	    printf(":");
+	}
+      
+	int cur_digit = digit_str[i];
+
+	if (opts->radix <= 16 && cur_digit >= 10) {
+	  if (opts->uppercase)
+	    printf("%c", 'A' + (cur_digit - 10));
+	  else
+	    printf("%c", 'a' + (cur_digit - 10));
+	} else {
+	  printf("%d", cur_digit);
+	}
+      }
+
+      free(digit_str);
+    }
+  } else { // -- floating-point value --
+    double value = value_get_float(val);
+    
+    if (opts->sci_notation)
+      printf("%.*e", value, opts->precision);
+    else
+      printf("%.*f", value, opts->precision);
   }
-  
-  free(digit_str);
 }
 
 void print_version() {

@@ -80,21 +80,21 @@ token_type peek_token(parser *parse);
 void get_identifier(parser *parse);
 void get_literal(parser *parse);
 
-void parse_expression(parser *parse, value *val);
-void parse_conditional_expression(parser *parse, value *val);
-void parse_logical_or_expression(parser *parse, value *val);
-void parse_logical_and_expression(parser *parse, value *val);
-void parse_inclusive_or_expression(parser *parse, value *val);
-void parse_exclusive_or_expression(parser *parse, value *val);
-void parse_and_expression(parser *parse, value *val);
-void parse_equality_expression(parser *parse, value *val);
-void parse_relational_expression(parser *parse, value *val);
-void parse_shift_expression(parser *parse, value *val);
-void parse_additive_expression(parser *parse, value *val);
-void parse_multiplicative_expression(parser *parse, value *val);
-void parse_unary_expression(parser *parse, value *val);
-void parse_exponential_expression(parser *parse, value *val);
-void parse_primary(parser *parse, value *val);
+void parse_expression(parser *parse, value *result);
+void parse_conditional_expression(parser *parse, value *result);
+void parse_logical_or_expression(parser *parse, value *result);
+void parse_logical_and_expression(parser *parse, value *result);
+void parse_inclusive_or_expression(parser *parse, value *result);
+void parse_exclusive_or_expression(parser *parse, value *result);
+void parse_and_expression(parser *parse, value *result);
+void parse_equality_expression(parser *parse, value *result);
+void parse_relational_expression(parser *parse, value *result);
+void parse_shift_expression(parser *parse, value *result);
+void parse_additive_expression(parser *parse, value *result);
+void parse_multiplicative_expression(parser *parse, value *result);
+void parse_unary_expression(parser *parse, value *result);
+void parse_exponential_expression(parser *parse, value *result);
+void parse_primary(parser *parse, value *result);
 
 void evaluate(char *expr, value *result, options *opts) {
   parser parse;
@@ -503,8 +503,8 @@ void get_identifier(parser *parse) {
   parse->str_value[length] = '\0';
 }
 
-void parse_expression(parser *parse, value *val) {  
-  parse_conditional_expression(parse, val);
+void parse_expression(parser *parse, value *result) {  
+  parse_conditional_expression(parse, result);
 
   bool done = false;
   while (!done) {
@@ -517,18 +517,18 @@ void parse_expression(parser *parse, value *val) {
       get_token(parse);
 
       //evaluate right side, discard everything to the left of the comma
-      parse_conditional_expression(parse, val);
+      parse_conditional_expression(parse, result);
 
       break;
     }
   }
 }
 
-void parse_conditional_expression(parser *parse, value *val) {
+void parse_conditional_expression(parser *parse, value *result) {
   value left;
 
-  parse_logical_or_expression(parse, val);
-  left = *val;
+  parse_logical_or_expression(parse, result);
+  left = *result;
 
   if (peek_token(parse) == TOKEN_QMARK) {
     //this is a conditional expression
@@ -553,15 +553,15 @@ void parse_conditional_expression(parser *parse, value *val) {
     //read second value
     parse_conditional_expression(parse, &on_false);
 
-    conditional(&left, &on_true, &on_false, val);
+    conditional(&left, &on_true, &on_false, result);
   }
 }
 
-void parse_logical_or_expression(parser *parse, value *val) {
+void parse_logical_or_expression(parser *parse, value *result) {
   value left, right;
   
-  parse_logical_and_expression(parse, val);
-  left = *val;
+  parse_logical_and_expression(parse, result);
+  left = *result;
 
   bool done = false;
   while (!done) {
@@ -572,19 +572,19 @@ void parse_logical_or_expression(parser *parse, value *val) {
     case TOKEN_OP_OR:
       get_token(parse);
       parse_logical_and_expression(parse, &right);
-      or(&left, &right, val);
+      or(&left, &right, result);
       
-      left = *val;
+      left = *result;
       break;
     }
   }  
 }
 
-void parse_logical_and_expression(parser *parse, value *val) {
+void parse_logical_and_expression(parser *parse, value *result) {
   value left, right;
 
-  parse_inclusive_or_expression(parse, val);
-  left = *val;
+  parse_inclusive_or_expression(parse, result);
+  left = *result;
 
   bool done = false;
   while (!done) {
@@ -595,19 +595,19 @@ void parse_logical_and_expression(parser *parse, value *val) {
     case TOKEN_OP_AND:
       get_token(parse);
       parse_inclusive_or_expression(parse, &right);
-      and(&left, &right, val);
+      and(&left, &right, result);
       
-      left = *val;
+      left = *result;
       break;
     }
   }
 }
 
-void parse_inclusive_or_expression(parser *parse, value *val) {
+void parse_inclusive_or_expression(parser *parse, value *result) {
   value left, right;
   
-  parse_exclusive_or_expression(parse, val);
-  left = *val;
+  parse_exclusive_or_expression(parse, result);
+  left = *result;
 
   bool done = false;
   while (!done) {
@@ -618,19 +618,19 @@ void parse_inclusive_or_expression(parser *parse, value *val) {
     case TOKEN_OP_BIT_OR:
       get_token(parse);
       parse_exclusive_or_expression(parse, &right);
-      bit_or(&left, &right, val);
+      bit_or(&left, &right, result);
       
-      left = *val;
+      left = *result;
       break;
     }
   }
 }
 
-void parse_exclusive_or_expression(parser *parse, value *val) {
+void parse_exclusive_or_expression(parser *parse, value *result) {
   value left, right;
 
-  parse_and_expression(parse, val);
-  left = *val;
+  parse_and_expression(parse, result);
+  left = *result;
 
   bool done = false;
   while (!done) {
@@ -641,19 +641,19 @@ void parse_exclusive_or_expression(parser *parse, value *val) {
     case TOKEN_OP_BIT_XOR:
       get_token(parse);
       parse_and_expression(parse, &right);
-      bit_xor(&left, &right, val);
+      bit_xor(&left, &right, result);
       
-      left = *val;
+      left = *result;
       break;
     }
   }
 }
 
-void parse_and_expression(parser *parse, value *val) {
+void parse_and_expression(parser *parse, value *result) {
   value left, right;
 
-  parse_equality_expression(parse, val);
-  left = *val;
+  parse_equality_expression(parse, result);
+  left = *result;
 
   bool done = false;
   while (!done) {
@@ -664,19 +664,19 @@ void parse_and_expression(parser *parse, value *val) {
     case TOKEN_OP_BIT_AND:
       get_token(parse);
       parse_equality_expression(parse, &right);
-      bit_and(&left, &right, val);
+      bit_and(&left, &right, result);
       
-      left = *val;
+      left = *result;
       break;
     }
   }
 }
 
-void parse_equality_expression(parser *parse, value *val) {
+void parse_equality_expression(parser *parse, value *result) {
   value left, right;
 
-  parse_relational_expression(parse, val);
-  left = *val;
+  parse_relational_expression(parse, result);
+  left = *result;
 
   bool done = false;
   while (!done) {
@@ -688,27 +688,27 @@ void parse_equality_expression(parser *parse, value *val) {
     case TOKEN_OP_EQUAL:
       get_token(parse);
       parse_relational_expression(parse, &right);
-      equal(&left, &right, val);
+      equal(&left, &right, result);
       
-      left = *val;
+      left = *result;
       break;
 
     case TOKEN_OP_NOT_EQUAL:
       get_token(parse);
       parse_relational_expression(parse, &right);
-      not_equal(&left, &right, val);
+      not_equal(&left, &right, result);
       
-      left = *val;
+      left = *result;
       break;
     }
   }
 }
 
-void parse_relational_expression(parser *parse, value *val) {
+void parse_relational_expression(parser *parse, value *result) {
   value left, right;
 
-  parse_shift_expression(parse, val);
-  left = *val;
+  parse_shift_expression(parse, result);
+  left = *result;
 
   bool done = false;
   while (!done) {
@@ -720,43 +720,43 @@ void parse_relational_expression(parser *parse, value *val) {
     case TOKEN_OP_LESS_THAN:
       get_token(parse);
       parse_shift_expression(parse, &right);
-      less_than(&left, &right, val);
+      less_than(&left, &right, result);
       
-      left = *val;
+      left = *result;
       break;
 
     case TOKEN_OP_LESS_THAN_EQ:
       get_token(parse);
       parse_shift_expression(parse, &right);
-      less_than_eq(&left, &right, val);
+      less_than_eq(&left, &right, result);
       
-      left = *val;
+      left = *result;
       break;
 
     case TOKEN_OP_GREATER_THAN:
       get_token(parse);
       parse_shift_expression(parse, &right);
-      greater_than(&left, &right, val);
+      greater_than(&left, &right, result);
       
-      left = *val;
+      left = *result;
       break;
 
     case TOKEN_OP_GREATER_THAN_EQ:
       get_token(parse);
       parse_shift_expression(parse, &right);
-      greater_than_eq(&left, &right, val);
+      greater_than_eq(&left, &right, result);
       
-      left = *val;
+      left = *result;
       break;
     }
   }
 }
 
-void parse_shift_expression(parser *parse, value *val) {
+void parse_shift_expression(parser *parse, value *result) {
   value left, right;
 
-  parse_additive_expression(parse, val);
-  left = *val;
+  parse_additive_expression(parse, result);
+  left = *result;
   
   bool done = false;
   while (!done) {
@@ -768,27 +768,27 @@ void parse_shift_expression(parser *parse, value *val) {
     case TOKEN_OP_BIT_SHIFT_LEFT:
       get_token(parse);
       parse_additive_expression(parse, &right);
-      bit_shift_left(&left, &right, val);
+      bit_shift_left(&left, &right, result);
       
-      left = *val;
+      left = *result;
       break;
 
     case TOKEN_OP_BIT_SHIFT_RIGHT:
       get_token(parse);
       parse_additive_expression(parse, &right);
-      bit_shift_right(&left, &right, val);
+      bit_shift_right(&left, &right, result);
       
-      left = *val;
+      left = *result;
       break;
     }
   }
 }
 
-void parse_additive_expression(parser *parse, value *val) {
+void parse_additive_expression(parser *parse, value *result) {
   value left, right;
   
-  parse_multiplicative_expression(parse, val);
-  left = *val;
+  parse_multiplicative_expression(parse, result);
+  left = *result;
 
   bool done = false;
   while (!done) {
@@ -800,27 +800,27 @@ void parse_additive_expression(parser *parse, value *val) {
     case TOKEN_OP_PLUS:
       get_token(parse);
       parse_multiplicative_expression(parse, &right);
-      add(&left, &right, val);
+      add(&left, &right, result);
       
-      left = *val;
+      left = *result;
       break;
 
     case TOKEN_OP_MINUS:
       get_token(parse);
       parse_multiplicative_expression(parse, &right);
-      subtract(&left, &right, val);
+      subtract(&left, &right, result);
       
-      left = *val;
+      left = *result;
       break;
     }
   }
 }
 
-void parse_multiplicative_expression(parser *parse, value *val) {
+void parse_multiplicative_expression(parser *parse, value *result) {
   value left, right;
 
-  parse_unary_expression(parse, val);
-  left = *val;
+  parse_unary_expression(parse, result);
+  left = *result;
 
   bool done = false;
   while (!done) {
@@ -832,76 +832,76 @@ void parse_multiplicative_expression(parser *parse, value *val) {
     case TOKEN_OP_TIMES:
       get_token(parse);
       parse_unary_expression(parse, &right);
-      multiply(&left, &right, val);
+      multiply(&left, &right, result);
       
-      left = *val;
+      left = *result;
       break;
 
     case TOKEN_OP_DIVIDE:
       get_token(parse);
       parse_unary_expression(parse, &right);
-      divide(&left, &right, val);
+      divide(&left, &right, result);
       
-      left = *val;
+      left = *result;
       break;
 
     case TOKEN_OP_IDIVIDE:
       get_token(parse);
       parse_unary_expression(parse, &right);
-      int_divide(&left, &right, val);
+      int_divide(&left, &right, result);
 
-      left = *val;
+      left = *result;
       break;
 
     case TOKEN_OP_MOD:
       get_token(parse);
       parse_unary_expression(parse, &right);
-      modulo(&left, &right, val);
+      modulo(&left, &right, result);
       
-      left = *val;
+      left = *result;
       break;
     }
   }
 }
 
-void parse_unary_expression(parser *parse, value *val) {
+void parse_unary_expression(parser *parse, value *result) {
   value operand;
 
   switch (peek_token(parse)) {
   default:
-    parse_exponential_expression(parse, val);
+    parse_exponential_expression(parse, result);
     break;
     
   case TOKEN_OP_PLUS:
     get_token(parse);
-    parse_unary_expression(parse, val);
+    parse_unary_expression(parse, result);
     break;
     
   case TOKEN_OP_MINUS:
     get_token(parse);
     parse_unary_expression(parse, &operand);
-    negate(&operand, val);
+    negate(&operand, result);
     break;
 
   case TOKEN_OP_BIT_NOT:
     get_token(parse);
     parse_unary_expression(parse, &operand);
-    bit_not(&operand, val);
+    bit_not(&operand, result);
     break;
 
   case TOKEN_OP_NOT:
     get_token(parse);
     parse_unary_expression(parse, &operand);
-    not(&operand, val);
+    not(&operand, result);
     break;
   }
 }
 
-void parse_exponential_expression(parser *parse, value *val) {
+void parse_exponential_expression(parser *parse, value *result) {
   value left, right;
 
-  parse_primary(parse, val);
-  left = *val;
+  parse_primary(parse, result);
+  left = *result;
 
   bool done = false;
   while (!done) {
@@ -912,15 +912,15 @@ void parse_exponential_expression(parser *parse, value *val) {
     case TOKEN_OP_POW:
       get_token(parse);
       parse_unary_expression(parse, &right);
-      power(&left, &right, val);
+      power(&left, &right, result);
       
-      left = *val;
+      left = *result;
       break;
     }
   }
 }
 
-void parse_primary(parser *parse, value *val) {
+void parse_primary(parser *parse, value *result) {
   get_token(parse);
 
   switch (parse->cur_token) {
@@ -974,18 +974,18 @@ void parse_primary(parser *parse, value *val) {
 	raise_error(ERROR_EXPR, "unmatched parenthesis '('");
 
       //call the function
-      call_function(id, val, argc, argv, parse->program_opts->degrees);
+      call_function(id, result, argc, argv, parse->program_opts->degrees);
     } else {    
-      get_constant(parse->str_value, val);
+      get_constant(parse->str_value, result);
     }
     break;
 
   case TOKEN_LITERAL:
-    *val = parse->numeric_value;
+    *result = parse->numeric_value;
     break;
 
   case TOKEN_LEFT_PAREN:
-    parse_expression(parse, val);
+    parse_expression(parse, result);
 
     //closing parenthesis should be next
     get_token(parse);
