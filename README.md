@@ -40,26 +40,17 @@ is given, read one line from standard input.
 | Option | Long name             | Description                                |
 |--------|-----------------------|--------------------------------------------|
 | -b     | --binary              | Print integer results in binary (base 2)
-|        | --bool                | Interpret the result as a boolean value
-                                   and print true or false
-| -c     | --caret-exp           | Use caret ^ for exponentiation rather than
-                                   for bitwise XOR
-| -d     | --degrees             | Use degrees instead of radians for
-                                   trigonometric functions
-| -g     | --grouping=*DIGITS*   | Group each set of *DIGITS* digits and
-                                   separate each group with spaces (use 0 for
-				   no grouping)
+|        | --bool                | Interpret the result as a boolean value and print true or false
+| -c     | --caret-exp           | Use caret ^ for exponentiation rather than for bitwise XOR
+| -d     | --degrees             | Use degrees instead of radians for trigonometric functions
+| -g     | --grouping=*DIGITS*   | Group each set of *DIGITS* digits and separate each group with spaces (use 0 for no grouping)
 | -o     | --octal               | Print integer results in octal (base 8)
-| -p     | --precision=*DIGITS*  | Print floating-point results with *DIGITS*
-                                   digits after the decimal point (default 6)
+| -p     | --precision=*DIGITS*  | Print floating-point results with *DIGITS* digits after the decimal point (default 6)
 | -r     | --radix=*RADIX*       | Print integer results in base *RADIX*
-| -s     | --scientific-notation | Always print floating-point results in
-                                   scientific notation, [-]d.ddde±dd
+| -s     | --scientific-notation | Always print floating-point results in scientific notation, [-]d.ddde±dd
 | -t     | --time                | Show how much time the computation took
-| -u     | --uppercase           | Use uppercase rather than lowercase letters
-                                   for digits in bases greater than 10
-| -x     | --hexadecimal         | Print integer results in hexadecimal (base
-                                   16)
+| -u     | --uppercase           | Use uppercase rather than lowercase letters for digits in bases greater than 10
+| -x     | --hexadecimal         | Print integer results in hexadecimal (base 16)
 | -?     | --help                | Give detailed usage information
 |        | --usage               | Give a short usage message
 |        | --version             | Display version information and exit
