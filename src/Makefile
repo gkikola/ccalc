@@ -2,7 +2,7 @@
 
 SHELL = /bin/sh
 CC = gcc
-CFLAGS = 
+CFLAGS = -std=gnu99
 OBJS = error.o evaluate.o main.o options.o value.o
 
 ccalc: $(OBJS)
