@@ -1,6 +1,6 @@
 Usage: ccalc [OPTION...] EXPRESSION
 Evaluate the C-style EXPRESSION and display the result. If no expression is
-given, read from standard input.
+given, read one line from standard input.
 
   -b, --binary               Print integer results in binary (base 2)
       --bool                 Interpret the result as a boolean value and print
