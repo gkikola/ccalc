@@ -7,6 +7,19 @@ this can be faster and easier than invoking an interactive or graphical
 program.
 
 
+License
+-------
+ccalc is *free software*, free in the sense that it
+[respects the user's freedom] (http://www.gnu.org/philosophy/free-sw.html).
+
+ccalc is copyright &copy; 2015-2016 Gregory Kikola. ccalc is licensed under
+the terms of the
+[GNU General Public License] (http://www.gnu.org/licenses/gpl.html) as
+published by the [Free Software Foundation] (http://www.fsf.org/), either
+version 3 of the License or (at your option) any later version. See the file
+[COPYING] (COPYING) for details.
+
+
 Examples
 --------
 
@@ -34,8 +47,8 @@ Usage
 
     ccalc [OPTION...] EXPRESSION
 
-Evaluate the C-style **EXPRESSION** and display the result. If no expression
-is given, read one line from standard input.
+Evaluate the C-style *EXPRESSION* and display the result. If no expression is
+given, read one line from standard input.
 
 | Option | Long name             | Description                                |
 |--------|-----------------------|--------------------------------------------|
@@ -58,21 +71,16 @@ is given, read one line from standard input.
 Mandatory or optional arguments to long options are also mandatory or optional
 for any corresponding short options.
 
-The **EXPRESSION** is interpreted as a C expression and evaluated. Integer
+The *EXPRESSION* is interpreted as a C expression and evaluated. Integer
 operations are used when possible. If a floating-point value is given
 explicitly, or if an operation results in a non-integer value, then
 floating-point arithmetic is used for the remainder of the calculation.
 
 **WARNING:** The caret ^ indicates bitwise XOR, like in C, and not
 exponentiation. This behavior can be changed with the '-c' option.
-Exponentiation can also be performed using the pow function or (unlike in C)
-the ** operator.
+Exponentiation can also be performed using the **pow** function or (unlike in
+C) the ** operator.
 
 Many mathematical functions from the C standard library are available. Common
 mathematical constants like PI and E are also defined. Consult the program
 documentation for a complete list.
-
-Exit status:
-0  if the calculation completed successfully,
-1  if an invalid expression was given,
-2  if a system error occurred.
