@@ -1,9 +1,12 @@
 #!/usr/bin/make
 
 SHELL = /bin/sh
-CC = gcc
-CFLAGS = -std=gnu99
+CC = gcc -std=gnu99
+CFLAGS =
+INSTALL = install
 OBJS = error.o evaluate.o main.o options.o value.o
+
+bindir = /usr/local/bin
 
 ccalc: $(OBJS)
 	$(CC) -lm -o ccalc $^
@@ -32,3 +35,8 @@ ccalc_tester.o: ccalc_tester.c
 .PHONY: clean
 clean:
 	rm ccalc $(OBJS) ccalc_tester ccalc_tester.o
+
+.PHONY: install
+install:
+	$(INSTALL) ccalc $(bindir)/ccalc
+

@@ -7,19 +7,6 @@ this can be faster and easier than invoking an interactive or graphical
 program.
 
 
-License
--------
-ccalc is *free software*, free in the sense that it
-[respects the user's freedom] (http://www.gnu.org/philosophy/free-sw.html).
-
-ccalc is copyright &copy; 2015-2016 Gregory Kikola. ccalc is licensed under
-the terms of the
-[GNU General Public License] (http://www.gnu.org/licenses/gpl.html) as
-published by the [Free Software Foundation] (http://www.fsf.org/), either
-version 3 of the License or (at your option) any later version. See the file
-[COPYING] (COPYING) for details.
-
-
 Examples
 --------
 
@@ -40,6 +27,34 @@ information, see the **Usage** section below.
 
     $ ccalc "(log(3) > 1.5) ? 1 : -1"
     -1
+
+
+License
+-------
+ccalc is *free software*, free in the sense that it
+[respects the user's freedom] (http://www.gnu.org/philosophy/free-sw.html).
+
+ccalc is copyright &copy; 2015-2016 Gregory Kikola. ccalc is licensed under
+the terms of the
+[GNU General Public License] (http://www.gnu.org/licenses/gpl.html) as
+published by the [Free Software Foundation] (http://www.fsf.org/), either
+version 3 of the License or (at your option) any later version. See the file
+[COPYING] (COPYING) for details.
+
+
+Installation
+------------
+
+To clone the repository, make sure git is installed and run
+
+    $ git clone https://github.com/gkikola/ccalc.git
+
+After obtaining the source files, ccalc can be built and installed by running
+make as follows:
+
+    $ cd ccalc/src
+    $ make
+    $ sudo make install
 
 
 Usage
