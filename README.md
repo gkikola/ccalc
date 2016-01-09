@@ -31,10 +31,13 @@ information, see the **Usage** section below.
 
 License
 -------
-ccalc is *free software*, free in the sense that it
+
+[**GNU GPLv3+**] (http://www.gnu.org/licenses/gpl.html)
+
+ccalc is *free software*: it is free in the sense that it
 [respects the user's freedom] (http://www.gnu.org/philosophy/free-sw.html).
 
-ccalc is copyright &copy; 2015-2016 Gregory Kikola. ccalc is licensed under
+This program is copyright &copy; 2015-2016 Gregory Kikola and is licensed under
 the terms of the
 [GNU General Public License] (http://www.gnu.org/licenses/gpl.html) as
 published by the [Free Software Foundation] (http://www.fsf.org/), either

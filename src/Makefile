@@ -6,7 +6,9 @@ CFLAGS =
 INSTALL = install
 OBJS = error.o evaluate.o main.o options.o value.o
 
-bindir = /usr/local/bin
+prefix = /usr/local
+bindir = $(prefix)/bin
+mandir = $(prefix)/share/man
 
 ccalc: $(OBJS)
 	$(CC) -lm -o ccalc $^
@@ -39,4 +41,5 @@ clean:
 .PHONY: install
 install:
 	$(INSTALL) ccalc $(bindir)/ccalc
-
+	$(INSTALL) ccalc.1 $(mandir)/man1/ccalc.1
+	mandb

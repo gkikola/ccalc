@@ -1,0 +1,22 @@
+.TH ccalc 1 "2016 January 08" "ccalc 0.1"
+.SH NAME
+ccalc - evaluate C expression
+.SH SYNOPSIS
+.B ccalc
+.RI [ "OPTION" "...] " EXPRESSION
+.SH DESCRIPTION
+.I ccalc
+is a command-line calculator. This program takes an arithmetic expression as
+an argument, and then evaluates and prints the result. The expression is evaluated using the syntax of the C programming language.
+.PP
+Both integer and floating-point values may be used in the expression. When
+possible,
+.I ccalc
+uses integer operations which return integer values. If a floating-point value
+is given explicitly, or if an operation results in a non-integer value, then
+floating-point arithmetic is used for the remainder of the calculation.
+.PP
+.I ccalc
+is quick and lightweight. It is ideal for performing quick calculations from
+the command-line. This is often faster and easier than invoking an
+interactive or graphical program. 
