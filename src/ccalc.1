@@ -1,22 +1,177 @@
+.\" Copyright (C) 2015-2016 Gregory Kikola.
+.\"
+.\" This file is part of ccalc.
+.\"
+.\" ccalc is free software: you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation, either version 3 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" ccalc is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\" 
+.\" You should have received a copy of the GNU General Public License
+.\" along with ccalc.  If not, see <http://www.gnu.org/licenses/>.
+.\" 
+.\" Written by Gregory Kikola <gkikola@gmail.com>.
 .TH ccalc 1 "2016 January 08" "ccalc 0.1"
 .SH NAME
-ccalc - evaluate C expression
+ccalc \- evaluate C expressions
 .SH SYNOPSIS
 .B ccalc
 .RI [ "OPTION" "...] " EXPRESSION
 .SH DESCRIPTION
 .I ccalc
-is a command-line calculator. This program takes an arithmetic expression as
-an argument, and then evaluates and prints the result. The expression is evaluated using the syntax of the C programming language.
+is a quick and lightweight command-line calculator, ideal for
+performing quick calculations from the terminal. This is often faster and
+easier than invoking an interactive or graphical program.
+.PP
+.I ccalc
+takes an arithmetic expression as an argument, it evaluates this expression,
+and then it prints the result. The expression is assumed to follow the syntax
+of the C programming language. All C operators are supported except for those
+with side-effects (namely assignment, increment, and decrement). A few
+mathematical constants like PI and E are defined, and most of the math
+functions in the C standard library are available.
 .PP
 Both integer and floating-point values may be used in the expression. When
 possible,
 .I ccalc
-uses integer operations which return integer values. If a floating-point value
+uses integer operations. If a floating-point value
 is given explicitly, or if an operation results in a non-integer value, then
-floating-point arithmetic is used for the remainder of the calculation.
+floating-point arithmetic is used for the remainder of the calculation. Note
+that unlike in C, integer division is not performed by default. The
+.BR // " operator may be used instead of " / " to guarantee an integer result."
 .PP
-.I ccalc
-is quick and lightweight. It is ideal for performing quick calculations from
-the command-line. This is often faster and easier than invoking an
-interactive or graphical program. 
+.RB "As in C, the caret " ^ " is used for bitwise XOR and not exponentiation."
+.RB "This behavior can be changed with the " -c " option. Exponentiation can "
+also be performed by using the pow function or, unlike in C, the
+.BR ** " operator."
+.SH OPTIONS
+Mandatory arguments to long options are also mandatory for the corresponding
+short option.
+.TP
+.B -b, --binary
+Print integer results in binary (base 2).
+.TP
+.B --bool
+Interpret the result as a boolean value and print
+.BR true " or " false.
+.TP
+.B -c, --caret-exp
+.RB "Use caret " ^ " for exponentiation rather than for bitwise XOR."
+.TP
+.B -d, --degrees
+Use degrees instead of radians for trigonometric functions.
+.TP
+.BI "-g, --grouping=" DIGITS
+.RI "Group each set of " DIGITS " digits and separate each group with spaces"
+.RB "(use " "-g 0" " for no grouping)."
+.TP
+.B -o, --octal
+Print integer results in octal (base 8).
+.TP
+.BI "-p, --precision=" DIGITS
+.RI "Print floating-point results with " DIGITS " digits after the decimal"
+point (default 6).
+.TP
+.BI "-r, --radix=" RADIX
+.RI "Print integer results in base " RADIX .
+.TP
+.B -s, --scientific-notation
+Always print floating-point results in scientific notation: [-]d.ddde±dd
+.TP
+.B -t, --time
+Show how much time the computation took.
+.TP
+.B -u, --uppercase
+Use uppercase letters in output instead of lowercase (e.g. for digits in bases
+greater than 10).
+.TP
+.B -x, --hexadecimal
+Print integer results in hexadecimal (base 16).
+.TP
+.B -?, --help
+Display a help message with detailed usage information and exit.
+.TP
+.B --usage
+Give a short usage message and exit.
+.TP
+.B --version
+Display version information and exit.
+.SH "EXIT STATUS"
+.TP
+.B 0
+The calculation was completed successfully.
+.TP
+.B 1
+An invalid expression was given.
+.TP
+.B 2
+A system error occurred.
+.SH EXAMPLES
+Basic operations:
+.IP
+$ ccalc "2 + 2"
+.br
+4
+.IP
+$ ccalc "21 - 3 * 5"
+.br
+6
+.IP
+$ ccalc "8146 % 7"
+.br
+5
+.PP
+Built-in functions and constants:
+.IP
+$ ccalc "1.4 * E"
+.br
+3.805595
+.IP
+$ ccalc "max(12, 15)"
+.br
+15
+.IP
+$ ccalc "sin(PI / 3)"
+.br
+0.866025
+.IP
+$ ccalc "exp(3.2)"
+.br
+24.532530
+.PP
+Base conversion:
+.IP
+$ ccalc --radix=13 "54"
+.br
+42
+.IP
+$ ccalc --binary "0x4a"
+.br
+1001010
+.IP
+$ ccalc --radix=60 "82709"
+.br
+22:58:29
+.PP
+Boolean tests:
+.IP
+$ ccalc --bool "10 > 5"
+.br
+true
+.IP
+$ ccalc --bool "PI == 3"
+.br
+false
+.SH AUTHOR
+Gregory Kikola <gkikola@gmail.com>
+.SH COPYRIGHT
+Copyright (C) 2015-2016 Gregory Kikola. License GPLv3+: GNU GPL version 3 or
+later <http://www.gnu.org/licenses/gpl.html>.
+.br
+This is free software: you are free to change and redistribute it. There is NO
+WARRANTY, to the extent permitted by law.
