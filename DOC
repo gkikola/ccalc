@@ -67,7 +67,7 @@ All operators have left-to-right associativity except for the unary operators,
 the exponentiation operator, and the conditional expression. The modulus 
 operator % and the bitwise operators &, |, ^, <<, >>, and ~ only work with 
 integer values. The assignment operators and the increment and decrement
-operators from C are nbot supported.
+operators from C are not supported.
 
 
 FUNCTIONS
