@@ -47,7 +47,7 @@ that unlike in C, integer division is not performed by default. The
 .PP
 .RB "As in C, the caret " ^ " is used for bitwise XOR and not exponentiation."
 .RB "This behavior can be changed with the " -c " option. Exponentiation can "
-also be performed by using the pow function or, unlike in C, the
+.RB "also be performed by using the " pow " function or, unlike in C, the"
 .BR ** " operator."
 .SH OPTIONS
 Mandatory arguments to long options are also mandatory for the corresponding
@@ -101,6 +101,76 @@ Give a short usage message and exit.
 .TP
 .B --version
 Display version information and exit.
+.SH OPERATORS
+The following operations are supported, in order of decreasing precedence:
+.IP
+.RB "grouping " () ","
+.IP
+.RB "exponentiation " ** ","
+.IP
+.RB "logical negation " ! ", bitwise negation " ~ ", unary " + " and " - ","
+.IP
+.RB "multiplication " * ", division " / ", integer division " // ,
+.RB "modulo " % ","
+.IP
+.RB "addition " + ", subtraction " - ","
+.IP
+.RB "bit shifts " << " and " >> ","
+.IP
+.RB "relational comparison " < ", " <= ", " > ", and " >= ","
+.IP
+.RB "equality comparison " == " and " != ","
+.IP
+.RB "bitwise AND " & ","
+.IP
+.RB "bitwise XOR " ^ ","
+.IP
+.RB "bitwise OR " | ","
+.IP
+.RB "logical AND " && ","
+.IP
+.RB "logical OR " || ","
+.IP
+.RB "ternary conditional expression " ?: ","
+.IP
+.RB "comma " , "."
+.PP
+All operators have left-to-right associativity except for the unary operators, 
+the exponentiation operator, and the conditional expression. The modulus 
+.RB "operator " % " and the bitwise operators " & ", " | ", " ^ ","
+.BR << ", " >> ", and " ~ " only work with integer values."
+.PP
+The assignment operators and the unary increment and decrement
+operators from C are not supported.
+.SH FUNCTIONS
+.I ccalc
+has many built-in functions, listed below. Most math functions from the C
+standard library are supported. For detailed usage information, consult your
+C standard library documentation.
+.TP
+Basic mathematical functions
+.B abs, cbrt, ceil, floor, hypot, max, min, pow, round, sqrt
+.TP
+Exponential and logarithmic functions
+.B exp, exp2, expm1, log, log10, log1p, log2
+.TP
+Trigonometric and inverse trigonometric functions
+.B acos, asin, atan, atan2, cos, sin, tan
+.TP
+Hyperbolic and inverse hyperbolic functions
+.B acosh, asinh, atanh, cosh, sinh, tanh
+.TP
+Functions for dealing with floating-point numbers
+.B fmod, nextafter, remainder, trunc
+.TP
+Other functions
+.B erf, erfc, lgamma, rand, tgamma
+.PP
+Most functions take a single argument.
+.B atan2, fmod, hypot, nextafter,
+and
+.B remainder
+take two arguments.
 .SH "EXIT STATUS"
 .TP
 .B 0
