@@ -1,5 +1,5 @@
 /* ccalc -- evaluate C-style expressions from the command line.
-   Copyright (C) 2015 Gregory Kikola.
+   Copyright (C) 2015-2016 Gregory Kikola.
 
    This file is part of ccalc.
 
@@ -87,7 +87,7 @@ explicitly, or if an operation results in a non-integer value, then\n\
 floating-point arithmetic is used for the remainder of the calculation.\n\
 \n\
 WARNING: The caret ^ indicates bitwise XOR, like in C, and not\n\
-exponentiation. This behavior can be changed with the '-e' option.\n\
+exponentiation. This behavior can be changed with the '-c' option.\n\
 Exponentiation can also be performed using the pow function or (unlike in C)\n\
 the ** operator.\n\
 \n\
