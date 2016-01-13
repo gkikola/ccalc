@@ -1,3 +1,4 @@
 *.o
+*~
 ccalc
-ccalc_tester
+test_ccalc

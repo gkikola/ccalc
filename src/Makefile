@@ -3,7 +3,7 @@
 SHELL = /bin/sh
 CC = gcc -std=gnu99
 CFLAGS =
-INSTALL = install
+INSTALL = install -D
 OBJS = error.o evaluate.o main.o options.o value.o
 
 prefix = /usr/local
@@ -13,8 +13,8 @@ mandir = $(prefix)/share/man
 ccalc: $(OBJS)
 	$(CC) -lm -o ccalc $^
 
-ccalc_tester: ccalc_tester.o
-	$(CC) -lm -o ccalc_tester $^
+test_ccalc: test_ccalc.o
+	$(CC) -lm -o $@ $^
 
 error.o: error.c error.h
 	$(CC) $(CFLAGS) -c error.c
@@ -31,8 +31,8 @@ options.o: error.h options.c options.h
 value.o: error.h value.c value.h
 	$(CC) $(CFLAGS) -c value.c
 
-ccalc_tester.o: ccalc_tester.c
-	$(CC) $(CFLAGS) -c ccalc_tester.c
+test_ccalc.o: test_ccalc.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 .PHONY: clean
 clean:

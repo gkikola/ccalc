@@ -5,4 +5,3 @@
  result for each (until eof)
 -allow semicolon to terminate input (end of line only)
 -rewrite README based on man page
--add references to C library documentation in man SEE ALSO section

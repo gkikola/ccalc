@@ -23,13 +23,13 @@ ccalc \- evaluate C expressions
 .B ccalc
 .RI [ "OPTION" "...] " EXPRESSION
 .SH DESCRIPTION
-.I ccalc
+.B ccalc
 is a quick and lightweight command-line calculator, ideal for
 performing quick calculations from the terminal. This is often faster and
 easier than invoking an interactive or graphical program. The
 "EXAMPLES" section can help you get started quickly.
 .PP
-.I ccalc
+.B ccalc
 takes an arithmetic expression as an argument, it evaluates this expression,
 and then it prints the result. The expression is assumed to follow the syntax
 of the C programming language. All C operators are supported except for those
@@ -40,12 +40,9 @@ are defined, and most of the math
 functions in the C standard library are available.
 .PP
 Both integer and floating-point values may be used in the input expression.
-When possible,
-.I ccalc
-uses integer operations. If a floating-point value
-is given explicitly, or if an operation results in a non-integer value, then
-floating-point arithmetic is used for the remainder of the calculation. Note
-that unlike in C, integer division is not performed by default. The
+.B ccalc
+will perform conversions where necessary. Note that unlike in C, integer
+division is not performed by default. The
 .B //
 operator may be used instead of
 .B /
@@ -54,7 +51,7 @@ to guarantee an integer result.
 Integer values may also be specified in binary, octal, or hexadecimal. Binary
 values should be prefixed with '0b', octal values with '0', and hexadecimal
 values with '0x'.
-.I ccalc
+.B ccalc
 can also display its results in different bases; see the "OPTIONS" section
 below for details.
 .PP
@@ -162,7 +159,7 @@ the exponentiation operator, and the conditional expression. The modulus
 The assignment operators and the unary increment and decrement
 operators from C are not supported.
 .SH FUNCTIONS
-.I ccalc
+.B ccalc
 has many built-in functions, listed below. Most math functions from the C
 standard library are supported. For detailed usage information, please
 consult your C standard library documentation.
@@ -277,3 +274,41 @@ later <http://www.gnu.org/licenses/gpl.html>.
 .br
 This is free software: you are free to change and redistribute it. There is NO
 WARRANTY, to the extent permitted by law.
+.SH "SEE ALSO"
+.BR abs (3),
+.BR acos (3),
+.BR acosh (3),
+.BR asin (3),
+.BR asinh (3),
+.BR atan (3),
+.BR atan2 (3),
+.BR atanh (3),
+.BR cbrt (3),
+.BR ceil (3),
+.BR cos (3),
+.BR cosh (3),
+.BR erf (3),
+.BR erfc (3),
+.BR exp (3),
+.BR exp2 (3),
+.BR expm1 (3),
+.BR floor (3),
+.BR fmod (3),
+.BR hypot (3),
+.BR lgamma (3),
+.BR log (3),
+.BR log10 (3),
+.BR log1p (3),
+.BR log2 (3),
+.BR nextafter (3),
+.BR pow (3),
+.BR rand (3),
+.BR remainder (3),
+.BR round (3),
+.BR sin (3),
+.BR sinh (3),
+.BR sqrt (3),
+.BR tan (3),
+.BR tanh (3),
+.BR tgamma (3),
+.BR trunc (3)
