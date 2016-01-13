@@ -62,9 +62,9 @@ Copyright
 
 Copyright &copy; 2015-2016 Gregory Kikola. License GPLv3+: [GNU GPL version 3
 or later](http://www.gnu.org/licenses/gpl.html).
-ccalc is free software: you are free to change and redistribute it. There is
-NO WARRANTY, to the extent permitted by law. See the file [COPYING](COPYING)
-for details.
+**ccalc** is free software: you are free to change and redistribute it. There
+is NO WARRANTY, to the extent permitted by law. See the file
+[COPYING](COPYING) for more details.
 
 
 Installation
@@ -85,7 +85,7 @@ make as follows:
 Usage
 -----
 
-    **ccalc** [*OPTION*...] [*EXPRESSION*]
+    ccalc [OPTION...] [EXPRESSION]
 
 **ccalc** takes an arithmetic expression as an argument, it evaluates this
 expression, and then it prints the result. If no expression is given,
