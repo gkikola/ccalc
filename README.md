@@ -1,10 +1,9 @@
 ccalc
 =====
 
-**ccalc** is a command-line calculator. ccalc takes a C expression as an
-argument, evaluates it, and then prints the result. For quick calculations,
-this can be faster and easier than invoking an interactive or graphical
-program.
+**ccalc** is a quick and lightweight command-line calculator, ideal for
+performing quick calculations from the terminal. This is often faster and
+easier than invoking an interactive or graphical program.
 
 
 Examples
@@ -13,36 +12,59 @@ Examples
 Here are a few example calculations using ccalc. For detailed usage
 information, see the **Usage** section below.
 
-    $ ccalc 2 + 2
+Basic operations:
+
+    $ ccalc "2 + 2"
     4
+    
+    $ ccalc "21 - 3 * 5"
+    6
+    
+    $ ccalc "8146 % 7"
+    5
 
-    $ ccalc PI / 2
-    1.570796
+Built-in functions and constants:
 
+    $ ccalc "1.4 * E"
+    3.805595
+    
+    $ ccalc "max(12, 15)"
+    15
+    
     $ ccalc "sin(PI / 3)"
     0.866025
+    
+    $ ccalc "exp(3.2)"
+    24.532530
 
-    $ ccalc "0x10ff << 3"
-    34808
+Base conversion:
 
-    $ ccalc "(log(3) > 1.5) ? 1 : -1"
-    -1
+    $ ccalc --radix=13 "54"
+    42
+    
+    $ ccalc --binary "0x4a"
+    1001010
+    
+    $ ccalc --radix=60 "82709"
+    22:58:29
+
+Boolean tests:
+
+    $ ccalc --bool "10 > 5"
+    true
+    
+    $ ccalc --bool "PI == 3"
+    false 
 
 
-License
--------
+Copyright
+---------
 
-[**GNU GPLv3+**] (http://www.gnu.org/licenses/gpl.html)
-
-ccalc is *free software*: it is free in the sense that it
-[respects the user's freedom] (http://www.gnu.org/philosophy/free-sw.html).
-
-This program is copyright &copy; 2015-2016 Gregory Kikola and is licensed under
-the terms of the
-[GNU General Public License] (http://www.gnu.org/licenses/gpl.html) as
-published by the [Free Software Foundation] (http://www.fsf.org/), either
-version 3 of the License or (at your option) any later version. See the file
-[COPYING] (COPYING) for details.
+Copyright &copy; 2015-2016 Gregory Kikola. License GPLv3+: [GNU GPL version 3
+or later](http://www.gnu.org/licenses/gpl.html).
+ccalc is free software: you are free to change and redistribute it. There is
+NO WARRANTY, to the extent permitted by law. See the file [COPYING](COPYING)
+for details.
 
 
 Installation
@@ -63,10 +85,12 @@ make as follows:
 Usage
 -----
 
-    ccalc [OPTION...] EXPRESSION
+    **ccalc** [*OPTION*...] [*EXPRESSION*]
 
-Evaluate the C-style *EXPRESSION* and display the result. If no expression is
-given, read one line from standard input.
+**ccalc** takes an arithmetic expression as an argument, it evaluates this
+expression, and then it prints the result. If no expression is given,
+**ccalc** will read lines from standard input. Any program options must be
+specified before the start of an expression.
 
 | Option | Long name             | Description                                |
 |--------|-----------------------|--------------------------------------------|
@@ -86,19 +110,16 @@ given, read one line from standard input.
 |        | --usage               | Give a short usage message
 |        | --version             | Display version information and exit
 
-Mandatory or optional arguments to long options are also mandatory or optional
-for any corresponding short options.
+Mandatory arguments to long options are also mandatory for the corresponding
+short options.
 
-The *EXPRESSION* is interpreted as a C expression and evaluated. Integer
-operations are used when possible. If a floating-point value is given
-explicitly, or if an operation results in a non-integer value, then
-floating-point arithmetic is used for the remainder of the calculation.
+The input expression is assumed to follow the syntax of the C programming
+language. All C operators are supported except for those with side-effects
+(namely assignment, increment, and decrement). A few mathematical constants
+like PI and E are defined, and most of the math functions in the C standard
+library are available.
 
-**WARNING:** The caret ^ indicates bitwise XOR, like in C, and not
-exponentiation. This behavior can be changed with the '-c' option.
-Exponentiation can also be performed using the **pow** function or (unlike in
-C) the ** operator.
-
-Many mathematical functions from the C standard library are available. Common
-mathematical constants like PI and E are also defined. Consult the program
-documentation for a complete list.
+Both integer and floating-point values may be used in the input expression.
+**ccalc** will perform conversions where necessary. Integer values may also
+be specified in binary, octal, or hexadecimal. Binary values should be
+prefixed with ’0b’, octal values with ’0’, and hexadecimal values with ’0x’.

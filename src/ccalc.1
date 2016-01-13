@@ -21,7 +21,7 @@
 ccalc \- evaluate C expressions
 .SH SYNOPSIS
 .B ccalc
-.RI [ "OPTION" "...] " EXPRESSION
+.RI [ OPTION "...] [" EXPRESSION ]
 .SH DESCRIPTION
 .B ccalc
 is a quick and lightweight command-line calculator, ideal for
@@ -31,43 +31,27 @@ easier than invoking an interactive or graphical program. The
 .PP
 .B ccalc
 takes an arithmetic expression as an argument, it evaluates this expression,
-and then it prints the result. The expression is assumed to follow the syntax
-of the C programming language. All C operators are supported except for those
-with side-effects (namely assignment, increment, and decrement). A few
-mathematical constants like
+and then it prints the result. If no expression is given,
+.B ccalc
+will read lines from standard input. Any program options must be specified
+before the start of an expression.
+.PP
+The input expression is assumed to follow the syntax of the C programming
+language. All C operators are supported except for those with side-effects
+(namely assignment, increment, and decrement). A few mathematical constants
+like
 .IR PI " and " E
 are defined, and most of the math
 functions in the C standard library are available.
 .PP
 Both integer and floating-point values may be used in the input expression.
 .B ccalc
-will perform conversions where necessary. Note that unlike in C, integer
-division is not performed by default. The
-.B //
-operator may be used instead of
-.B /
-to guarantee an integer result.
-.PP
-Integer values may also be specified in binary, octal, or hexadecimal. Binary
-values should be prefixed with '0b', octal values with '0', and hexadecimal
-values with '0x'.
-.B ccalc
-can also display its results in different bases; see the "OPTIONS" section
-below for details.
-.PP
-As in C, the caret
-.B ^
-is used for bitwise XOR and not for exponentiation. This behavior can be
-changed with the
-.B -c
-option. Exponentiation can also be performed by using the
-.B pow
-function or, unlike in C, the
-.B **
-operator.
+will perform conversions where necessary. Integer values may also be
+specified in binary, octal, or hexadecimal. Binary values should be
+prefixed with '0b', octal values with '0', and hexadecimal values with '0x'.
 .SH OPTIONS
 Mandatory arguments to long options are also mandatory for the corresponding
-short option.
+short options.
 .TP
 .B -b, --binary
 Print integer results in binary (base 2).
@@ -152,12 +136,32 @@ The following operations are supported, in order of decreasing precedence:
 .RB "comma " , "."
 .PP
 All operators have left-to-right associativity except for the unary operators, 
-the exponentiation operator, and the conditional expression. The modulus 
-.RB "operator " % " and the bitwise operators " & ", " | ", " ^ ","
-.BR << ", " >> ", and " ~ " only work with integer values."
+the exponentiation operator, and the conditional expression.
 .PP
-The assignment operators and the unary increment and decrement
-operators from C are not supported.
+.RB "The integer division operator " // ", the modulus"
+.RB "operator " % ", and the bitwise operators " & ", " | ", " ^ ","
+.BR << ", " >> ", and " ~ " only work with integer values."
+Unlike in C, the standard division operator
+.B /
+may yield a floating-point result even if both arguments are integers; if
+this is not wanted, the
+.B //
+operator may be used to perform integer division.
+.PP
+By default, the caret
+.B ^
+indicates bitwise XOR and not exponentiation, like in C. This behavior can be
+changed with the
+.B -c
+option. Exponentiation can also be performed by using the
+.B pow
+function or, unlike in C, by using the
+.B **
+operator.
+.PP
+The assignment operators and the unary increment and decrement operators
+from C are not supported.
+.PP
 .SH FUNCTIONS
 .B ccalc
 has many built-in functions, listed below. Most math functions from the C
