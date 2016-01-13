@@ -34,6 +34,8 @@
 #include "options.h"
 #include "value.h"
 
+void process_expression(char *expression, options *opts);
+
 void print_value(value *val, options *opts);
 void print_int(long value, int base, bool uppercase);
 void print_version();
@@ -52,6 +54,9 @@ int main(int argc, char *argv[]) {
 
   if (opts.precision < 0)
     raise_error(ERROR_EXPR, "precision cannot be less than 0");
+
+  //seed RNG
+  srand(time(NULL));
   
   char *expression = NULL;
   int expr_length = 0;
@@ -63,46 +68,60 @@ int main(int argc, char *argv[]) {
 
   if (expr_length > 0) { //copy expression string
     expression = malloc(expr_length + 1);
-    expression[0] = '\0';
 
     if (!expression)
       raise_error(ERROR_EXPR, "memory allocation error");
 
+    expression[0] = '\0';
+
     for (int i = expr_index; i < argc; i++) {
       strcat(expression, argv[i]);
     }
-  } else { //no expression given, read from standard input
-    size_t n = 0;
-    expr_length = getline(&expression, &n, stdin);
 
-    if (expr_length == 1) //just the newline
-      expr_length = 0;
+    process_expression(expression, &opts);
+
+    if (expression)
+      free(expression);
+  } else { //no expression given, read from standard input
+    bool done = false;
+    size_t n;
+
+    while (!done) {
+      expression = NULL;
+      n = 0;
+      expr_length = getline(&expression, &n, stdin);
+
+      if (expr_length > 1) //we have something to evaluate
+	process_expression(expression, &opts);
+      else if (expr_length <= 0) //reached eof
+	done = true;
+
+      if (expression)
+	free(expression);
+    }
   }
 
-  if (expr_length <= 0)
-    raise_error(ERROR_EXPR, "no expression given");
+  return 0;
+}
 
-  //seed RNG
-  srand(time(NULL));
-
-  //evaluate the expression, and time it if the user wants
+void process_expression(char *expression, options *opts) {
   value result_value;
   struct timeval tv_start, tv_end;
   value_set_int(&result_value, 0);
 
-  if (opts.show_time)
+  if (opts->show_time)
     gettimeofday(&tv_start, NULL);
   
-  evaluate(expression, &result_value, &opts);
+  evaluate(expression, &result_value, opts);
 
-  if (opts.show_time)
+  if (opts->show_time)
     gettimeofday(&tv_end, NULL);
 
   //print the calculated value
-  print_value(&result_value, &opts);
+  print_value(&result_value, opts);
   
   //show the elapsed time if requested
-  if (opts.show_time) {
+  if (opts->show_time) {
     int sec = 0, usec = 0;
 
     sec = tv_end.tv_sec - tv_start.tv_sec;
@@ -117,11 +136,6 @@ int main(int argc, char *argv[]) {
   }
 
   printf("\n");
-
-  if (expression)
-    free(expression);
-
-  return 0;
 }
 
 void print_value(value *val, options *opts) {

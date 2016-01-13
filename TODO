@@ -1,7 +1,5 @@
 -Rewrite output code
   -add options for digit grouping and padding
   -should use scientific notation for really big or small float values
--when no expression is given, should read multiple lines from stdin and output
- result for each (until eof)
 -allow semicolon to terminate input (end of line only)
 -rewrite README based on man page
