@@ -26,29 +26,48 @@ ccalc \- evaluate C expressions
 .I ccalc
 is a quick and lightweight command-line calculator, ideal for
 performing quick calculations from the terminal. This is often faster and
-easier than invoking an interactive or graphical program.
+easier than invoking an interactive or graphical program. The
+"EXAMPLES" section can help you get started quickly.
 .PP
 .I ccalc
 takes an arithmetic expression as an argument, it evaluates this expression,
 and then it prints the result. The expression is assumed to follow the syntax
 of the C programming language. All C operators are supported except for those
 with side-effects (namely assignment, increment, and decrement). A few
-mathematical constants like PI and E are defined, and most of the math
+mathematical constants like
+.IR PI " and " E
+are defined, and most of the math
 functions in the C standard library are available.
 .PP
-Both integer and floating-point values may be used in the expression. When
-possible,
+Both integer and floating-point values may be used in the input expression.
+When possible,
 .I ccalc
 uses integer operations. If a floating-point value
 is given explicitly, or if an operation results in a non-integer value, then
 floating-point arithmetic is used for the remainder of the calculation. Note
 that unlike in C, integer division is not performed by default. The
-.BR // " operator may be used instead of " / " to guarantee an integer result."
+.B //
+operator may be used instead of
+.B /
+to guarantee an integer result.
 .PP
-.RB "As in C, the caret " ^ " is used for bitwise XOR and not exponentiation."
-.RB "This behavior can be changed with the " -c " option. Exponentiation can "
-.RB "also be performed by using the " pow " function or, unlike in C, the"
-.BR ** " operator."
+Integer values may also be specified in binary, octal, or hexadecimal. Binary
+values should be prefixed with '0b', octal values with '0', and hexadecimal
+values with '0x'.
+.I ccalc
+can also display its results in different bases; see the "OPTIONS" section
+below for details.
+.PP
+As in C, the caret
+.B ^
+is used for bitwise XOR and not for exponentiation. This behavior can be
+changed with the
+.B -c
+option. Exponentiation can also be performed by using the
+.B pow
+function or, unlike in C, the
+.B **
+operator.
 .SH OPTIONS
 Mandatory arguments to long options are also mandatory for the corresponding
 short option.
@@ -145,8 +164,8 @@ operators from C are not supported.
 .SH FUNCTIONS
 .I ccalc
 has many built-in functions, listed below. Most math functions from the C
-standard library are supported. For detailed usage information, consult your
-C standard library documentation.
+standard library are supported. For detailed usage information, please
+consult your C standard library documentation.
 .TP
 Basic mathematical functions
 .B abs, cbrt, ceil, floor, hypot, max, min, pow, round, sqrt
@@ -171,6 +190,19 @@ Most functions take a single argument.
 and
 .B remainder
 take two arguments.
+.SH CONSTANTS
+The following mathematical constants are defined:
+.IR E ", the base of the natural logarithm; " PHI ", the golden ratio; and"
+.IR PI ", the ratio of the circumference of a circle to its diameter."
+.PP
+Some machine-dependent limit values from the C standard library are also provided. Consult the C library documentation for details:
+.IR CHAR_MAX ", " CHAR_MIN ", " DBL_DIG ", " DBL_EPSILON ", "
+.IR DBL_MANT_DIG ", " DBL_MAX ", " DBL_MAX_EXP ", " DBL_MIN ", "
+.IR DBL_MIN_EXP ", " FLT_DIG ", " FLT_EPSILON ", " FLT_MANT_DIG ", "
+.IR FLT_MAX ", " FLT_MAX_EXP ", " FLT_MIN ", " FLT_MIN_EXP ", "
+.IR FLT_RADIX ", " INT_MAX ", " INT_MIN ", " LONG_MAX ", " LONG_MIN ", "
+.IR RAND_MAX ", " SCHAR_MAX ", " SCHAR_MIN ", " SHRT_MAX ", " SHRT_MIN ", "
+.IR UCHAR_MAX ", and " USHRT_MAX "."
 .SH "EXIT STATUS"
 .TP
 .B 0
