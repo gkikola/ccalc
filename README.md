@@ -1,7 +1,7 @@
 ccalc
 =====
 
-**ccalc** is a quick and lightweight command-line calculator, ideal for
+**ccalc** is a fast and lightweight command-line calculator, ideal for
 performing quick calculations from the terminal. This is often faster and
 easier than invoking an interactive or graphical program.
 
