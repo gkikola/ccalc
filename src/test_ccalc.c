@@ -1,5 +1,5 @@
 /* test_ccalc -- run tests on ccalc.
-   Copyright (C) 2015 Gregory Kikola.
+   Copyright (C) 2015-2016 Gregory Kikola.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -47,6 +47,8 @@ int main() {
 
   assert(EXPECT_INT(42));
   assert(EXPECT_INT(0713));
+  assert(EXPECT_INT(1000000000));
+  assert(EXPECT_INT(-1000000000));
   assert(EXPECT_INT(-0713));
   assert(EXPECT_INT(-35));
   assert(EXPECT_INT(0));
@@ -1155,7 +1157,10 @@ bool expect_int(char *expr, char *opts, long expected) {
 bool expect_float(char *expr, char *opts, double expected) {
   char value[BUF_SIZE];
 
-  snprintf(value, BUF_SIZE, "%f", expected);
+  if (fabs(expected) >= 1.e9 || (fabs(expected) > 0 && fabs(expected) < 1.e-6))
+    snprintf(value, BUF_SIZE, "%e", expected);
+  else
+    snprintf(value, BUF_SIZE, "%f", expected);
 
   return expect(expr, opts, value);
 }

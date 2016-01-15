@@ -168,7 +168,7 @@ void print_value(value *val, options *opts) {
     if (uvalue == 0) {
       printf("0");
     } else {
-      int num_digits = floor(log(uvalue) / log(opts->radix)) + 1;
+      int num_digits = floor(log(uvalue) / log(opts->radix)) + 2;
       int *digit_str = malloc(num_digits * sizeof(int));
       int place = num_digits - 1;
 
@@ -176,15 +176,20 @@ void print_value(value *val, options *opts) {
 	raise_error(ERROR_SYS, "memory allocation failed");
 
       //compute digits
-      while (uvalue > 0 && place >= 0) {
+      while (place >= 0) {
 	digit_str[place--] = uvalue % opts->radix;
 	uvalue /= opts->radix;
       }
 
+      //find first nonzero digit
+      int start = 0;
+      while (start < num_digits && digit_str[start] == 0)
+	start++;
+      
       //print each digit
-      for (int i = 0; i < num_digits; i++) {
+      for (int i = start; i < num_digits; i++) {
 	//print spacer
-	if (i > 0) {
+	if (i > start) {
 	  if (opts->grouping > 0 && (num_digits - i) % opts->grouping == 0) {
 	    printf(" ");
 
@@ -210,18 +215,55 @@ void print_value(value *val, options *opts) {
     }
   } else { // -- floating-point value --
     double value = value_get_float(val);
-    
-    if (opts->sci_notation)
-      printf("%.*e", value, opts->precision);
+    bool sci_not = false;
+
+    if (value < 0) { //print minus sign for negative number
+      printf("-");
+      value = -value;
+    }
+
+    if (opts->sci_notation || (value > 0 && value < 1.e-6) || value >= 1.e9)
+      sci_not = true;
+
+    int max_len = abs(floor(log10(value + 1))) + opts->precision + 12;
+    char flt_str[max_len];
+
+    if (sci_not)
+      snprintf(flt_str, max_len, "%.*e", value, opts->precision);
     else
-      printf("%.*f", value, opts->precision);
+      snprintf(flt_str, max_len, "%.*f", value, opts->precision);
+
+    int str_len = strlen(flt_str);
+    
+    //determine location of decimal point
+    int dec_pos = 0;
+    while (dec_pos < str_len && flt_str[dec_pos] != '.')
+      dec_pos++;
+
+    //print the string
+    bool in_exponent = false;
+    for (int i = 0; i < str_len; i++) {
+      if (flt_str[i] == 'E' || flt_str[i] == 'e')
+	in_exponent = true;
+      
+      //print spacers
+      if (!in_exponent && opts->grouping > 0) {
+	if (i > 0 && i < dec_pos && (dec_pos - i) % opts->grouping == 0)
+	  printf(" ");
+	else if (i > dec_pos + 1 && (i - dec_pos - 1) % opts->grouping == 0)
+	  printf(" ");
+      }
+
+      //print digit from number string
+      printf("%c", flt_str[i]);
+    }
   }
 }
 
 void print_version() {
   printf("\
-ccalc 0.1\n\
-Copyright (C) 2015 Gregory Kikola\n\
+ccalc 1.0\n\
+Copyright (C) 2015-2016 Gregory Kikola\n\
 License GPLv3+: GNU GPL version 3 or later\n\
 <http://www.gnu.org/licenses/gpl.html>.\n\
 This is free software: you are free to change and redistribute it.\n\

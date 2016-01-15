@@ -1,5 +1,3 @@
 -Rewrite output code
   -add options for digit grouping and padding
   -should use scientific notation for really big or small float values
--allow semicolon to terminate input (end of line only)
--rewrite README based on man page

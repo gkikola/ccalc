@@ -62,6 +62,7 @@ Copyright
 
 Copyright &copy; 2015-2016 Gregory Kikola. License GPLv3+: [GNU GPL version 3
 or later](http://www.gnu.org/licenses/gpl.html).
+
 **ccalc** is free software: you are free to change and redistribute it. There
 is NO WARRANTY, to the extent permitted by law. See the file
 [COPYING](COPYING) for more details.
@@ -70,12 +71,12 @@ is NO WARRANTY, to the extent permitted by law. See the file
 Installation
 ------------
 
-To clone the repository, make sure git is installed and run
+To clone the repository, make sure **git** is installed and run
 
     $ git clone https://github.com/gkikola/ccalc.git
 
-After obtaining the source files, ccalc can be built and installed by running
-make as follows:
+After obtaining the source files, **ccalc** can be built and installed by
+running **make** as follows:
 
     $ cd ccalc/src
     $ make
