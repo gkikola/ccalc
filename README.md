@@ -71,16 +71,19 @@ is NO WARRANTY, to the extent permitted by law. See the file
 Installation
 ------------
 
-To clone the repository, make sure **git** is installed and run
+From the ccalc directory: run
 
-    $ git clone https://github.com/gkikola/ccalc.git
+    $ autoreconf --install
 
-After obtaining the source files, **ccalc** can be built and installed by
-running **make** as follows:
+to generate the configure script. Then
 
-    $ cd ccalc/src
-    $ make
+    $ ./configure && make
+
+to build the project and
+
     $ sudo make install
+
+to install it.
 
 
 Usage
