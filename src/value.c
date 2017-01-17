@@ -30,6 +30,14 @@
 #include "error.h"
 #include "value.h"
 
+#ifndef PI
+#define PI 3.141592653589793238462643
+#endif
+
+#ifndef E
+#define E 2.7182818284590452353602874
+#endif
+
 void value_set_int(value *val, long int ivalue) {
   number data;
   
@@ -88,10 +96,10 @@ void round_to_int(value *x) {
 void get_constant(char *identifier, value *val) {
   if (!strcmp(identifier, "PI")) {
     val->type = FLOAT;
-    val->data.fvalue = M_PI;
+    val->data.fvalue = PI;
   } else if (!strcmp(identifier, "E")) {
     val->type = FLOAT;
-    val->data.fvalue = M_E;
+    val->data.fvalue = E;
   } else if (!strcmp(identifier, "PHI")) {
     val->type = FLOAT;
     val->data.fvalue = 1.6180339887498948482;
