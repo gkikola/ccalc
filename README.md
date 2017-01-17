@@ -9,7 +9,7 @@ faster and easier than invoking an interactive or graphical program.
 Examples
 --------
 
-Here are a few example calculations using ccalc. For detailed usage
+Here are a few example calculations using **ccalc**. For detailed usage
 information, see the **Usage** section below.
 
 Basic operations:
