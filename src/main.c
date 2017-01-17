@@ -1,5 +1,5 @@
 /* ccalc -- evaluate C-style expressions from the command line.
-   Copyright (C) 2015-2016 Gregory Kikola.
+   Copyright (C) 2015-2017 Gregory Kikola.
 
    This file is part of ccalc.
 
@@ -262,8 +262,8 @@ void print_value(value *val, options *opts) {
 
 void print_version() {
   printf("\
-ccalc 1.0\n\
-Copyright (C) 2015-2016 Gregory Kikola\n\
+ccalc 1.01\n\
+Copyright (C) 2015-2017 Gregory Kikola\n\
 License GPLv3+: GNU GPL version 3 or later\n\
 <http://www.gnu.org/licenses/gpl.html>.\n\
 This is free software: you are free to change and redistribute it.\n\

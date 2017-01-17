@@ -1,5 +1,5 @@
 /* ccalc -- evaluate C-style expressions from the command line.
-   Copyright (C) 2015 Gregory Kikola.
+   Copyright (C) 2015-2017 Gregory Kikola.
 
    This file is part of ccalc.
 

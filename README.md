@@ -60,7 +60,7 @@ Boolean tests:
 Copyright
 ---------
 
-Copyright &copy; 2015-2016 Gregory Kikola. License GPLv3+: [GNU GPL version 3
+Copyright &copy; 2015-2017 Gregory Kikola. License GPLv3+: [GNU GPL version 3
 or later](http://www.gnu.org/licenses/gpl.html).
 
 **ccalc** is free software: you are free to change and redistribute it. There
