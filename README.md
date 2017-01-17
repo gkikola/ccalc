@@ -102,6 +102,7 @@ Download ccalc-*version*.tar.gz and run
     $ ./configure && make
     $ sudo make install
 
+
 **From Windows binary (Windows only):**
 
 Download ccalc.exe and place it anywhere. You may then run it from the command
