@@ -39,13 +39,13 @@ Built-in functions and constants:
 
 Base conversion:
 
-    $ ccalc --radix=13 "54"
+    $ ccalc --radix 13 "54"
     42
     
     $ ccalc --binary "0x4a"
     1001010
     
-    $ ccalc --radix=60 "82709"
+    $ ccalc --radix 60 "82709"
     22:58:29
 
 Boolean tests:
