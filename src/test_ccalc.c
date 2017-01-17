@@ -149,7 +149,7 @@ int main() {
   assert(expect_int("4 * 3 ^ 2", "-c", 4 * 9));
   assert(expect_int("2 ^ 2 ^ 2", "-c", 16));
   assert(expect_int("-13 ^ 2", "-c", -169));
-  assert(expect_int("(-13) ^ 2", "-c", 169));
+  assert(expect_int("(-13) ^ 2", "--caret-exp", 169));
   assert(expect_int("+3 ^ 2", "-c", 9));
   assert(expect_int("-3 ^ 2", "-c", -9));
   
@@ -264,7 +264,7 @@ int main() {
 
   assert(EXPECT_FLOAT(30.));
   assert(EXPECT_FLOAT(.713));
-  assert(EXPECT_FLOAT(1.2e47));
+  assert(EXPECT_FLOAT(1.2e27));
   assert(EXPECT_FLOAT(0.0));
   assert(EXPECT_FLOAT(-3.4e-12));
   assert(EXPECT_FLOAT(-3.4e+12));
@@ -900,15 +900,20 @@ int main() {
   assert(expect("42", "-r 2", "101010"));
   assert(expect("42", "-o", "52"));
   assert(expect("42", "-r 8", "52"));
+  assert(expect("42", "--radix 8", "52"));
   assert(expect("42", "-x", "2a"));
   assert(expect("42", "-ux", "2A"));
   assert(expect("42", "-r 16", "2a"));
   assert(expect("42", "-r 16 -u", "2A"));
   assert(expect("-42", "-b", "-101010"));
+  assert(expect("-42", "--binary", "-101010"));
   assert(expect("-42", "-o", "-52"));
+  assert(expect("-42", "--octal", "-52"));
   assert(expect("-42", "-x", "-2a"));
+  assert(expect("-42", "--hexadecimal", "-2a"));
   assert(expect("42", "-r 12", "36"));
   assert(expect("42", "-r 20", "2:2"));
+  assert(expect("42", "-dr 12", "36"));
   assert(expect("-42", "-r 20", "-2:2"));
   assert(expect("324235", "-r 60", "1:30:3:55"));
   assert(expect("-324235", "-r 60", "-1:30:3:55"));
@@ -925,6 +930,7 @@ int main() {
   assert(expect("153467865", "-g 4", "1 5346 7865"));
   assert(expect("153467865", "-g 5", "1534 67865"));
   assert(expect("153467865", "-g 6", "153 467865"));
+  assert(expect("153467865", "--grouping 6", "153 467865"));
   assert(expect("153467865", "-g 7", "15 3467865"));
   assert(expect("153467865", "-g 8", "1 53467865"));
   assert(expect("153467865", "-g 9", "153467865"));
@@ -951,26 +957,37 @@ int main() {
   assert(expect("-242837.23413986", "-p 8 -g 3", "-242 837.234 139 86"));
   assert(expect("-242837.23413986", "-p 8 -g 4", "-24 2837.2341 3986"));
   assert(expect("-242837.23413986", "-p 8 -g 5", "-2 42837.23413 986"));
-  assert(expect("-242837.23413986", "-p 8 -g 6", "-242837.234139 86"));
-  assert(expect("-242837.23413986", "-p 8 -g 7", "-242837.2341398 6"));
-  assert(expect("-242837.23413986", "-p 8 -g 8", "-242837.23413986"));
+  assert(expect("-242837.23413986", "--precision 8 -g 6", "-242837.234139 86"));
+  assert(expect("-242837.23413986", "-p 8 --grouping 7", "-242837.2341398 6"));
+  assert(expect("-242837.23413986", "--precision 8 --grouping 8",
+                "-242837.23413986"));
   assert(expect("-242837.23413986", "-p 8 -g 9", "-242837.23413986"));
 
   assert(expect("783.123456789", "-p 0", "783"));
   assert(expect("783.123456789", "-p 1", "783.1"));
-  assert(expect("783.123456789", "-p 2", "783.12"));
+  assert(expect("783.123456789", "--precision 2", "783.12"));
   assert(expect("783.123456789", "-p 8", "783.12345679"));
 
   assert(expect("783.123456789", "-s", "7.831235e+02"));
-  assert(expect("783123.456789", "-s", "7.831235e+05"));
+  assert(expect("783123.456789", "--scientific-notation", "7.831235e+05"));
   assert(expect("0.000783123456789", "-s", "7.831235e-04"));
   assert(expect("0.783123456789", "-s", "7.831235e-01"));
-  assert(expect("7.83123456789", "-s", "7.831235e+00"));
+  assert(expect("7.83123456789", "--scientific-notation", "7.831235e+00"));
   assert(expect("-242837.23413986", "-s", "-2.428372e+05"));
-  assert(expect("-242837.23413986", "-s -g 3 -p 10", "-2.428 372 341 4e+05"));
-  
+  assert(expect("-242837.23413986", "-s --grouping 3 -p 10",
+                "-2.428 372 341 4e+05"));
+
+  assert(expect("47^1", "--hexadecimal --uppercase --caret-exp", "2F"));
+  assert(expect("47^1", "-x --uppercase --caret-exp", "2F"));
+  assert(expect("47^1", "--hexadecimal -u --caret-exp", "2F"));
+  assert(expect("47^1", "-x --uppercase -c", "2F"));
+  assert(expect("47^1", "-xc --uppercase", "2F"));
+  assert(expect("47^1", "--uppercase -cx", "2F"));
+  assert(expect("47^1", "-cux", "2F"));
+
   assert(expect_float("sin(90)", "-d", sin(PI / 2)));
   assert(expect_float("cos(30)", "-d", cos(PI / 6)));
+  assert(expect_float("cos(30)", "--degrees", cos(PI / 6)));
   assert(expect_float("acos(sqrt(2)/2)", "-d", acos(sqrt(2)/2) * 180 / PI));
   
   assert(expect_error("4 * (1 + 2", "", "unmatched parenthesis '('"));
@@ -1082,6 +1099,17 @@ int main() {
 		      "bit shift operator '>>' requires integer operands"));
   assert(expect_error("10.5 >> 3", "",
 		      "bit shift operator '>>' requires integer operands"));  
+
+  assert(expect_error("32", "--degr",
+                      "invalid option 'degr'"));
+  assert(expect_error("32", "--degreess",
+                      "invalid option 'degreess'"));
+  assert(expect_error("32", "-cbjd",
+                      "invalid option 'j'"));
+  assert(expect_error("32", "-crd 10",
+                      "expected argument for option 'r'"));
+  assert(expect_error("12", "-rcd 10",
+                      "expected argument for option 'r'"));
   
   printf("%d tests completed successfully.\n", num_tests);
   return 0;

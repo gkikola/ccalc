@@ -33,6 +33,7 @@ typedef struct {
   bool degrees;
   bool sci_notation;
   bool show_time;
+  bool show_help;
   bool show_version;
   bool uppercase;
 } options;

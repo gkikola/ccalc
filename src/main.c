@@ -47,6 +47,10 @@ int main(int argc, char *argv[]) {
 
   read_options(argc, argv, &expr_index, &opts);
 
+  if (opts.show_help) { //help text was shown, now exit
+    return 0;
+  }
+  
   if (opts.show_version) { //show version information
     print_version();
     return 0;

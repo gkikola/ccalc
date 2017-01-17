@@ -19,10 +19,10 @@
 
 /* Written by Gregory Kikola <gkikola@gmail.com>. */
 
-#include <argp.h>
-#include <errno.h>
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "error.h"
 #include "options.h"
@@ -30,7 +30,8 @@
 #define OPTION_BOOL 1
 #define OPTION_VERSION 2
 
-error_t parse_opt(int key, char *arg, struct argp_state *state);
+void print_usage();
+void print_help();
 
 void read_options(int argc, char *argv[], int *expr_index, options *opts) {
   //set default options
@@ -42,82 +43,127 @@ void read_options(int argc, char *argv[], int *expr_index, options *opts) {
   opts->degrees = false;
   opts->sci_notation = false;
   opts->show_time = false;
+  opts->show_help = false;
   opts->show_version = false;
   opts->uppercase = false;
-  
-  //option descriptions for argp  
-  struct argp_option opt_desc[] = {
-    { "binary", 'b', 0, 0, "Print integer results in binary (base 2)" },
-    { "bool", OPTION_BOOL, 0, 0, "Interpret the result as a boolean value and "
-      "print true or false" },
-    { "caret-exp", 'c', 0, 0, "Use caret ^ for exponentiation rather than for "
-      "bitwise XOR" },
-    { "degrees", 'd', 0, 0, "Use degrees instead of radians for trigonometric "
-      "functions" },
-    { "grouping", 'g', "DIGITS", 0, "Group each set of DIGITS digits and "
-      "separate each group with spaces (use 0 for no grouping)" },
-    { "octal", 'o', 0, 0, "Print integer results in octal (base 8)" },
-    { "precision", 'p', "DIGITS", 0, "Print floating-point results with "
-      "DIGITS digits after the decimal point (default 6)" },
-    { "radix", 'r', "RADIX", 0, "Print integer results in base RADIX" },
-    { "scientific-notation", 's', 0, 0, "Always print floating-point results "
-      "in scientific notation, [-]d.ddde±dd" },
-    { "time", 't', 0, 0, "Show how much time the computation took" },
-    { "uppercase", 'u', 0, 0, "Use uppercase rather than lowercase letters for "
-      "digits in bases greater than 10" },
-    { "hexadecimal", 'x', 0, 0, "Print integer results in hexadecimal (base "
-      "16)" },
-    { "version", OPTION_VERSION, 0, 0, "Display version information and "
-      "exit" },
-    { 0 }
-  };
 
-  //more argp setup
-  struct argp args;
-  args.options = opt_desc;
-  args.parser = parse_opt;
-  args.args_doc = "EXPRESSION";
-  args.doc = "\
-Evaluate the C-style EXPRESSION and display the result. If no expression is\n\
-given, read from standard input.\
-\v\
-The EXPRESSION is interpreted as a C expression and evaluated. Integer\n\
-operations are used when possible. If a floating-point value is given\n\
-explicitly, or if an operation results in a non-integer value, then\n\
-floating-point arithmetic is used for the remainder of the calculation.\n\
-\n\
-WARNING: The caret ^ indicates bitwise XOR, like in C, and not\n\
-exponentiation. This behavior can be changed with the '-c' option.\n\
-Exponentiation can also be performed using the pow function or (unlike in C)\n\
-the ** operator.\n\
-\n\
-Many mathematical functions from the C standard library are available. Common\n\
-mathematical constants like PI and E are also defined. Consult the program\n\
-documentation for a complete list.\n\
-\n\
-Exit status:\n\
-0  if the calculation completed successfully,\n\
-1  if an invalid expression was given,\n\
-2  if a system error occurred.";
-  args.children = 0;
-  args.help_filter = 0;
-  args.argp_domain = 0;
+  int i;
+  bool read_argument = false;
+  int *arg = &opts->radix;
+  for (i = 1; i < argc; ++i) {
+    if (read_argument) {
+      *arg = atoi(argv[i]);
+      read_argument = false;
+      continue;
+    }
+    
+    if (argv[i][0] != '-')
+      break;
 
-  //parse the command-line options
-  error_t result = argp_parse(&args, argc, argv, ARGP_NO_ARGS,
-                              expr_index, opts);
+    char c = argv[i][1];
+    if (c == '-') { //'--': long option
+      if (!strcmp(argv[i], "--")) {
+        ++i;
+        break;
+      } else if (!strcmp(argv[i], "--binary")) {
+        opts->radix = 2;
+      } else if (!strcmp(argv[i], "--bool")) {
+        opts->boolean = true;
+      } else if (!strcmp(argv[i], "--caret-exp")) {
+        opts->caret_exp = true;
+      } else if (!strcmp(argv[i], "--degrees")) {
+        opts->degrees = true;
+      } else if (!strcmp(argv[i], "--grouping")) {
+        read_argument = true;
+        arg = &opts->grouping;
+      } else if (!strcmp(argv[i], "--octal")) {
+        opts->radix = 8;
+      } else if (!strcmp(argv[i], "--precision")) {
+        read_argument = true;
+        arg = &opts->precision;
+      } else if (!strcmp(argv[i], "--radix")) {
+        read_argument = true;
+        arg = &opts->radix;
+      } else if (!strcmp(argv[i], "--scientific-notation")) {
+        opts->sci_notation = true;
+      } else if (!strcmp(argv[i], "--time")) {
+        opts->show_time = true;
+      } else if (!strcmp(argv[i], "--uppercase")) {
+        opts->uppercase = true;
+      } else if (!strcmp(argv[i], "--hexadecimal")) {
+        opts->radix = 16;
+      } else if (!strcmp(argv[i], "--help")) {
+        print_help();
+        opts->show_help = true;
+        return;
+      } else if (!strcmp(argv[i], "--usage")) {
+        print_usage();
+        opts->show_help = true;
+        return;
+      } else if (!strcmp(argv[i], "--version")) {
+        opts->show_version = true;
+        return;
+      } else {
+        raise_error(ERROR_SYS, "invalid option '%s'", argv[i] + 2);
+      }
+    } else if (!isalpha(c) && c != '?') { //not an option
+      break;
+    } else { //short options
+      int length = strlen(argv[i]);
+      for (int pos = 1; pos < length; ++pos) {
+        switch (argv[i][pos]) {
+        case 'b':
+          opts->radix = 2;
+          break;
+        case 'c':
+          opts->caret_exp = true;
+          break;
+        case 'd':
+          opts->degrees = true;
+          break;
+        case 'g':
+          read_argument = true;
+          arg = &opts->grouping;
+          break;
+        case 'o':
+          opts->radix = 8;
+          break;
+        case 'p':
+          read_argument = true;
+          arg = &opts->precision;
+          break;
+        case 'r':
+          read_argument = true;
+          arg = &opts->radix;
+          break;
+        case 's':
+          opts->sci_notation = true;
+          break;
+        case 't':
+          opts->show_time = true;
+          break;
+        case 'u':
+          opts->uppercase = true;
+          break;
+        case 'x':
+          opts->radix = 16;
+          break;
+        case '?':
+          print_help();
+          opts->show_help = true;
+          return;
+        default:
+          raise_error(ERROR_SYS, "invalid option '%c'", argv[i][pos]);
+        }
 
-  //do error checking
-  if (result) {
-    switch (result) {
-    case ENOMEM:
-      raise_error(ERROR_SYS, "memory allocation error");
-    case EINVAL:
-      raise_error(ERROR_SYS, "invalid option");
-    default:
-      raise_error(ERROR_SYS, "could not read program arguments");
+        if (read_argument && pos != length - 1)
+          raise_error(ERROR_SYS, "expected argument for option '%c'",
+                      argv[i][pos]);
+      }
     }
   }
+
+  *expr_index = i;
 
   //set default grouping if user didn't specify otherwise
   if (opts->grouping < 0) {
@@ -136,53 +182,63 @@ Exit status:\n\
   }
 }
 
-error_t parse_opt(int key, char *arg, struct argp_state *state) {
-  options *input = (options *)state->input;
-  
-  switch (key) {
-  case 'b':
-    input->radix = 2;
-    break;
-  case OPTION_BOOL:
-    input->boolean = true;
-    break;
-  case 'c':
-    input->caret_exp = true;
-    break;
-  case 'd':
-    input->degrees = true;
-    break;
-  case 'g':
-    input->grouping = atoi(arg);
-    break;
-  case 'o':
-    input->radix = 8;
-    break;
-  case 'p':
-    input->precision = atoi(arg);
-    break;
-  case 'r':
-    input->radix = atoi(arg);
-    break;
-  case 's':
-    input->sci_notation = true;
-    break;
-  case 't':
-    input->show_time = true;
-    break;
-  case 'u':
-    input->uppercase = true;
-    break;
-  case 'x':
-    input->radix = 16;
-    break;
-  case OPTION_VERSION:
-    input->show_version = true;
-    break;
-  case ARGP_KEY_ARG:
-    break;
-  default:
-    return ARGP_ERR_UNKNOWN;
-  }
-  return 0;
+void print_usage() {
+  printf("\
+Usage: ccalc [-bcdostux?] [-g DIGITS] [-p DIGITS] [-r RADIX] [--binary]\n\
+            [--bool] [--caret-exp] [--degrees] [--grouping=DIGITS] [--octal]\n\
+            [--precision=DIGITS] [--radix=RADIX] [--scientific-notation]\n\
+            [--time] [--uppercase] [--hexadecimal] [--help] [--usage]\n\
+            [--version] EXPRESSION\n");
+}
+
+void print_help() {
+  printf("\
+Usage: ccalc [OPTION...] EXPRESSION\n\
+Evaluate the C-style EXPRESSION and display the result. If no expression is\n\
+given, read from standard input.\n\
+\n\
+  -b, --binary               Print integer results in binary (base 2)\n\
+      --bool                 Interpret the result as a boolean value and\n\
+                             print true or false\n\
+  -c, --caret-exp            Use caret ^ for exponentiation rather than for\n\
+                             bitwise XOR\n\
+  -d, --degrees              Use degrees instead of radians for trigonometric\n\
+                             functions\n\
+  -g, --grouping=DIGITS      Group each set of DIGITS digits and separate\n\
+                             each group with spaces (use 0 for no grouping)\n\
+  -o, --octal                Print integer results in octal (base 8)\n\
+  -p, --precision=DIGITS     Print floating-point results with DIGITS digits\n\
+                             after the decimal point (default 6)\n\
+  -r, --radix=RADIX          Print integer results in base RADIX\n\
+  -s, --scientific-notation  Always print floating-point results in\n\
+                             scientific notation, [-]d.ddde±dd\n\
+  -t, --time                 Show how much time the computation took\n\
+  -u, --uppercase            Use uppercase rather than lowercase letters for\n\
+                             digits in bases greater than 10\n\
+  -x, --hexadecimal          Print integer results in hexadecimal (base 16)\n\
+  -?, --help                 Give this help list\n\
+      --usage                Give a short usage message\n\
+      --version              Display version information and exit\n\
+\n\
+Mandatory or optional arguments to long options are also mandatory or\n\
+optional for any corresponding short options.\n\
+\n\
+The EXPRESSION is interpreted as a C expression and evaluated. Integer\n\
+operations are used when possible. If a floating-point value is given\n\
+explicitly, or if an operation results in a non-integer value, then\n\
+floating-point arithmetic is used for the remainder of the calculation.\n\
+\n\
+WARNING: The caret ^ indicates bitwise XOR, like in C, and not\n\
+exponentiation. This behavior can be changed with the '-c' option.\n\
+Exponentiation can also be performed using the pow function or (unlike in C)\n\
+the ** operator.\n\
+\n\
+Many mathematical functions from the C standard library are available. Common\n\
+mathematical constants like PI and E are also defined. Consult the program\n\
+documentation for a complete list.\n\
+\n\
+Exit status:\n\
+0  if the calculation completed successfully,\n\
+1  if an invalid expression was given,\n\
+2  if a system error occurred.\n");
 }
