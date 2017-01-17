@@ -267,7 +267,7 @@ void call_function(char *identifier, value *result, int argc, value argv[],
     if (argc == 1) {
       arg = value_get_float(&argv[0]);
       if (degrees) {
-	arg *= M_PI / 180;
+	arg *= PI / 180;
       }
       
       result->type = FLOAT;
@@ -277,7 +277,7 @@ void call_function(char *identifier, value *result, int argc, value argv[],
     if (argc == 1) {
       arg = value_get_float(&argv[0]);
       if (degrees) {
-	arg *= M_PI / 180;
+	arg *= PI / 180;
       }
       result->type = FLOAT;
       result->data.fvalue = cos(arg);
@@ -286,7 +286,7 @@ void call_function(char *identifier, value *result, int argc, value argv[],
     if (argc == 1) {
       arg = value_get_float(&argv[0]);
       if (degrees) {
-	arg *= M_PI / 180;
+	arg *= PI / 180;
       }
       result->type = FLOAT;
       result->data.fvalue = tan(arg);
@@ -297,7 +297,7 @@ void call_function(char *identifier, value *result, int argc, value argv[],
       result->data.fvalue = asin(value_get_float(&argv[0]));
 
       if (degrees)
-	result->data.fvalue *= 180 / M_PI;
+	result->data.fvalue *= 180 / PI;
     } else bad_args = true;
   } else if (!strcmp(identifier, "acos")) {
     if (argc == 1) {
@@ -305,7 +305,7 @@ void call_function(char *identifier, value *result, int argc, value argv[],
       result->data.fvalue = acos(value_get_float(&argv[0]));
 
       if (degrees)
-	result->data.fvalue *= 180 / M_PI;
+	result->data.fvalue *= 180 / PI;
     } else bad_args = true;
   } else if (!strcmp(identifier, "atan")) {
     if (argc == 1) {
@@ -313,7 +313,7 @@ void call_function(char *identifier, value *result, int argc, value argv[],
       result->data.fvalue = atan(value_get_float(&argv[0]));
 
       if (degrees)
-	result->data.fvalue *= 180 / M_PI;
+	result->data.fvalue *= 180 / PI;
     } else bad_args = true;
   } else if (!strcmp(identifier, "atan2")) {
     if (argc == 2) {
@@ -322,7 +322,7 @@ void call_function(char *identifier, value *result, int argc, value argv[],
 				  value_get_float(&argv[1]));
 
       if (degrees)
-	result->data.fvalue *= 180 / M_PI;
+	result->data.fvalue *= 180 / PI;
     } else bad_args = true;
   } else if (!strcmp(identifier, "exp")) {
     if (argc == 1) {

@@ -31,6 +31,14 @@
 #define EXPECT_INT(EXPR) expect_int(#EXPR, "", (EXPR))
 #define EXPECT_FLOAT(EXPR) expect_float(#EXPR, "", (EXPR))
 
+#ifndef M_PI
+#define M_PI 3.141592653589793238462643
+#endif
+
+#ifndef M_E
+#define M_E 2.7182818284590452353602874
+#endif
+
 bool expect(char *expr, char *opts, char *expected);
 bool expect_int(char *expr, char *opts, long expected);
 bool expect_float(char *expr, char *opts, double expected);
