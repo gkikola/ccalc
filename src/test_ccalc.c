@@ -1,5 +1,5 @@
 /* test_ccalc -- run tests on ccalc.
-   Copyright (C) 2015-2016 Gregory Kikola.
+   Copyright (C) 2015-2017 Gregory Kikola.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by

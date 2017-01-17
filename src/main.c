@@ -34,11 +34,15 @@
 #include "options.h"
 #include "value.h"
 
+#define BUFFER_SIZE 128
+
 void process_expression(char *expression, options *opts);
 
 void print_value(value *val, options *opts);
 void print_int(long value, int base, bool uppercase);
 void print_version();
+
+ssize_t readline(char **lineptr, size_t *n, FILE *stream);
 
 int main(int argc, char *argv[]) {
   //parse program arguments
@@ -93,11 +97,11 @@ int main(int argc, char *argv[]) {
     while (!done) {
       expression = NULL;
       n = 0;
-      expr_length = getline(&expression, &n, stdin);
+      expr_length = readline(&expression, &n, stdin);
 
-      if (expr_length > 1) //we have something to evaluate
+      if (expr_length > 0) //we have something to evaluate
 	process_expression(expression, &opts);
-      else if (expr_length <= 0) //reached eof
+      else //reached eof
 	done = true;
 
       if (expression)
@@ -274,4 +278,53 @@ This is free software: you are free to change and redistribute it.\n\
 There is NO WARRANTY, to the extent permitted by law.\n\
 \n\
 Written by Gregory Kikola <gkikola@gmail.com>.\n");
+}
+
+//readline function based on GNU getline
+//we're avoiding getline in order to maintain portability
+ssize_t readline(char **lineptr, size_t *n, FILE *stream) {
+  if (lineptr == NULL || n == NULL) {
+    raise_error(ERROR_SYS, "unexpected NULL pointer");
+    return -1;
+  }
+
+  //allocate initial memory if necessary
+  if (*lineptr == NULL || *n == 0) {
+    *n = BUFFER_SIZE;
+    *lineptr = (char *)malloc(*n);
+    if (*lineptr == NULL) {
+      raise_error(ERROR_SYS, "memory allocation failure");
+      return -1;
+    }
+  }
+
+  if (feof(stream) || ferror(stream))
+    return -1;
+
+  char buffer[BUFFER_SIZE];
+  ssize_t read = 0;
+  for (;;) {
+    if (!fgets(buffer, BUFFER_SIZE, stream))
+      return read;
+
+    int length = strlen(buffer);
+    
+    if (length <= 0)
+      return read;
+    else if (buffer[length - 1] == '\n') {
+      buffer[length - 1] == '\0';
+      --length;
+    }
+
+    strcpy(*lineptr + read, buffer);
+    read += length;
+
+    if (length + 1 < BUFFER_SIZE) {
+      return read;
+    }
+
+    *lineptr = (char *)realloc(*lineptr, read + BUFFER_SIZE);
+  }
+
+  return read;
 }
