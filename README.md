@@ -71,7 +71,7 @@ is NO WARRANTY, to the extent permitted by law. See the file
 Installation
 ------------
 
-###### From git repository
+**From git repository:**
 
 To clone the repository, run
 
@@ -92,7 +92,8 @@ to build the project and
 
 to install it.
 
-###### From source distribution
+
+**From source distribution:**
 
 Download ccalc-*version*.tar.gz and run
 
@@ -101,7 +102,7 @@ Download ccalc-*version*.tar.gz and run
     $ ./configure && make
     $ sudo make install
 
-###### From Windows binary (Windows only)
+**From Windows binary (Windows only):**
 
 Download ccalc.exe and place it anywhere. You may then run it from the command
 prompt. For your convenience you may wish to modify your Path environment
