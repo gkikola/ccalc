@@ -73,7 +73,7 @@ Installation
 
 From the ccalc directory: run
 
-    $ autoreconf --install
+    $ ./bootstrap
 
 to generate the configure script. Then
 
