@@ -1131,7 +1131,7 @@ bool call_ccalc(char *expr, char *opts, char *output, int output_size) {
 #else
   char *prog = "ccalc ";
   char *sep = " -- \"";
-  char *end = "\"";
+  char *end = "\" 2>&1";
 #endif
   
   char command[BUF_SIZE];
