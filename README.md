@@ -1,9 +1,9 @@
 ccalc
 =====
 
-**ccalc** is a fast and lightweight command-line calculator, ideal for
-performing quick calculations from the terminal. This is often faster and
-easier than invoking an interactive or graphical program.
+**ccalc** is a fast, lightweight, and cross-platform command-line calculator,
+ideal for performing quick calculations from the terminal. This is often
+faster and easier than invoking an interactive or graphical program.
 
 
 Examples
@@ -71,11 +71,18 @@ is NO WARRANTY, to the extent permitted by law. See the file
 Installation
 ------------
 
-From the ccalc directory: run
+###### From git repository
+
+To clone the repository, run
+
+    $ git clone https://github.com/gkikola/ccalc.git
+    $ cd ccalc/
+
+To generate the configure script, run
 
     $ ./bootstrap
 
-to generate the configure script. Then
+Then run
 
     $ ./configure && make
 
@@ -84,6 +91,21 @@ to build the project and
     $ sudo make install
 
 to install it.
+
+###### From source distribution
+
+Download ccalc-*version*.tar.gz and run
+
+    $ tar -xvzf ccalc-1.xx.tar.gz
+    $ cd ccalc-1.xx/
+    $ ./configure && make
+    $ sudo make install
+
+###### From Windows binary (Windows only)
+
+Download ccalc.exe and place it anywhere. You may then run it from the command
+prompt. For your convenience you may wish to modify your Path environment
+variable appropriately.
 
 
 Usage
