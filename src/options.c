@@ -27,9 +27,6 @@
 #include "error.h"
 #include "options.h"
 
-#define OPTION_BOOL 1
-#define OPTION_VERSION 2
-
 void print_usage();
 void print_help();
 
