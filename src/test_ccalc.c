@@ -1129,7 +1129,7 @@ bool call_ccalc(char *expr, char *opts, char *output, int output_size) {
   char *sep = " -- \"";
   char *end = "\" 2>&1";
 #else
-  char *prog = "/ccalc ";
+  char *prog = "ccalc ";
   char *sep = " -- \"";
   char *end = "\"";
 #endif
