@@ -1,6 +1,7 @@
 *.o
 *~
 *.cache
+*.exe
 *.gz
 *.log
 *.m4

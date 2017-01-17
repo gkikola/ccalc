@@ -1124,9 +1124,16 @@ int main() {
 }
 
 bool call_ccalc(char *expr, char *opts, char *output, int output_size) {
+#ifndef _WIN32
   char *prog = "./ccalc ";
   char *sep = " -- \"";
   char *end = "\" 2>&1";
+#else
+  char *prog = "/ccalc ";
+  char *sep = " -- \"";
+  char *end = "\"";
+#endif
+  
   char command[BUF_SIZE];
 
   if (strlen(expr) + strlen(opts) + strlen(sep) + strlen(expr) + strlen(end)

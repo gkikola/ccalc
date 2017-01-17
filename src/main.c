@@ -237,9 +237,9 @@ void print_value(value *val, options *opts) {
     char flt_str[max_len];
 
     if (sci_not)
-      snprintf(flt_str, max_len, "%.*e", value, opts->precision);
+      snprintf(flt_str, max_len, "%.*e", opts->precision, value);
     else
-      snprintf(flt_str, max_len, "%.*f", value, opts->precision);
+      snprintf(flt_str, max_len, "%.*f", opts->precision, value);
 
     int str_len = strlen(flt_str);
     
