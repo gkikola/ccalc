@@ -39,13 +39,13 @@ Built-in functions and constants:
 
 Base conversion:
 
-    $ ccalc --radix 13 "54"
+    $ ccalc --radix=13 "54"
     42
     
     $ ccalc --binary "0x4a"
     1001010
     
-    $ ccalc --radix 60 "82709"
+    $ ccalc --radix=60 "82709"
     22:58:29
 
 Boolean tests:
@@ -151,3 +151,9 @@ Both integer and floating-point values may be used in the input expression.
 **ccalc** will perform conversions where necessary. Integer values may also
 be specified in binary, octal, or hexadecimal. Binary values should be
 prefixed with ’0b’, octal values with ’0’, and hexadecimal values with ’0x’.
+
+Note that **ccalc** treats the `^` operator as C does: as the bitwise XOR
+operator and not as exponentiation. This behavior can be changed with the
+--caret-exp option. Also, unlike in C, the division operator `/` may produce
+a floating-point result even when both operands are integers. To force
+integer division, you may use the `//` operator.
