@@ -913,6 +913,8 @@ int main() {
   assert(expect("42", "-ux", "2A"));
   assert(expect("42", "-r 16", "2a"));
   assert(expect("42", "-r 16 -u", "2A"));
+  assert(expect("42", "-r=16 -u", "2A"));
+  assert(expect("42", "--radix=16 -u", "2A"));
   assert(expect("-42", "-b", "-101010"));
   assert(expect("-42", "--binary", "-101010"));
   assert(expect("-42", "-o", "-52"));
@@ -922,9 +924,11 @@ int main() {
   assert(expect("42", "-r 12", "36"));
   assert(expect("42", "-r 20", "2:2"));
   assert(expect("42", "-dr 12", "36"));
+  assert(expect("42", "-dr=12", "36"));
   assert(expect("-42", "-r 20", "-2:2"));
   assert(expect("324235", "-r 60", "1:30:3:55"));
   assert(expect("-324235", "-r 60", "-1:30:3:55"));
+  assert(expect("-324235", "-r=60", "-1:30:3:55"));
   
   assert(expect("4 > 2", "--bool", "true"));
   assert(expect("4 > 2", "-u --bool", "TRUE"));

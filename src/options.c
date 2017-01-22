@@ -103,7 +103,7 @@ void read_options(int argc, char *argv[], int *expr_index, options *opts) {
       } else {
         raise_error(ERROR_SYS, "invalid option '%s'", argv[i] + 2);
       }
-    } else if (!isalpha(c) && c != '?') { //not an option
+    } else if (!isalpha(c) && c != '?' && c != '=') { //not an option
       break;
     } else { //short options
       int length = strlen(argv[i]);
@@ -149,15 +149,29 @@ void read_options(int argc, char *argv[], int *expr_index, options *opts) {
           print_help();
           opts->show_help = true;
           return;
+        case '=':
+          if (!read_argument) {
+            if (pos > 0)
+              raise_error(ERROR_SYS, "unexpected argument for option '%c'",
+                          argv[i][pos - 1]);
+            else
+              raise_error(ERROR_SYS, "invalid option '='");
+          }
+
+          char* val = argv[i] + pos + 1;
+          *arg = atoi(val);
+          pos += strlen(val);
+          read_argument = false;
+          break;
         default:
           raise_error(ERROR_SYS, "invalid option '%c'", argv[i][pos]);
-        }
+        } //end switch
 
-        if (read_argument && pos != length - 1)
+        if (read_argument && pos < length - 1 && argv[i][pos + 1] != '=')
           raise_error(ERROR_SYS, "expected argument for option '%c'",
                       argv[i][pos]);
-      }
-    }
+      } //end for
+    } //end else
   }
 
   *expr_index = i;
