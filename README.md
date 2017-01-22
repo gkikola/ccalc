@@ -143,17 +143,22 @@ short options.
 
 The input expression is assumed to follow the syntax of the C programming
 language. All C operators are supported except for those with side-effects
-(namely assignment, increment, and decrement). A few mathematical constants
-like `PI` and `E` are defined, and most of the math functions in the C
-standard library are available.
+(namely assignment, increment, and decrement). In addition, an exponentiation
+operator `**` and an integer division operator `//` are provided. A few
+mathematical constants like `PI` and `E` are defined, and most of the math
+functions in the C standard library are available.
+
+Note that **ccalc** treats the `^` operator as C does: as the bitwise XOR
+operator and not as exponentiation. This behavior can be changed with the
+--caret-exp option. Otherwise the `pow` function or `**` operator may be
+used.
+
+Note also that, unlike in C, the division operator `/` may
+produce a floating-point result even when both operands are integers. To
+force integer division, you may use the `//` operator.
 
 Both integer and floating-point values may be used in the input expression.
 **ccalc** will perform conversions where necessary. Integer values may also
 be specified in binary, octal, or hexadecimal. Binary values should be
 prefixed with `0b`, octal values with `0`, and hexadecimal values with `0x`.
-
-Note that **ccalc** treats the `^` operator as C does: as the bitwise XOR
-operator and not as exponentiation. This behavior can be changed with the
---caret-exp option. Also, unlike in C, the division operator `/` may produce
-a floating-point result even when both operands are integers. To force
-integer division, you may use the `//` operator.
+All values are signed.
