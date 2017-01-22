@@ -59,50 +59,79 @@ void read_options(int argc, char *argv[], int *expr_index, options *opts) {
 
     char c = argv[i][1];
     if (c == '-') { //'--': long option
-      if (!strcmp(argv[i], "--")) {
+      //extract option name
+      int arg_length = strlen(argv[i]);
+      char* option = malloc(arg_length + 1);
+      if (!option)
+        raise_error(ERROR_SYS, "memory allocation error");
+      strcpy(option, argv[i]);
+      
+      char* eq = strchr(option, '=');      
+      if (eq)
+        *eq = '\0';
+      int opt_length = strlen(option);
+      
+      if (!strcmp(argv[i], "--")) { //end of options
         ++i;
         break;
-      } else if (!strcmp(argv[i], "--binary")) {
+      } else if (!strcmp(option, "--binary")) {
         opts->radix = 2;
-      } else if (!strcmp(argv[i], "--bool")) {
+      } else if (!strcmp(option, "--bool")) {
         opts->boolean = true;
-      } else if (!strcmp(argv[i], "--caret-exp")) {
+      } else if (!strcmp(option, "--caret-exp")) {
         opts->caret_exp = true;
-      } else if (!strcmp(argv[i], "--degrees")) {
+      } else if (!strcmp(option, "--degrees")) {
         opts->degrees = true;
-      } else if (!strcmp(argv[i], "--grouping")) {
+      } else if (!strcmp(option, "--grouping")) {
         read_argument = true;
         arg = &opts->grouping;
-      } else if (!strcmp(argv[i], "--octal")) {
+      } else if (!strcmp(option, "--octal")) {
         opts->radix = 8;
-      } else if (!strcmp(argv[i], "--precision")) {
+      } else if (!strcmp(option, "--precision")) {
         read_argument = true;
         arg = &opts->precision;
-      } else if (!strcmp(argv[i], "--radix")) {
+      } else if (!strcmp(option, "--radix")) {
         read_argument = true;
         arg = &opts->radix;
-      } else if (!strcmp(argv[i], "--scientific-notation")) {
+      } else if (!strcmp(option, "--scientific-notation")) {
         opts->sci_notation = true;
-      } else if (!strcmp(argv[i], "--time")) {
+      } else if (!strcmp(option, "--time")) {
         opts->show_time = true;
-      } else if (!strcmp(argv[i], "--uppercase")) {
+      } else if (!strcmp(option, "--uppercase")) {
         opts->uppercase = true;
-      } else if (!strcmp(argv[i], "--hexadecimal")) {
+      } else if (!strcmp(option, "--hexadecimal")) {
         opts->radix = 16;
-      } else if (!strcmp(argv[i], "--help")) {
+      } else if (!strcmp(option, "--help")) {
         print_help();
         opts->show_help = true;
         return;
-      } else if (!strcmp(argv[i], "--usage")) {
+      } else if (!strcmp(option, "--usage")) {
         print_usage();
         opts->show_help = true;
         return;
-      } else if (!strcmp(argv[i], "--version")) {
+      } else if (!strcmp(option, "--version")) {
         opts->show_version = true;
         return;
       } else {
         raise_error(ERROR_SYS, "invalid option '%s'", argv[i] + 2);
       }
+
+      if (opt_length != arg_length) {
+        if (!read_argument)
+          raise_error(ERROR_SYS, "unexpected argument for option '%s'",
+                      option);
+        else {
+          char* val = argv[i] + opt_length + 1;
+          if (*val == '\0')
+            raise_error(ERROR_SYS, "expected argument for option '%s'",
+                        option);
+          
+          *arg = atoi(val);
+          read_argument = false;
+        }
+      }
+
+      free(option);
     } else if (!isalpha(c) && c != '?' && c != '=') { //not an option
       break;
     } else { //short options

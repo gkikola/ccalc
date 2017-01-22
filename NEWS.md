@@ -3,6 +3,7 @@ ccalc Release Notes
 
 ccalc 1.02 (TBD)
 ----------------
+* Allow option arguments to be specified by an equals sign '='
 * Minor documentation improvements
 
 ccalc 1.01 (2017-01-17)
