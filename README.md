@@ -103,11 +103,11 @@ Download ccalc-*version*.tar.gz and run
     $ sudo make install
 
 
-**From Windows binary (Windows only):**
+**From Windows binary distribution (Windows only):**
 
-Download ccalc.exe and place it anywhere. You may then run it from the command
-prompt. For your convenience you may wish to modify your Path environment
-variable appropriately.
+Download ccalc-*version*_w32.zip and extract it anywhere. You may then run
+it from the command prompt. For your convenience you may wish to modify your 
+Path environment variable appropriately.
 
 
 Usage
