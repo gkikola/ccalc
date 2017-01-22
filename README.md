@@ -144,13 +144,13 @@ short options.
 The input expression is assumed to follow the syntax of the C programming
 language. All C operators are supported except for those with side-effects
 (namely assignment, increment, and decrement). A few mathematical constants
-like PI and E are defined, and most of the math functions in the C standard
-library are available.
+like `PI` and `E` are defined, and most of the math functions in the C
+standard library are available.
 
 Both integer and floating-point values may be used in the input expression.
 **ccalc** will perform conversions where necessary. Integer values may also
 be specified in binary, octal, or hexadecimal. Binary values should be
-prefixed with ’0b’, octal values with ’0’, and hexadecimal values with ’0x’.
+prefixed with `0b`, octal values with `0`, and hexadecimal values with `0x`.
 
 Note that **ccalc** treats the `^` operator as C does: as the bitwise XOR
 operator and not as exponentiation. This behavior can be changed with the
