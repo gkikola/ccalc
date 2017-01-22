@@ -270,7 +270,7 @@ void print_value(value *val, options *opts) {
 
 void print_version() {
   printf("\
-ccalc 1.01\n\
+ccalc 1.02\n\
 Copyright (C) 2015-2017 Gregory Kikola\n\
 License GPLv3+: GNU GPL version 3 or later\n\
 <http://www.gnu.org/licenses/gpl.html>.\n\
