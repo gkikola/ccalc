@@ -106,8 +106,9 @@ Download ccalc-*version*.tar.gz and run
 **From Windows binary distribution (Windows only):**
 
 Download ccalc-*version*_w32.zip and extract it anywhere. You may then run
-it from the command prompt. For your convenience you may wish to modify your 
-Path environment variable appropriately.
+ccalc from the command prompt. You may need to modify your Path environment
+variable if you want to run ccalc from a directory different than the one you
+installed it in.
 
 
 Usage
