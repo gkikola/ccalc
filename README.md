@@ -161,4 +161,3 @@ Both integer and floating-point values may be used in the input expression.
 **ccalc** will perform conversions where necessary. Integer values may also
 be specified in binary, octal, or hexadecimal. Binary values should be
 prefixed with `0b`, octal values with `0`, and hexadecimal values with `0x`.
-All values are signed.
