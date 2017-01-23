@@ -1056,12 +1056,30 @@ int main() {
 		      "unexpected digit '8' in octal constant"));
   assert(expect_error("02ff", "",
 		      "unexpected digit 'f' in octal constant"));
+  assert(expect_error("0b0e1", "",
+		      "unexpected digit 'e' in binary constant"));
+  assert(expect_error("0b0E1", "",
+		      "unexpected digit 'E' in binary constant"));
   assert(expect_error("5 * 0b11020011", "",
 		      "unexpected digit '2' in binary constant"));
   assert(expect_error("0x35a1.302", "",
 		      "hexadecimal constant must be an integer"));
   assert(expect_error("0b110110.101011", "",
 		      "binary constant must be an integer"));
+
+  assert(expect_error("0.0e", "", "exponent has no digits"));
+  assert(expect_error("1.11e + 5", "", "exponent has no digits"));
+  assert(expect_error("-9.84e+", "", "exponent has no digits"));
+  assert(expect_error("1.527e-", "", "exponent has no digits"));
+  assert(expect_error("0e", "", "exponent has no digits"));
+  assert(expect_error("3e + 5", "", "exponent has no digits"));
+  assert(expect_error("9e+", "", "exponent has no digits"));
+  assert(expect_error("9e-", "", "exponent has no digits"));
+  assert(expect_error("0e--5", "", "exponent has no digits"));
+  assert(expect_error("0e++5", "", "exponent has no digits"));
+  assert(expect_error("0e+-5", "", "exponent has no digits"));
+  assert(expect_error("0e-+5", "", "exponent has no digits"));
+  assert(expect_error("-e", "", "unknown identifier 'e'"));
 
   assert(expect_error("sin(13, 4)", "",
 		      "function 'sin' does not take 2 arguments"));

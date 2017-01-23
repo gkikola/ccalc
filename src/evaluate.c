@@ -438,6 +438,11 @@ void get_literal(parser *parse) {
             negative_exponent = true;
             parse->pos++;
           }
+
+          //make sure we have digits in the exponent
+          if (parse->expr[parse->pos + 1] < '0'
+              || parse->expr[parse->pos + 1] > '9')
+            raise_error(ERROR_EXPR, "exponent has no digits");
         }
         break;
       case '.':
@@ -478,6 +483,11 @@ void get_literal(parser *parse) {
 	  negative_exponent = true;
 	  parse->pos++;
 	}
+
+        //make sure we have digits in the exponent
+        if (parse->expr[parse->pos + 1] < '0'
+            || parse->expr[parse->pos + 1] > '9')
+          raise_error(ERROR_EXPR, "exponent has no digits");
 	break;
       }
     }
