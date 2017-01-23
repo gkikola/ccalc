@@ -67,6 +67,9 @@ int main() {
   assert(expect_int("0b0", "", 0));
   assert(expect_int("0b1001001", "", 0x49));
   assert(EXPECT_INT(0xDEAD));
+  assert(EXPECT_INT(0xdead));
+  assert(EXPECT_INT(0xDeAd));
+  assert(EXPECT_INT(0xdEaD));
   assert(EXPECT_INT(000));
   assert(EXPECT_INT(010));
   assert(EXPECT_INT(021));
@@ -254,6 +257,7 @@ int main() {
   assert(EXPECT_INT(7 >> 2 & 7 << 1));
   assert(EXPECT_INT(63 << 1 & 0xFF));
   assert(EXPECT_INT(0xcdcdcd | 710));
+  assert(EXPECT_INT(0xCDcdCD | 710));
   assert(EXPECT_INT(0xcdcdcd & 710));
   assert(EXPECT_INT(0xcdcdcd ^ 710));
   assert(EXPECT_INT(3 << 12 / 4));
@@ -286,6 +290,14 @@ int main() {
   assert(EXPECT_FLOAT(219.00));
   assert(EXPECT_FLOAT(219.912));
   assert(EXPECT_FLOAT(87.41592));
+  assert(EXPECT_FLOAT(1e9));
+  assert(EXPECT_FLOAT(1E9));
+  assert(EXPECT_FLOAT(-1E-9));
+  assert(EXPECT_FLOAT(-2E+9));
+  assert(EXPECT_FLOAT(-1e-9));
+  assert(EXPECT_FLOAT(-2e+9));
+  assert(EXPECT_FLOAT(0e0));
+  assert(EXPECT_FLOAT(01234e1));
   
   assert(EXPECT_FLOAT(3.0 + 2));
   assert(EXPECT_FLOAT(3 + 2.0));

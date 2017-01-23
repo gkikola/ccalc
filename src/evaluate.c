@@ -317,7 +317,7 @@ void get_literal(parser *parse) {
   bool is_float = false;
   int start_pos = parse->pos;
   
-  //check for a decimal point
+  //check for a decimal point or exponent
   int pos = parse->pos;
   while (true) {
     char cur_ch = parse->expr[pos];
@@ -325,7 +325,7 @@ void get_literal(parser *parse) {
     if ((cur_ch < '0' || cur_ch > '9') && (cur_ch < 'A' || cur_ch > 'F')
 	&& (cur_ch < 'a' || cur_ch > 'f') && cur_ch != '.')
       break;
-    else if (cur_ch == '.')
+    else if (cur_ch == '.' || cur_ch == 'E' || cur_ch == 'e')
       is_float = true;
     
     pos++;
@@ -338,11 +338,13 @@ void get_literal(parser *parse) {
     case 'X':
       base = 16;
       parse->pos += 2;
+      is_float = false;
       break;
     case 'b':
     case 'B':
       base = 2;
       parse->pos += 2;
+      is_float = false;
       break;
     default:
       if (!is_float) {
@@ -386,7 +388,6 @@ void get_literal(parser *parse) {
       case 'B':
       case 'C':
       case 'D':
-      case 'E':
       case 'F':
 	if (base == 10)
 	  raise_error(ERROR_EXPR, "unexpected digit '%c' in constant", cur_ch);
@@ -403,7 +404,6 @@ void get_literal(parser *parse) {
       case 'b':
       case 'c':
       case 'd':
-      case 'e':
       case 'f':
 	if (base == 10)
 	  raise_error(ERROR_EXPR, "unexpected digit '%c' in constant", cur_ch);
@@ -416,6 +416,30 @@ void get_literal(parser *parse) {
 
 	result.data.ivalue = base * result.data.ivalue + (10 + cur_ch - 'a');
 	break;
+      case 'E':
+      case 'e':
+        if (base == 2)
+          raise_error(ERROR_EXPR, "unexpected digit '%c' in binary constant",
+                      cur_ch);
+        else if (base == 8)
+          raise_error(ERROR_EXPR, "unexpected digit '%c' in octal constant",
+                      cur_ch);
+        else if (base != 10) //this 'e' is a digit
+          result.data.ivalue = base * result.data.ivalue
+            + (10 + cur_ch - ((cur_ch == 'E') ? 'A' : 'a'));
+        else { //we've encountered an exponent
+          result.type = FLOAT;
+          result.data.fvalue = (double) result.data.ivalue;
+          reading_exponent = true;
+
+          if (parse->expr[parse->pos + 1] == '+') {
+            parse->pos++;
+          } else if (parse->expr[parse->pos + 1] == '-') {
+            negative_exponent = true;
+            parse->pos++;
+          }
+        }
+        break;
       case '.':
         if (base == 16)
 	  raise_error(ERROR_EXPR, "hexadecimal constant must be an integer");
