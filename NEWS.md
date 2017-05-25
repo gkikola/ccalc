@@ -1,7 +1,7 @@
 ccalc Release Notes
 ===================
 
-ccalc 1.02 (TBD)
+ccalc 1.02 (2017-05-25)
 ----------------
 * Correctly interprets floating-point values having an exponent but no decimal
 * Gives error when floating-point exponent is blank
